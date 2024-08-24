@@ -32,75 +32,81 @@ class JigarHome extends StatelessWidget {
           child: GridView.builder(
             itemCount: controller.homeItems.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 1.5,
-              crossAxisSpacing: 40,
+              childAspectRatio: 1.6,
+              crossAxisSpacing: 5,
               mainAxisSpacing: 20,
               crossAxisCount: 2,
             ),
             itemBuilder: (context, index) {
-              return InkWell(
-                onTap: () => controller.onItemTap(index),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: 30,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.textWhiteColor,
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: Center(
-                          child: Text(
-                            controller.homeItems[index]["name"]!,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: AppColors.homeblack,
-                                fontWeight: FontWeight.w600),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: InkWell(
+                  onTap: () => controller.onItemTap(index),
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned(
+                        top: 30,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.textWhiteColor,
+                            borderRadius: BorderRadius.circular(7),
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: MediaQuery.of(context).size.width * 0.15,
-                      child: Container(
-                        width: 55,
-                        height: 55,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          color: AppColors.redColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.redColor.withOpacity(0.6),
-                              offset: const Offset(0, 4),
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 24,
-                            height: 23,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7),
-                              color: Colors.transparent,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(7),
-                              child: SvgPicture.asset(
-                                controller.homeItems[index]["img"]!,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                controller.homeItems[index]["name"]!,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: AppColors.homeblack,
+                                    fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        top: 0,
+                        child: Container(
+                          width: 55,
+                          height: 55,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            color: AppColors.redColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.redColor.withOpacity(0.6),
+                                offset: const Offset(0, 4),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 24,
+                              height: 23,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
+                                color: Colors.transparent,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(7),
+                                child: SvgPicture.asset(
+                                  controller.homeItems[index]["img"]!,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

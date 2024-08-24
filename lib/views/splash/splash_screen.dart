@@ -16,7 +16,8 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(AppImages.splash))),
+            image: DecorationImage(
+                image: AssetImage(AppImages.splash), fit: BoxFit.cover)),
         child: Center(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
