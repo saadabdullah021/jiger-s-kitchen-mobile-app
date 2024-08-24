@@ -4,12 +4,17 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
+  final Color? bgColor;
+  final Color? textColor;
+  double? padding;
 
-  const CustomButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-  });
+  CustomButton(
+      {super.key,
+      required this.text,
+      required this.onPressed,
+      this.padding,
+      this.bgColor,
+      this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +22,16 @@ class CustomButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: EdgeInsets.symmetric(vertical: padding ?? 16.0),
         decoration: BoxDecoration(
-          color: AppColors.primaryColor,
+          color: bgColor ?? AppColors.primaryColor,
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Center(
           child: Text(
             text,
             style: TextStyle(
-              color: AppColors.textWhiteColor,
+              color: textColor ?? AppColors.textWhiteColor,
               fontSize: 16.0,
               fontWeight: FontWeight.w600,
             ),

@@ -8,7 +8,7 @@ AppBar appBar({
   Function()? onPressed,
   String? text,
   bool? back,
-  bool? action = false,
+  List<Widget>? actions, // Changed from Widget? to List<Widget>?
   Color? backgroundColor,
   Color? backColor,
   bool? showback,
@@ -47,19 +47,10 @@ AppBar appBar({
         ),
       ),
       actions: [
-        if (action!)
-          CircleAvatar(
-            backgroundColor: AppColors.lightBlue,
-            child: IconButton(
-              icon: Icon(
-                Icons.settings,
-                color: AppColors.cyanColor,
-              ),
-              onPressed: () {},
-            ),
-          ),
+        if (actions != null)
+          ...actions, // Spread operator to include multiple actions
         const SizedBox(
           width: 15,
-        )
+        ),
       ],
     );

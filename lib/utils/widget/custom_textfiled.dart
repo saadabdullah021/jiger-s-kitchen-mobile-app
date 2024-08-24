@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
+import 'package:jigers_kitchen/utils/helper.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final Color? fillColor;
   final TextInputType keyboardType;
   final bool obscureText;
+  final bool? readOnly;
+  final String? Function(String?)? validator;
   final TextInputAction textInputAction;
   final void Function(String)? onChanged;
   final Widget? prefixIcon; // Optional prefix icon
@@ -17,9 +21,12 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     this.keyboardType = TextInputType.text,
+    this.fillColor,
+    this.readOnly,
     this.obscureText = false,
     this.textInputAction = TextInputAction.done,
     this.onChanged,
+    this.validator,
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixIconTap,
@@ -27,7 +34,9 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      validator: validator ?? Helper.validateEmpty,
+      readOnly: readOnly == true ? true : false,
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
@@ -35,7 +44,7 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
-        fillColor: AppColors.lightGreyColor,
+        fillColor: fillColor ?? AppColors.lightGreyColor,
         hintText: hintText,
         hintStyle: TextStyle(color: AppColors.greyColor, fontSize: 14),
         border: OutlineInputBorder(
@@ -45,6 +54,7 @@ class CustomTextField extends StatelessWidget {
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         prefixIcon: prefixIcon, // Use the prefix icon if provided
+
         suffixIcon: suffixIcon != null
             ? GestureDetector(
                 onTap: onSuffixIconTap, // Call the callback when tapped

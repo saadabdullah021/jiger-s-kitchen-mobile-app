@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jigers_kitchen/utils/app_colors.dart';
 
 void showDialogWithAutoDismiss(
     {BuildContext? context,
@@ -15,6 +16,7 @@ void showDialogWithAutoDismiss(
         fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
     String? btnText}) {
   showDialog(
+    barrierColor: AppColors.primaryColor.withOpacity(0.6),
     context: context!,
     builder: (BuildContext context) {
       autoDismiss == true
