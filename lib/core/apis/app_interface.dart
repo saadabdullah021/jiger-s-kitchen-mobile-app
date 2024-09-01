@@ -58,6 +58,54 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> addVendor({
+    String? firstName,
+    String? lastName,
+    String? userName,
+    String? phoneNumber,
+    String? invoiceEmail,
+    String? multipleOrderEmail,
+    String? password,
+    String? vendorCategory,
+    String? tax,
+    String? billingAddress,
+    String? shippingAddress,
+    String? deliveryCharges,
+    String? profileImage,
+  }) async {
+    var data = {
+      "first_name": firstName,
+      "last_name": lastName,
+      "user_name": userName,
+      "phone_number": phoneNumber,
+      "invoice_email": invoiceEmail,
+      "multiple_order_email": multipleOrderEmail,
+      "password": password,
+      "vendor_category": vendorCategory!.toLowerCase(),
+      "tax": tax,
+      "billing_address": billingAddress,
+      "shipping_address": shippingAddress,
+      "delivery_charges": deliveryCharges,
+      "profile_image": MultipartFile(File(profileImage!),
+          filename: DateTime.now().microsecondsSinceEpoch.toString()),
+    };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+        "${Constants.API_BASE_URL}add-new-vendor", data,
+        headers: headers);
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      UserDataModel resposeData = UserDataModel.fromJson(response.body['data']);
+
+      return resposeData;
+    } else if (response.body['status'] == 400) {
+      return response.body['message'];
+    }
+    return null;
+  }
+
   Future<dynamic> login({
     String? userName,
     String? password,
@@ -145,7 +193,7 @@ class AppInterface extends BaseApi {
       query: {
         "role": role,
         "page": page,
-        "limit": "3",
+        "limit": "4",
       },
       headers: headers,
     );

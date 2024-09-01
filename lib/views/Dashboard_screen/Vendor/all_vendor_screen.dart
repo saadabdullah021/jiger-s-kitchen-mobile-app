@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
-import 'package:jigers_kitchen/views/Dashboard_screen/Chef/chef_list/chef_list_controller.dart';
+import 'package:jigers_kitchen/views/Dashboard_screen/Vendor/all_vendor_controller.dart';
+import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
 import '../../../../core/contstants.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
-import '../add_chef/add_chef_screen.dart';
 
-class AllChefListScreen extends StatefulWidget {
-  const AllChefListScreen({super.key});
+class AllVendorListScreen extends StatefulWidget {
+  const AllVendorListScreen({super.key});
 
   @override
-  State<AllChefListScreen> createState() => _AllChefListScreenState();
+  State<AllVendorListScreen> createState() => _AllVendorListScreenState();
 }
 
-class _AllChefListScreenState extends State<AllChefListScreen> {
-  ChefListController controller = ChefListController();
+class _AllVendorListScreenState extends State<AllVendorListScreen> {
+  vendorListController controller = vendorListController();
   ScrollController _scrollController = ScrollController();
   Future<void> _scrollListener() async {
     print(_scrollController.position.extentAfter);
@@ -42,7 +42,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Chef List"),
+      appBar: appBar(text: "Vendor List"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
@@ -66,7 +66,9 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                           ),
                           InkWell(
                             onTap: () {
-                              Get.to(() => const AddChefScreen());
+                              Get.to(() => SignUpScreen(
+                                    addVendor: true,
+                                  ));
                             },
                             child: Row(
                               children: [
@@ -88,7 +90,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                   width: 2,
                                 ),
                                 const Text(
-                                  "Add chef",
+                                  "Add Vendor",
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
@@ -106,9 +108,27 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                         fillColor: AppColors.lightGreyColor,
                         controller: controller.textController,
                         prefixIcon: const Icon(Icons.search),
-                        hintText: "Search for chef"),
+                        hintText: "Search for Vendor"),
                     const SizedBox(
                       height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Vendor Name",
+                          style: TextStyle(
+                              // decoration: TextDecoration.underline,
+                              // decorationColor: AppColors.primaryColor,
+                              color: AppColors.primaryColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        const Text("Action"),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 16,
                     ),
                     Expanded(
                       child: ListView.builder(
@@ -168,12 +188,18 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(15),
                                               color: Colors.white),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
                                                 vertical: 8, horizontal: 13),
                                             child: Text(
-                                              "Print Orders",
-                                              style: TextStyle(
+                                              controller
+                                                      .userList
+                                                      .value
+                                                      .data!
+                                                      .chefList![index]
+                                                      .vendorType ??
+                                                  "",
+                                              style: const TextStyle(
                                                   fontSize: 10,
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.w600),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jigers_kitchen/core/apis/app_interface.dart';
-import 'package:jigers_kitchen/model/user_list_model.dart';
-import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
-class ChefListController extends GetxController {
+import '../../../core/apis/app_interface.dart';
+import '../../../model/user_list_model.dart';
+import '../../../utils/widget/appwidgets.dart';
+
+class vendorListController extends GetxController {
   TextEditingController textController = TextEditingController();
 
   RxBool isLoading = false.obs;
@@ -16,7 +17,7 @@ class ChefListController extends GetxController {
     } else {
       isLoading.value = true;
     }
-    await AppInterface().getUserList(role: "chef", page: page).then((value) {
+    await AppInterface().getUserList(role: "vendor", page: page).then((value) {
       if (value is userListModel) {
         if (moreLoading) {
           userList.value.data!.chefList!.addAll(value.data!.chefList!);

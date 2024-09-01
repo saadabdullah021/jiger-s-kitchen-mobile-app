@@ -25,7 +25,7 @@ class userListModel {
 class Data {
   int? totalRecords;
   String? limit;
-  String? currentPage;
+  int? currentPage;
   int? totalPages;
   List<ChefList>? chefList;
 
@@ -39,7 +39,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     totalRecords = json['total_records'];
     limit = json['limit'];
-    currentPage = json['current_page'];
+    currentPage = int.parse(json['current_page'].toString());
     totalPages = json['total_pages'];
     if (json['chef_list'] != null) {
       chefList = <ChefList>[];
@@ -71,6 +71,7 @@ class ChefList {
   String? profileImage;
   int? status;
   String? createdAt;
+  String? vendorType;
 
   ChefList(
       {this.id,
@@ -79,6 +80,7 @@ class ChefList {
       this.userName,
       this.phoneNumber,
       this.profileImage,
+      this.vendorType,
       this.status,
       this.createdAt});
 
@@ -86,6 +88,7 @@ class ChefList {
     id = json['id'];
     name = json['name'];
     email = json['email'];
+    vendorType = json['vendor_category'];
     userName = json['user_name'];
     phoneNumber = json['phone_number'];
     profileImage = json['profile_image'];

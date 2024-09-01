@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
+import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
@@ -10,7 +13,8 @@ import '../../../utils/widget/custom_textfiled.dart';
 import 'signup_controller.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+  bool? addVendor;
+  SignUpScreen({super.key, this.addVendor});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +22,8 @@ class SignUpScreen extends StatelessWidget {
     final GlobalKey<FormState> key = GlobalKey();
     controller.dummyController.text = "--Select--";
     return Scaffold(
-      appBar: appBar(text: "Jigar’s Kitchen"),
+      appBar:
+          appBar(text: addVendor == true ? "Add Vendor" : "Jigar’s Kitchen"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -30,19 +35,55 @@ class SignUpScreen extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                const Text(
-                  "Create Account",
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+
+                Visibility(
+                  visible: addVendor == null,
+                  child: const Text(
+                    "Create Account",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+                  ),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
-                Text(
-                  "Hello there,lorem ipsum dolor",
-                  style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 12,
-                      color: AppColors.textFiledGrey),
+                Visibility(
+                  visible: addVendor == null,
+                  child: Text(
+                    "Hello there,lorem ipsum dolor",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+                        color: AppColors.textFiledGrey),
+                  ),
+                ),
+                Visibility(
+                  visible: addVendor == true,
+                  child: Center(
+                    child: InkWell(
+                      onTap: () {
+                        controller.takePicture();
+                      },
+                      child: Obx(
+                        () => CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey.withOpacity(0.4),
+                          backgroundImage: controller.imagePath.value != ""
+                              ? FileImage(File(controller.imagePath.value))
+                              : null,
+                          child: Center(
+                              child: controller.imagePath.value == ""
+                                  ? Image.asset(
+                                      AppImages.images,
+                                      height: 20,
+                                    )
+                                  : null),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 const SizedBox(
                   height: 14,
@@ -254,7 +295,16 @@ class SignUpScreen extends StatelessWidget {
                     if (key.currentState?.validate() ?? false) {
                       if (controller.selectedRadioValue == null) {
                       } else {
-                        controller.Register();
+                        if (addVendor == true) {
+                          if (controller.imagePath.value == "") {
+                            appWidgets().showToast(
+                                "Sorry", "Please Add Profile Picture");
+                          } else {
+                            controller.AddVendor();
+                          }
+                        } else {
+                          controller.Register();
+                        }
                       }
                     }
                   },
