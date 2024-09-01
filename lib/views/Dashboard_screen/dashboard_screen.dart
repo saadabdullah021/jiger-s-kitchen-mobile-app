@@ -31,49 +31,54 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
         child: Column(
           children: [
-            Container(
-              height: Get.height * 0.18,
-              decoration: BoxDecoration(
-                  color: controller.DashBoardItems[0]['bgColor'],
-                  borderRadius: BorderRadius.circular(6)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        controller.DashBoardItems[0]["name"]!,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: AppColors.homeblack,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal),
-                      ),
-                      Text(
-                        controller.DashBoardItems[0]["count"].toString(),
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: controller.DashBoardItems[0]['color'],
-                            fontSize: 39,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: AppColors.textWhiteColor,
-                    child: Center(
-                      child: SvgPicture.asset(
-                        controller.DashBoardItems[0]['img'],
-                        color: controller.DashBoardItems[0]['color'],
-                      ),
+            InkWell(
+              onTap: () {
+                controller.onItemClick(0);
+              },
+              child: Container(
+                height: Get.height * 0.18,
+                decoration: BoxDecoration(
+                    color: controller.DashBoardItems[0]['bgColor'],
+                    borderRadius: BorderRadius.circular(6)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.DashBoardItems[0]["name"]!,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: AppColors.homeblack,
+                              fontSize: 15,
+                              fontWeight: FontWeight.normal),
+                        ),
+                        Text(
+                          controller.DashBoardItems[0]["count"].toString(),
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: controller.DashBoardItems[0]['color'],
+                              fontSize: 39,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
-                  )
-                ],
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: AppColors.textWhiteColor,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          controller.DashBoardItems[0]['img'],
+                          color: controller.DashBoardItems[0]['color'],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             const SizedBox(
@@ -90,7 +95,9 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   return InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      controller.onItemClick(index);
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),

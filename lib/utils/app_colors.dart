@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class AppColors {
   static Color primaryColor = fromHex('#60BA62');
   static Color redColor = fromHex('#F55E66');
+  static Color orangeColor = fromHex('#FF7700');
+  static Color dividerGreyColor = fromHex('#F2F2F2');
   static Color homeblack = fromHex("#333333");
-
+  static Color newOrderGrey = fromHex("#737373");
   static Color appColor = fromHex('#60BA62');
   static Color dialougBG = fromHex('#F9F9F9');
   static Color textFiledGrey = fromHex("#979494");

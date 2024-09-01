@@ -1,6 +1,4 @@
 import 'package:get/get.dart';
-import 'package:jigers_kitchen/core/contstants.dart';
-import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
 class BaseApi extends GetConnect {
   // late SharedPreferences prefs;
@@ -8,7 +6,7 @@ class BaseApi extends GetConnect {
   void onInit() {
     // allowAutoSignedCert = true;
     super.onInit();
-    httpClient.baseUrl = Constants.API_BASE_URL;
+    // httpClient.baseUrl = Constants.API_BASE_URL;
     httpClient.timeout = const Duration(seconds: 60);
   }
 
@@ -16,11 +14,13 @@ class BaseApi extends GetConnect {
       {String? contentType,
       Map<String, String>? headers,
       Map<String, dynamic>? query}) async {
-    appWidgets.loadingDialog();
     var response = await post(url, FormData(body),
         contentType: contentType, headers: headers, query: query);
-    appWidgets.hideDialog();
+
     if (response.statusCode != 200) {
+      print(response.statusCode.toString());
+      print(response.bodyBytes.toString());
+      print(response.bodyString.toString());
       return null;
     }
     return response;
@@ -33,7 +33,6 @@ class BaseApi extends GetConnect {
     var response = await get(url,
         contentType: contentType, headers: headers, query: query);
     if (response.statusCode != 200) {
-      appWidgets().showToast("Sorry", "Internal server error");
       return null;
     }
 

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/model/user_data_model.dart';
-import 'package:jigers_kitchen/views/auth/login/login_screen.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
+import '../../../utils/widget/appwidgets.dart';
 import '../../../utils/widget/success_dialoug.dart';
+import '../login/login_screen.dart';
 
 class SignupController extends GetxController {
   TextEditingController nameController = TextEditingController();
@@ -22,16 +23,13 @@ class SignupController extends GetxController {
   TextEditingController shippingAddressController = TextEditingController();
   TextEditingController deliveryChargesController = TextEditingController();
   TextEditingController dummyController = TextEditingController();
-  RxBool showPassword = true.obs;
+  RxBool showPassword = false.obs;
   RxBool checkedValue = false.obs;
   RxString selectedValue = "--Select--".obs;
-  String? selectedRadioValue = "Wholesaler";
-
-  void handleRadioValueChanged(String? value) {
-    selectedRadioValue = value;
-  }
+  RxString? selectedRadioValue = "Wholesaler".obs;
 
   Register() async {
+    appWidgets.loadingDialog();
     await AppInterface()
         .register(
             firstName: nameController.text,
@@ -40,13 +38,14 @@ class SignupController extends GetxController {
             phoneNumber: phoneController.text,
             invoiceEmail: invoiceEmailController.text,
             multipleOrderEmail: otherEmailController.text,
-            vendorCategory: selectedRadioValue,
+            vendorCategory: selectedRadioValue!.value,
             password: passwordController.text,
             tax: taxController.text,
             billingAddress: billingAddressController.text,
             shippingAddress: shippingAddressController.text,
             deliveryCharges: deliveryChargesController.text)
         .then((value) {
+      appWidgets.hideDialog();
       if (value is UserDataModel) {
         Get.off(() => const LoginScreen());
         showDialogWithAutoDismiss(
@@ -59,6 +58,10 @@ class SignupController extends GetxController {
                 fontSize: 32,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textBlackColor));
+      } else if (value is String) {
+        appWidgets().showToast("Sorry", value);
+      } else {
+        appWidgets().showToast("Sorry", "Internal server error");
       }
     });
   }
