@@ -6,7 +6,6 @@ import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
-import '../../../utils/widget/custom_radion_btn.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import 'signup_controller.dart';
 
@@ -139,22 +138,63 @@ class SignUpScreen extends StatelessWidget {
                 const SizedBox(
                   height: 14,
                 ),
-                CustomTextField(
-                  controller: controller.dummyController,
-                  hintText: "--Select--",
-                  readOnly: true,
-                  suffixIcon: Icon(
-                    Icons.arrow_drop_down,
-                    size: 16,
-                    color: AppColors.textFiledGrey,
+                Obx(
+                  () => Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightGreyColor,
+                      borderRadius: BorderRadius.circular(23.0),
+                    ),
+                    child: DropdownButton<String>(
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        size: 16,
+                        color: AppColors.textFiledGrey,
+                      ),
+                      isExpanded: true,
+                      value: controller.selectedRadioValue!.value,
+                      style: TextStyle(
+                          color: AppColors.greyColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                      hint: Text(
+                        "--select--",
+                        style:
+                            TextStyle(color: AppColors.greyColor, fontSize: 14),
+                      ),
+                      underline: const SizedBox(),
+                      items: <String>[
+                        'Wholesaler',
+                        'Catering',
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        controller.selectedRadioValue!.value = newValue!;
+                      },
+                    ),
                   ),
                 ),
+                // CustomTextField(
+                //   controller: controller.dummyController,
+                //   hintText: "--Select--",
+                //   readOnly: true,
+                //   suffixIcon: Icon(
+                //     Icons.arrow_drop_down,
+                //     size: 16,
+                //     color: AppColors.textFiledGrey,
+                //   ),
+                // ),
                 const SizedBox(
                   height: 14,
                 ),
-                RadioButtonRow(
-                  onValueChanged: controller.handleRadioValueChanged,
-                ),
+                // RadioButtonRow(
+                //   onValueChanged: controller.handleRadioValueChanged,
+                // ),
                 const SizedBox(
                   height: 14,
                 ),

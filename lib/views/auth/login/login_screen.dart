@@ -4,7 +4,6 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
 import 'package:jigers_kitchen/views/auth/login/login_controller.dart';
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
-import 'package:jigers_kitchen/views/jigar_home_screen/jiagar_home.dart';
 
 import '../../../utils/widget/app_button.dart';
 import '../../../utils/widget/custom_textfiled.dart';
@@ -145,11 +144,12 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       CustomButton(
-                        text: "LOGIN",
-                        onPressed: () {
-                          Get.off(() => const JigarHome());
-                        },
-                      ),
+                          text: "LOGIN",
+                          onPressed: () {
+                            if (key.currentState?.validate() ?? false) {
+                              controller.login();
+                            }
+                          }),
                       const SizedBox(height: 20),
                       Center(
                         child: Text(

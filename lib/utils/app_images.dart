@@ -34,4 +34,8 @@ class AppImages {
   static String dashboard5 = "${dashboadImgePath}dashboard_5.svg";
   static String dashboard6 = "${dashboadImgePath}dashboard_6.svg";
   static String dashboard7 = "${dashboadImgePath}dashboard_7.svg";
+  static String images = "${dashboadImgePath}images-regular.png";
+  //new order
+  static String smosa = "${imgePath}smosa.svg";
+  static String clock = "${imgePath}clock.svg";
 }

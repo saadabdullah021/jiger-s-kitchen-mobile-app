@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/dashboard_screen.dart';
 
+import '../Dashboard_screen/Chef/chef_list/chef_list_screen.dart';
+
 class HomeController extends GetxController {
   List<Map<String, dynamic>> homeItems = [
     {"img": AppImages.home1Image, "name": "Dashboard"},
@@ -19,6 +21,9 @@ class HomeController extends GetxController {
     switch (index) {
       case 0:
         Get.to(() => const DashboardScreen());
+        break;
+      case 3:
+        Get.to(() => const AllChefListScreen());
         break;
       default:
     }
