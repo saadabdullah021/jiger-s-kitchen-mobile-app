@@ -1,11 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
+import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
+import 'package:jigers_kitchen/utils/widget/no_data.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/Chef/chef_list/chef_list_controller.dart';
 
 import '../../../../core/contstants.dart';
+import '../../../../utils/app_images.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/delete_item_dialoug.dart';
+import '../../../../utils/widget/success_dialoug.dart';
 import '../add_chef/add_chef_screen.dart';
 
 class AllChefListScreen extends StatefulWidget {
@@ -18,6 +26,7 @@ class AllChefListScreen extends StatefulWidget {
 class _AllChefListScreenState extends State<AllChefListScreen> {
   ChefListController controller = ChefListController();
   ScrollController _scrollController = ScrollController();
+
   Future<void> _scrollListener() async {
     print(_scrollController.position.extentAfter);
     if (_scrollController.position.extentAfter < 5) {
@@ -26,7 +35,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
         int currntPage = controller.userList.value.data!.currentPage!;
         int page = Totalpage > currntPage ? ++currntPage : 0;
         if (page != 0) {
-          controller.getChef(true, page.toString());
+          controller.getChef(true, page.toString(), true);
         }
       }
     }
@@ -35,7 +44,8 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
   @override
   void initState() {
     _scrollController = ScrollController()..addListener(_scrollListener);
-    controller.getChef(false, "1");
+    controller.textController.addListener(controller.onTextChanged);
+    controller.getChef(false, "1", true);
     super.initState();
   }
 
@@ -52,169 +62,322 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                     color: AppColors.primaryColor,
                   ),
                 )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 13),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Result: ${controller.userList.value.data!.totalRecords.toString()}",
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Get.to(() => const AddChefScreen());
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                    height: 15,
-                                    width: 15,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: AppColors.jetBlackColor),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: const Center(
-                                        child: Icon(
-                                      Icons.add,
-                                      size: 12,
-                                    ))),
-                                const SizedBox(
-                                  width: 2,
-                                ),
-                                const Text(
-                                  "Add chef",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
+              : RefreshIndicator(
+                  onRefresh: controller.pullRefresh,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 13),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Result: ${controller.userList.value.data!.totalRecords.toString()}",
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    CustomTextField(
-                        fillColor: AppColors.lightGreyColor,
-                        controller: controller.textController,
-                        prefixIcon: const Icon(Icons.search),
-                        hintText: "Search for chef"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount:
-                              controller.userList.value.data!.chefList!.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: AppColors.textGreyColor,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 15),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          controller.userList.value.data!
-                                                  .chefList![index].name ??
-                                              "",
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        iconTextWidget(
-                                          icon: Icons.phone_callback,
-                                          text: controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .phoneNumber ??
-                                              "",
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        iconTextWidget(
-                                          icon: Icons.email,
-                                          text: controller.userList.value.data!
-                                                  .chefList![index].email ??
-                                              "",
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: Colors.white),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 13),
-                                            child: Text(
-                                              "Print Orders",
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor: Colors.white,
-                                      backgroundImage: controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .profileImage !=
-                                              null
-                                          ? NetworkImage(Constants.webUrl +
-                                              controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .profileImage!)
-                                          : null,
-                                    )
-                                  ],
-                                ),
+                            InkWell(
+                              onTap: () async {
+                                await Get.to(() => AddChefScreen())!
+                                    .then((value) {
+                                  controller.getChef(false, "1", false);
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                      height: 15,
+                                      width: 15,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: AppColors.jetBlackColor),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: const Center(
+                                          child: Icon(
+                                        Icons.add,
+                                        size: 12,
+                                      ))),
+                                  const SizedBox(
+                                    width: 2,
+                                  ),
+                                  const Text(
+                                    " Add Chef",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
                               ),
-                            );
-                          }),
-                    ),
-                    controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
                             ),
-                          )
-                        : const SizedBox()
-                  ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      CustomTextField(
+                          fillColor: AppColors.lightGreyColor,
+                          controller: controller.textController,
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: controller.textController.text != ""
+                              ? InkWell(
+                                  onTap: () {
+                                    controller.textController.clear();
+                                  },
+                                  child: const Icon(Icons.cancel))
+                              : null,
+                          hintText: "Search for Chef"),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: controller.userList.value.data!.chefList!.isEmpty
+                            ? Column(
+                                children: [
+                                  SizedBox(height: Get.height * 0.15),
+                                  noData(),
+                                ],
+                              )
+                            : ListView.builder(
+                                controller: _scrollController,
+                                itemCount: controller
+                                    .userList.value.data!.chefList!.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    color: AppColors.textGreyColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 15),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: Get.width * 0.57,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    iconTextWidget(
+                                                      icon:
+                                                          Icons.phone_callback,
+                                                      text: controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .phoneNumber ??
+                                                          "",
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    iconTextWidget(
+                                                      icon: Icons.email,
+                                                      text: controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .email ??
+                                                          "",
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              CircleAvatar(
+                                                radius: 30,
+                                                backgroundColor: Colors.white,
+                                                backgroundImage: controller
+                                                            .userList
+                                                            .value
+                                                            .data!
+                                                            .chefList![index]
+                                                            .profileImage !=
+                                                        null
+                                                    ? NetworkImage(Constants
+                                                            .webUrl +
+                                                        controller
+                                                            .userList
+                                                            .value
+                                                            .data!
+                                                            .chefList![index]
+                                                            .profileImage!)
+                                                    : null,
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    color: Colors.white),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 13),
+                                                  child: Text(
+                                                    "Print Orders",
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Get.to(
+                                                          () => AddChefScreen(
+                                                                id: controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                                isEdit: true,
+                                                              ));
+                                                    },
+                                                    child: const Icon(
+                                                      Icons.edit,
+                                                      size: 17,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      showDeleteItemDialoug(
+                                                          description:
+                                                              "Are you sure you want to DELETE the Chef?",
+                                                          context: context,
+                                                          url: controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .profileImage,
+                                                          onYes: () async {
+                                                            Get.back();
+                                                            appWidgets
+                                                                .loadingDialog();
+                                                            await AppInterface()
+                                                                .deleteUser(
+                                                              role: "chef",
+                                                              id: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .id
+                                                                  .toString(),
+                                                            )
+                                                                .then((value) {
+                                                              if (value !=
+                                                                      null &&
+                                                                  value ==
+                                                                      200) {
+                                                                appWidgets
+                                                                    .hideDialog();
+                                                                controller.getChef(
+                                                                    false,
+                                                                    controller
+                                                                        .userList
+                                                                        .value
+                                                                        .data!
+                                                                        .currentPage
+                                                                        .toString(),
+                                                                    false);
+                                                                showDialogWithAutoDismiss(
+                                                                    context: Get
+                                                                        .context,
+                                                                    doubleBack:
+                                                                        false,
+                                                                    img: AppImages
+                                                                        .successDialougIcon,
+                                                                    autoDismiss:
+                                                                        true,
+                                                                    heading:
+                                                                        "Hurray!",
+                                                                    text:
+                                                                        "Chef Deleted Successfully",
+                                                                    headingStyle: TextStyle(
+                                                                        fontSize:
+                                                                            32,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: AppColors
+                                                                            .textBlackColor));
+                                                              }
+                                                            });
+                                                          });
+                                                    },
+                                                    child: const Icon(
+                                                      Icons.delete,
+                                                      size: 17,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                      ),
+                      controller.isMoreLoading.isTrue
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryColor,
+                              ),
+                            )
+                          : const SizedBox()
+                    ],
+                  ),
                 ),
         ),
       ),
@@ -234,12 +397,15 @@ Widget iconTextWidget({
           backgroundColor: Colors.white,
           child: Icon(icon, size: 12, color: AppColors.newOrderGrey)),
       const SizedBox(width: 5),
-      Text(
-        text,
-        style: TextStyle(
-            fontSize: 11,
-            color: AppColors.newOrderGrey,
-            fontWeight: FontWeight.w600),
+      Expanded(
+        child: Text(
+          overflow: TextOverflow.ellipsis,
+          text,
+          style: TextStyle(
+              fontSize: 11,
+              color: AppColors.newOrderGrey,
+              fontWeight: FontWeight.w600),
+        ),
       ),
     ],
   );

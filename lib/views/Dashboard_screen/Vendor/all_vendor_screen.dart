@@ -1,3 +1,4 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -5,8 +6,16 @@ import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/Vendor/all_vendor_controller.dart';
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
-import '../../../../core/contstants.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../core/apis/app_interface.dart';
+import '../../../core/contstants.dart';
+import '../../../model/user_list_model.dart';
+import '../../../utils/app_images.dart';
+import '../../../utils/widget/appwidgets.dart';
+import '../../../utils/widget/delete_item_dialoug.dart';
+import '../../../utils/widget/no_data.dart';
+import '../../../utils/widget/success_dialoug.dart';
+import '../../new_order_screens/new_order_widgets.dart';
 
 class AllVendorListScreen extends StatefulWidget {
   const AllVendorListScreen({super.key});
@@ -26,7 +35,7 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
         int currntPage = controller.userList.value.data!.currentPage!;
         int page = Totalpage > currntPage ? ++currntPage : 0;
         if (page != 0) {
-          controller.getChef(true, page.toString());
+          controller.getChef(true, page.toString(), true);
         }
       }
     }
@@ -35,7 +44,8 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
   @override
   void initState() {
     _scrollController = ScrollController()..addListener(_scrollListener);
-    controller.getChef(false, "1");
+    controller.textController.addListener(controller.onTextChanged);
+    controller.getChef(false, "1", true);
     super.initState();
   }
 
@@ -65,10 +75,13 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                 fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                           InkWell(
-                            onTap: () {
-                              Get.to(() => SignUpScreen(
-                                    addVendor: true,
-                                  ));
+                            onTap: () async {
+                              await Get.to(() => SignUpScreen(
+                                        addVendor: true,
+                                      ))!
+                                  .then((value) {
+                                controller.getChef(false, "1", false);
+                              });
                             },
                             child: Row(
                               children: [
@@ -90,7 +103,7 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                   width: 2,
                                 ),
                                 const Text(
-                                  "Add Vendor",
+                                  " Add Vendor",
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
@@ -108,131 +121,169 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                         fillColor: AppColors.lightGreyColor,
                         controller: controller.textController,
                         prefixIcon: const Icon(Icons.search),
+                        suffixIcon: controller.textController.text != ""
+                            ? InkWell(
+                                onTap: () {
+                                  controller.textController.clear();
+                                },
+                                child: const Icon(Icons.cancel))
+                            : null,
                         hintText: "Search for Vendor"),
                     const SizedBox(
                       height: 15,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Vendor Name",
-                          style: TextStyle(
-                              // decoration: TextDecoration.underline,
-                              // decorationColor: AppColors.primaryColor,
-                              color: AppColors.primaryColor,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const Text("Action"),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount:
-                              controller.userList.value.data!.chefList!.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: AppColors.textGreyColor,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 15),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          controller.userList.value.data!
-                                                  .chefList![index].name ??
-                                              "",
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        iconTextWidget(
-                                          icon: Icons.phone_callback,
-                                          text: controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .phoneNumber ??
-                                              "",
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        iconTextWidget(
-                                          icon: Icons.email,
-                                          text: controller.userList.value.data!
-                                                  .chefList![index].email ??
-                                              "",
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: Colors.white),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 13),
-                                            child: Text(
-                                              controller
-                                                      .userList
-                                                      .value
-                                                      .data!
-                                                      .chefList![index]
-                                                      .vendorType ??
-                                                  "",
-                                              style: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
+                    controller.userList.value.data!.chefList!.isEmpty
+                        ? Column(
+                            children: [
+                              SizedBox(height: Get.height * 0.15),
+                              noData(),
+                            ],
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                                controller: _scrollController,
+                                itemCount: controller
+                                    .userList.value.data!.chefList!.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    color: AppColors.textGreyColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(13),
+                                      child: ExpandablePanel(
+                                          theme: ExpandableThemeData(
+                                              iconColor:
+                                                  AppColors.primaryColor),
+                                          header: Text(
+                                            controller.userList.value.data!
+                                                    .chefList![index].name ??
+                                                "",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
                                           ),
-                                        )
-                                      ],
+                                          collapsed: vendorListDataWidget(
+                                            data: controller.userList.value
+                                                .data!.chefList![index],
+                                          ),
+                                          expanded: Column(
+                                            children: [
+                                              vendorListDataWidget(
+                                                data: controller.userList.value
+                                                    .data!.chefList![index],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  NewOrderButtonWidget(
+                                                    ic: Icons.edit,
+                                                    text: "Edit",
+                                                    clr: AppColors.primaryColor,
+                                                    ontap: () {
+                                                      Get.to(SignUpScreen(
+                                                        isEdit: true,
+                                                        chefID: controller
+                                                            .userList
+                                                            .value
+                                                            .data!
+                                                            .chefList![index]
+                                                            .id
+                                                            .toString(),
+                                                        addVendor: true,
+                                                      ));
+                                                    },
+                                                  ),
+                                                  NewOrderButtonWidget(
+                                                    ic: Icons.delete,
+                                                    text: "Delete",
+                                                    ontap: () {
+                                                      showDeleteItemDialoug(
+                                                          description:
+                                                              "Are you sure you want to DELETE the Vendor?",
+                                                          context: context,
+                                                          url: controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .profileImage,
+                                                          onYes: () async {
+                                                            Get.back();
+                                                            appWidgets
+                                                                .loadingDialog();
+                                                            await AppInterface()
+                                                                .deleteUser(
+                                                              role: "vendor",
+                                                              id: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .id
+                                                                  .toString(),
+                                                            )
+                                                                .then((value) {
+                                                              if (value !=
+                                                                      null &&
+                                                                  value ==
+                                                                      200) {
+                                                                controller.getChef(
+                                                                    false,
+                                                                    controller
+                                                                        .userList
+                                                                        .value
+                                                                        .data!
+                                                                        .currentPage
+                                                                        .toString(),
+                                                                    false);
+                                                                appWidgets
+                                                                    .hideDialog();
+                                                                showDialogWithAutoDismiss(
+                                                                    context: Get
+                                                                        .context,
+                                                                    doubleBack:
+                                                                        false,
+                                                                    img: AppImages
+                                                                        .successDialougIcon,
+                                                                    autoDismiss:
+                                                                        true,
+                                                                    heading:
+                                                                        "Hurray!",
+                                                                    text:
+                                                                        "Vendor Deleted Successfully",
+                                                                    headingStyle: TextStyle(
+                                                                        fontSize:
+                                                                            32,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: AppColors
+                                                                            .textBlackColor));
+                                                              }
+                                                            });
+                                                          });
+                                                    },
+                                                    clr: AppColors.redColor,
+                                                  ),
+                                                  NewOrderButtonWidget(
+                                                    ic: Icons.receipt,
+                                                    text: "Orders",
+                                                    ontap: () {},
+                                                    clr: AppColors.orangeColor,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )),
                                     ),
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor: Colors.white,
-                                      backgroundImage: controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .profileImage !=
-                                              null
-                                          ? NetworkImage(Constants.webUrl +
-                                              controller
-                                                  .userList
-                                                  .value
-                                                  .data!
-                                                  .chefList![index]
-                                                  .profileImage!)
-                                          : null,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
+                                  );
+                                }),
+                          ),
                     controller.isMoreLoading.isTrue
                         ? Center(
                             child: CircularProgressIndicator(
@@ -244,6 +295,63 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                 ),
         ),
       ),
+    );
+  }
+}
+
+class vendorListDataWidget extends StatelessWidget {
+  vendorListDataWidget({super.key, required this.data});
+
+  ChefList data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconTextWidget(
+                icon: Icons.email,
+                text: data.email ?? "",
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              iconTextWidget(
+                icon: Icons.phone_callback,
+                text: data.phoneNumber ?? "",
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
+                    child: Text(
+                      data.vendorType ?? "",
+                      style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )),
+            ],
+          ),
+        ),
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Colors.white,
+          backgroundImage: data.profileImage != null
+              ? NetworkImage(Constants.webUrl + data.profileImage!)
+              : null,
+        )
+      ],
     );
   }
 }
@@ -260,12 +368,15 @@ Widget iconTextWidget({
           backgroundColor: Colors.white,
           child: Icon(icon, size: 12, color: AppColors.newOrderGrey)),
       const SizedBox(width: 5),
-      Text(
-        text,
-        style: TextStyle(
-            fontSize: 11,
-            color: AppColors.newOrderGrey,
-            fontWeight: FontWeight.w600),
+      Expanded(
+        child: Text(
+          text,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontSize: 11,
+              color: AppColors.newOrderGrey,
+              fontWeight: FontWeight.w600),
+        ),
       ),
     ],
   );

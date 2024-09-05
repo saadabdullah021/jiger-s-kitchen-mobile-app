@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,11 +13,41 @@ class vendorListController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isMoreLoading = false.obs;
   Rx<userListModel> userList = userListModel().obs;
-  getChef(bool moreLoading, String page) async {
+  Timer? _debounce;
+  void onTextChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(seconds: 1), () {
+      callApi(textController.text);
+    });
+  }
+
+  Future<void> pullRefresh() async {
+    getChef(false, "1", true);
+  }
+
+  Future<void> callApi(String query) async {
+    if (query == "") {
+      getChef(false, "1", false);
+    } else {
+      await AppInterface()
+          .searchUser(role: "vendor", query: query)
+          .then((value) {
+        if (value != null && value is userListModel) {
+          userList.value = value;
+          userList.refresh();
+        }
+      });
+    }
+  }
+
+  getChef(bool moreLoading, String page, bool showLoading) async {
     if (moreLoading) {
       isMoreLoading.value = true;
     } else {
-      isLoading.value = true;
+      if (showLoading == true) {
+        isLoading.value = true;
+      }
     }
     await AppInterface().getUserList(role: "vendor", page: page).then((value) {
       if (value is userListModel) {

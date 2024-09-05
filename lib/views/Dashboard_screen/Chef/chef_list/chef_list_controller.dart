@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/core/apis/app_interface.dart';
@@ -9,12 +11,41 @@ class ChefListController extends GetxController {
 
   RxBool isLoading = false.obs;
   RxBool isMoreLoading = false.obs;
+  Timer? _debounce;
   Rx<userListModel> userList = userListModel().obs;
-  getChef(bool moreLoading, String page) async {
+  void onTextChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(seconds: 1), () {
+      callApi(textController.text);
+    });
+  }
+
+  Future<void> pullRefresh() async {
+    getChef(false, "1", true);
+    // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
+  }
+
+  Future<void> callApi(String query) async {
+    if (query == "") {
+      getChef(false, "1", false);
+    } else {
+      await AppInterface().searchUser(role: "chef", query: query).then((value) {
+        if (value != null && value is userListModel) {
+          userList.value = value;
+          userList.refresh();
+        }
+      });
+    }
+  }
+
+  getChef(bool moreLoading, String page, bool showLoading) async {
     if (moreLoading) {
       isMoreLoading.value = true;
     } else {
-      isLoading.value = true;
+      if (showLoading == true) {
+        isLoading.value = true;
+      }
     }
     await AppInterface().getUserList(role: "chef", page: page).then((value) {
       if (value is userListModel) {

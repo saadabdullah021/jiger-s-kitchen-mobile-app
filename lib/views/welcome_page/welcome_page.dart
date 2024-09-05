@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
+
 import '../../utils/app_colors.dart';
+import '../../utils/app_keys.dart';
+import '../../utils/local_db_helper.dart';
 import '../auth/login/login_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
+  const OnBoardingScreen({super.key});
+
   @override
   _OnBoardingScreenState createState() => _OnBoardingScreenState();
 }
@@ -38,9 +43,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _currentIndex == 0
-          ? AppColors.primaryColor
-          : AppColors.textWhiteColor,
+      backgroundColor: AppColors.primaryColor,
       body: Stack(
         children: <Widget>[
           PageView.builder(
@@ -63,11 +66,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               bottom: 17,
               child: InkWell(
                   onTap: () {
+                    SharedPref.getInstance()
+                        .addBoolToSF(AppKeys.isFirstTime, false);
                     _currentIndex != 2
                         ? pageController.nextPage(
-                            duration: Duration(milliseconds: 200),
+                            duration: const Duration(milliseconds: 200),
                             curve: Curves.bounceInOut)
-                        : Get.off(() => LoginScreen());
+                        : Get.off(() => const LoginScreen());
                   },
                   child: Text(
                     _currentIndex == 2 ? "Skip >" : "Next >",
@@ -81,8 +86,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  Widget getPage(dynamic image, _titlesList, _subtitlesList,
-      BuildContext context, bool isLastPage) {
+  Widget getPage(dynamic image, titlesList, subtitlesList, BuildContext context,
+      bool isLastPage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +98,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             backgroundImage: AssetImage(image)),
         SizedBox(height: MediaQuery.of(context).size.height * 0.03),
         Text(
-          _titlesList.toString().toUpperCase(),
+          titlesList.toString().toUpperCase(),
           textAlign: TextAlign.center,
           style: TextStyle(
               color: AppColors.textBlackColor,
@@ -103,7 +108,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         Padding(
             padding: const EdgeInsets.only(right: 35, left: 35, top: 15),
             child: Text(
-              _subtitlesList,
+              subtitlesList,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.greyColor,

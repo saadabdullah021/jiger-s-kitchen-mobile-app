@@ -190,7 +190,10 @@ class NewOrderListScreen extends StatelessWidget {
                                 ic: Icons.delete,
                                 text: "Delete",
                                 ontap: () {
-                                  showDeleteItemDialoug(context: context);
+                                  showDeleteItemDialoug(
+                                      context: context,
+                                      description:
+                                          "Are you sure you want to DELETE the order?");
                                 },
                                 clr: AppColors.redColor,
                               ),

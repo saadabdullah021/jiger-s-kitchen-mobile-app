@@ -31,7 +31,7 @@ class Helper {
       else
         return null;
     } else {
-      return "Filed is required";
+      return "This field is required";
     }
   }
 
@@ -59,7 +59,7 @@ class Helper {
 
   static String? validateEmpty(String? value) {
     if (value == "") {
-      return "Filed is required";
+      return "This field is required";
     } else {
       return null;
     }

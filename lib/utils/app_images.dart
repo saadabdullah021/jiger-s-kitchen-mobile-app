@@ -36,6 +36,7 @@ class AppImages {
   static String dashboard7 = "${dashboadImgePath}dashboard_7.svg";
   static String images = "${dashboadImgePath}images-regular.png";
   //new order
+  static String loader = "${imgePath}catering.gif";
   static String smosa = "${imgePath}smosa.svg";
   static String clock = "${imgePath}clock.svg";
 }

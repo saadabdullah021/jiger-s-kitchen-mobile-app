@@ -3,6 +3,9 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 
 class AppTheme {
   static final light = ThemeData.light().copyWith(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
+    hoverColor: Colors.transparent,
     textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'Poppins',
         ),

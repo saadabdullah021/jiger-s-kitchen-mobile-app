@@ -14,9 +14,9 @@ class LoginController extends GetxController {
     appWidgets.loadingDialog();
     await AppInterface()
         .login(
-      userName: nameController.text,
-      password: passwordController.text,
-    )
+            userName: nameController.text,
+            password: passwordController.text,
+            remeber: checkedValue.value)
         .then((value) {
       if (value == 200) {
         appWidgets.hideDialog();
