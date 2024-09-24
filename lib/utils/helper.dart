@@ -57,6 +57,25 @@ class Helper {
     return null;
   }
 
+  static String capitalizeFirstLetter(String input) {
+    if (input.isEmpty) return input; // Return empty string if input is empty
+
+    return input[0].toUpperCase() + input.substring(1);
+  }
+
+  static String? validateFloat(String? value) {
+    // Regular expression pattern for validating floating-point numbers
+    String pattern = r'^-?\d+(\.\d+)?$';
+    RegExp regExp = RegExp(pattern);
+
+    if (value == null || value.isEmpty) {
+      return "Please enter a number";
+    } else if (!regExp.hasMatch(value)) {
+      return "Please enter a valid number";
+    }
+    return null;
+  }
+
   static String? validateEmpty(String? value) {
     if (value == "") {
       return "This field is required";

@@ -1,4 +1,4 @@
-package com.example.jigers_kitchen
+package app.jigars.kitchen
 
 import io.flutter.embedding.android.FlutterActivity
 

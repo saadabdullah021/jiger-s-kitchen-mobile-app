@@ -116,8 +116,8 @@ class NewOrderButtonWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 40,
-            width: 42,
+            height: 30,
+            width: 32,
             decoration: BoxDecoration(boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),

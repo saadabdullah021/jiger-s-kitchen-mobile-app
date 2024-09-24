@@ -74,12 +74,14 @@ class ChefList {
   int? status;
   String? createdAt;
   String? vendorType;
+  String? groupId;
   RxBool? isExpanded = false.obs;
 
   ChefList(
       {this.id,
       this.name,
       this.email,
+      this.groupId,
       this.userName,
       this.phoneNumber,
       this.profileImage,
@@ -92,6 +94,7 @@ class ChefList {
     id = json['id'];
     name = json['name'];
     email = json['email'];
+    groupId = json['group_id'];
     vendorType = json['vendor_category'];
     userName = json['user_name'];
     phoneNumber = json['phone_number'];

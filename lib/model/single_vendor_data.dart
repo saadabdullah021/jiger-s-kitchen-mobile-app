@@ -35,6 +35,7 @@ class Data {
   String? multipleOrderEmail;
   String? vendorCategory;
   String? token;
+  int? groupId;
   String? tax;
   String? billingAddress;
   String? shippingAddress;
@@ -44,7 +45,7 @@ class Data {
   int? updatedBy;
   int? deletedBy;
   int? registeredAt;
-  String? lastLoginAt;
+  int? lastLoginAt;
   String? createdAt;
   String? updatedAt;
   String? decodedPassword;
@@ -63,6 +64,7 @@ class Data {
       this.userName,
       this.multipleOrderEmail,
       this.vendorCategory,
+      this.groupId,
       this.token,
       this.tax,
       this.billingAddress,
@@ -84,6 +86,7 @@ class Data {
     id = json['id'];
     name = json['name'];
     email = json['email'];
+    groupId = json['group_id'];
     emailVerifiedAt = json['email_verified_at'];
     phoneNumber = json['phone_number'];
     role = json['role'];

@@ -29,9 +29,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   ];
 
   final List<dynamic> _imageList = [
-    AppImages.welcome1,
-    AppImages.welcome1,
-    AppImages.welcome1,
+    AppImages.onBoard1,
+    AppImages.onBoard2,
+    AppImages.onBoard3,
   ];
   int _currentIndex = 0;
 
@@ -93,9 +93,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         CircleAvatar(
-            backgroundColor: AppColors.textGreyColor,
-            radius: 70,
-            backgroundImage: AssetImage(image)),
+          backgroundColor: AppColors.textGreyColor,
+          radius: 70,
+          child: SizedBox(height: 80, child: Image.asset(image)),
+        ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.03),
         Text(
           titlesList.toString().toUpperCase(),

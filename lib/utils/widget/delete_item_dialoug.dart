@@ -10,6 +10,7 @@ void showDeleteItemDialoug({
   String? description,
   VoidCallback? onYes,
   VoidCallback? onCancel,
+  String? yesBtnText,
   String? url,
 }) {
   showDialog(
@@ -51,6 +52,7 @@ void showDeleteItemDialoug({
                       height: 8.0), // Space between title and subtitle
                   Text(
                     description ?? "",
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 13,
@@ -67,7 +69,7 @@ void showDeleteItemDialoug({
                   ),
                   const SizedBox(height: 20.0),
                   CustomButton(
-                    text: "Delete",
+                    text: yesBtnText ?? "Delete",
                     onPressed: onYes!,
                   ),
                 ],

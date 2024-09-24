@@ -15,7 +15,13 @@ class AppImages {
   static String splashBG = "${imgePath}splashbg.svg";
   static String error = "${imgePath}error.svg";
   static String forgetPassword = "${imgePath}forgetpassword.svg";
+  //welcomePage
+  static String onBoard1 = "${imgePath}w1.png";
+  static String onBoard2 = "${imgePath}w2.png";
+  static String onBoard3 = "${imgePath}w3.png";
   //home images
+
+  static String logout = "${imgePath}logout.svg";
   static String home1Image = "${imgePath}home_1.svg";
   static String home2Image = "${imgePath}home_2.svg";
   static String home3Image = "${imgePath}home_3.svg";

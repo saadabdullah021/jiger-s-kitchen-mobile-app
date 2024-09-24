@@ -2,11 +2,17 @@ import 'dart:io';
 
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 import 'package:jigers_kitchen/common/common.dart';
+import 'package:jigers_kitchen/model/chef_drop_down_data_model.dart';
+import 'package:jigers_kitchen/model/get_menu_item_model.dart';
 import 'package:jigers_kitchen/model/login_model.dart';
+import 'package:jigers_kitchen/model/menu_tab_model.dart';
 import 'package:jigers_kitchen/model/single_user_data.dart';
 import 'package:jigers_kitchen/model/user_data_model.dart';
 import 'package:jigers_kitchen/model/user_list_model.dart';
 
+import '../../model/get_vendor_group.dart';
+import '../../model/menu_item_model.dart';
+import '../../model/requested_item_list_model.dart';
 import '../../model/single_vendor_data.dart';
 import '../../utils/app_keys.dart';
 import '../../utils/local_db_helper.dart';
@@ -62,21 +68,21 @@ class AppInterface extends BaseApi {
     return null;
   }
 
-  Future<dynamic> addVendor({
-    String? firstName,
-    String? lastName,
-    String? userName,
-    String? phoneNumber,
-    String? invoiceEmail,
-    String? multipleOrderEmail,
-    String? password,
-    String? vendorCategory,
-    String? tax,
-    String? billingAddress,
-    String? shippingAddress,
-    String? deliveryCharges,
-    String? profileImage,
-  }) async {
+  Future<dynamic> addVendor(
+      {String? firstName,
+      String? lastName,
+      String? userName,
+      String? phoneNumber,
+      String? invoiceEmail,
+      String? multipleOrderEmail,
+      String? password,
+      String? vendorCategory,
+      String? tax,
+      String? billingAddress,
+      String? shippingAddress,
+      String? deliveryCharges,
+      String? profileImage,
+      String? groupId}) async {
     Map<String, Object?> data;
     profileImage == ""
         ? data = {
@@ -92,6 +98,7 @@ class AppInterface extends BaseApi {
             "billing_address": billingAddress,
             "shipping_address": shippingAddress,
             "delivery_charges": deliveryCharges,
+            "group_id": groupId == "-1" ? "" : groupId ?? ""
           }
         : data = {
             "first_name": firstName,
@@ -106,6 +113,7 @@ class AppInterface extends BaseApi {
             "billing_address": billingAddress,
             "shipping_address": shippingAddress,
             "delivery_charges": deliveryCharges,
+            "group_id": groupId == "-1" ? "" : groupId ?? "",
             "profile_image": MultipartFile(File(profileImage!),
                 filename: DateTime.now().microsecondsSinceEpoch.toString()),
           };
@@ -141,6 +149,7 @@ class AppInterface extends BaseApi {
     String? shippingAddress,
     String? deliveryCharges,
     String? profileImage,
+    String? groupId,
   }) async {
     Map<String, Object?> data;
     profileImage == ""
@@ -155,6 +164,7 @@ class AppInterface extends BaseApi {
             "password": password,
             "vendor_category": vendorCategory!.toLowerCase(),
             "tax": tax,
+            "group_id": groupId == "-1" ? "" : groupId ?? "",
             "billing_address": billingAddress,
             "shipping_address": shippingAddress,
             "delivery_charges": deliveryCharges,
@@ -170,6 +180,7 @@ class AppInterface extends BaseApi {
             "password": password,
             "vendor_category": vendorCategory!.toLowerCase(),
             "tax": tax,
+            "group_id": groupId == "-1" ? "" : groupId ?? "",
             "billing_address": billingAddress,
             "shipping_address": shippingAddress,
             "delivery_charges": deliveryCharges,
@@ -210,6 +221,7 @@ class AppInterface extends BaseApi {
       if (response.body['status'] == 200) {
         loginModel resposeData = loginModel.fromJson(response.body);
         Common.loginReponse.value = resposeData;
+        Common.currentRole = resposeData.data!.role!;
         if (remeber == true) {
           SharedPref.getInstance().addStringToSF(
               AppKeys.accessToken, resposeData.data!.token ?? "");
@@ -284,6 +296,115 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> createAdmin({
+    String? firstName,
+    String? lastName,
+    String? groupId,
+    String? userName,
+    String? phoneNumber,
+    String? password,
+    String? email,
+    String? profileImage,
+  }) async {
+    Map<String, Object?> data;
+    profileImage != ""
+        ? data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "group_id": groupId,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+            "profile_image": MultipartFile(File(profileImage!),
+                filename: DateTime.now().microsecondsSinceEpoch.toString()),
+          }
+        : data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "group_id": groupId,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+          };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-subadmin",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> createDeliveryUser({
+    String? firstName,
+    String? lastName,
+    String? userName,
+    String? phoneNumber,
+    String? password,
+    String? email,
+    String? profileImage,
+  }) async {
+    Map<String, Object?> data;
+    profileImage != ""
+        ? data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+            "profile_image": MultipartFile(File(profileImage!),
+                filename: DateTime.now().microsecondsSinceEpoch.toString()),
+          }
+        : data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+          };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}register-delivery-user",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> editChef({
     String? firstName,
     String? lastName,
@@ -303,7 +424,7 @@ class AppInterface extends BaseApi {
             "phone_number": phoneNumber,
             "password": password,
             "email": email,
-            'chef_id': id,
+            'user_id': id,
             "profile_image": MultipartFile(File(profileImage!),
                 filename: DateTime.now().microsecondsSinceEpoch.toString()),
           }
@@ -311,7 +432,7 @@ class AppInterface extends BaseApi {
             "first_name": firstName,
             "last_name": lastName,
             "user_name": userName,
-            'chef_id': id,
+            'user_id': id,
             "phone_number": phoneNumber,
             "password": password,
             "email": email,
@@ -320,7 +441,7 @@ class AppInterface extends BaseApi {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendPost(
-      "${Constants.API_BASE_URL}update-chef",
+      "${Constants.API_BASE_URL}update-user-info",
       headers: headers,
       data,
     );
@@ -335,6 +456,130 @@ class AppInterface extends BaseApi {
       appWidgets.hideDialog();
       Constants.internalServerErrorToast();
     }
+    return null;
+  }
+
+  Future<dynamic> editAdmin({
+    String? firstName,
+    String? lastName,
+    String? userName,
+    String? phoneNumber,
+    String? password,
+    String? email,
+    String? profileImage,
+    String? groupId,
+    String? id,
+  }) async {
+    Map<String, Object?> data;
+    profileImage != ""
+        ? data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+            'user_id': id,
+            "group_id": groupId,
+            "profile_image": MultipartFile(File(profileImage!),
+                filename: DateTime.now().microsecondsSinceEpoch.toString()),
+          }
+        : data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            'user_id': id,
+            "group_id": groupId,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+          };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-subadmin",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> editDeliveryUser({
+    String? firstName,
+    String? lastName,
+    String? userName,
+    String? phoneNumber,
+    String? password,
+    String? email,
+    String? profileImage,
+    String? id,
+  }) async {
+    Map<String, Object?> data;
+    profileImage != ""
+        ? data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+            'delivery_user_id': id,
+            "profile_image": MultipartFile(File(profileImage!),
+                filename: DateTime.now().microsecondsSinceEpoch.toString()),
+          }
+        : data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_name": userName,
+            'delivery_user_id': id,
+            "phone_number": phoneNumber,
+            "password": password,
+            "email": email,
+          };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-delivery-user",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> updateFcm() async {
+    Map<String, Object?> data = {"fcm_token": Common.fcmToken};
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-fcm",
+      headers: headers,
+      data,
+    );
     return null;
   }
 
@@ -357,6 +602,109 @@ class AppInterface extends BaseApi {
     if (response == null) return null;
     if (response.body['status'] == 200) {
       userListModel userData = userListModel.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getRequestUserList(
+      {String? searchKey, String? page, bool? isSearch}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-vendors-for-requested-items",
+      query: isSearch == true
+          ? {"search_keyword": searchKey}
+          : {
+              "page": page,
+              "limit": "4",
+            },
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      userListModel userData = userListModel.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> createVendorGroup(String name) async {
+    Map<String, Object?> data = {"group_name": name};
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-vendor-group",
+      headers: headers,
+      data,
+    );
+    if (response!.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getVendorGroups() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-vendor-groups",
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      getVendorGroupModel data = getVendorGroupModel.fromJson(response.body);
+      return data;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getRequestedItemListById(
+      {String? searchKey,
+      String? page,
+      bool? isSearch,
+      String? vendorID}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-requested-items-by-vendor-id",
+      query: isSearch == true
+          ? {"search_keyword": searchKey, "vendor_id": vendorID}
+          : {"page": page, "limit": "4", "vendor_id": vendorID},
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      RequestedItemListModel userData =
+          RequestedItemListModel.fromJson(response.body);
       return userData;
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
@@ -405,6 +753,7 @@ class AppInterface extends BaseApi {
       if (response.body['status'] == 200) {
         loginModel resposeData = loginModel.fromJson(response.body);
         Common.loginReponse.value = resposeData;
+        Common.currentRole = resposeData.data!.role!;
         return 200;
       } else if (response.body['status'] == 400) {
         appWidgets.hideDialog();
@@ -486,6 +835,353 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}delete-user",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getAllChefDropDown() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-all-chefs",
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      ChefDropDownData userData = ChefDropDownData.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getAllMenuDropDown() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-menu-for-menu-item",
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      ChefDropDownData userData = ChefDropDownData.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getMenuTab() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-menu",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      menuTabModel menuData = menuTabModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getMenuItems({
+    required String page,
+    required String id,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      GetMenuItemModel menuData = GetMenuItemModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> searchMenuItems({
+    required String page,
+    required String id,
+    required String keyWord,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}search-menu-items?menu_id=$id&page=$page&limit=10&search_keyword=$keyWord&role=${Common.loginReponse.value.data!.role!}",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      GetMenuItemModel menuData = GetMenuItemModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> chnageMenuStatus({
+    String? columnName,
+    String? id,
+    int? value,
+  }) async {
+    var data = {
+      "menu_item_id": id,
+      "column_name": columnName,
+      "value": value.toString(),
+    };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}change-menu-status",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.soryyTryAgainToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> deleteMenuItem({
+    String? id,
+  }) async {
+    var data = {
+      "menu_item_id": id,
+    };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}delet-menu-item",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.soryyTryAgainToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> addMenu({
+    String? itemName,
+    String? chefId,
+    String? menuId,
+    String? menuType,
+    String? isWholesaler,
+    String? isCatering,
+    String? isVeg,
+    String? isNonVeg,
+    String? itemQuantity,
+    String? itemDescription,
+    String? itemNotes,
+    String? liveStationName,
+  }) async {
+    Map<String, Object?> data = {
+      "item_name": itemName,
+      "chef_id": chefId,
+      "menu_id": menuId,
+      "menu_type": menuType,
+      "is_wholesaler": isWholesaler,
+      "is_catering": isCatering,
+      'is_veg': isVeg,
+      "is_non_veg": isNonVeg,
+      'item_quantity': itemQuantity,
+      'item_description': itemDescription,
+      'item_notes': itemNotes,
+      'live_station_name': liveStationName ?? "",
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-menu-item",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> editMenu({
+    String? itemName,
+    String? chefId,
+    String? itemId,
+    String? menuId,
+    String? menuType,
+    String? isWholesaler,
+    String? isCatering,
+    String? isVeg,
+    String? isNonVeg,
+    String? itemQuantity,
+    String? itemDescription,
+    String? itemNotes,
+    String? liveStationName,
+  }) async {
+    Map<String, Object?> data = {
+      "item_name": itemName,
+      "menu_item_id": itemId,
+      "chef_id": chefId,
+      "menu_id": menuId,
+      "menu_type": menuType,
+      "is_wholesaler": isWholesaler,
+      "is_catering": isCatering,
+      'is_veg': isVeg,
+      "is_non_veg": isNonVeg,
+      'item_quantity': itemQuantity,
+      'item_description': itemDescription,
+      'item_notes': itemNotes,
+      'live_station_name': liveStationName ?? "",
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-menu-item",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      print(response.body['profile_image']);
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getMenuItemFromID({
+    required String id,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-menu-item?menu_id=$id",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      MenuItemModel menuData = MenuItemModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> requestItem({List<int>? ids}) async {
+    Map<String, Object?> data = {"item_id": ids};
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPostRaw(
+      "${Constants.API_BASE_URL}add-vendor-request-items",
       headers: headers,
       data,
     );

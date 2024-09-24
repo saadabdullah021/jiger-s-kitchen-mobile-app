@@ -32,9 +32,11 @@ class Data {
   String? profileImage;
   String? decodedPassword;
   String? vendorCategory;
+  int? groupId;
 
   Data(
       {this.id,
+      this.groupId,
       this.name,
       this.lastName,
       this.email,
@@ -48,6 +50,7 @@ class Data {
     id = json['id'];
     name = json['first_name'];
     lastName = json['last_name'];
+    groupId = json['group_id'];
     email = json['email'];
     userName = json['user_name'];
     phoneNumber = json['phone_number'];

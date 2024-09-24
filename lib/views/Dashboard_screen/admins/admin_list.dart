@@ -7,24 +7,27 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 import 'package:jigers_kitchen/utils/widget/no_data.dart';
-import 'package:jigers_kitchen/views/Dashboard_screen/Chef/chef_list/chef_list_controller.dart';
+import 'package:jigers_kitchen/views/Dashboard_screen/admins/add_admin/add_admin.dart';
+import 'package:jigers_kitchen/views/Dashboard_screen/admins/admin_controller.dart';
 
 import '../../../../core/contstants.dart';
 import '../../../../utils/app_images.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
 import '../../../../utils/widget/delete_item_dialoug.dart';
 import '../../../../utils/widget/success_dialoug.dart';
-import '../add_chef/add_chef_screen.dart';
+import '../../new_order_screens/new_order_widgets.dart';
 
-class AllChefListScreen extends StatefulWidget {
-  const AllChefListScreen({super.key});
+class AdminList extends StatefulWidget {
+  const AdminList({
+    super.key,
+  });
 
   @override
-  State<AllChefListScreen> createState() => _AllChefListScreenState();
+  State<AdminList> createState() => _AdminListState();
 }
 
-class _AllChefListScreenState extends State<AllChefListScreen> {
-  ChefListController controller = ChefListController();
+class _AdminListState extends State<AdminList> {
+  AdminController controller = AdminController();
   ScrollController _scrollController = ScrollController();
 
   Future<void> _scrollListener() async {
@@ -35,7 +38,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
         int currntPage = controller.userList.value.data!.currentPage!;
         int page = Totalpage > currntPage ? ++currntPage : 0;
         if (page != 0) {
-          controller.getChef(true, page.toString(), true);
+          controller.getUser(true, page.toString(), true);
         }
       }
     }
@@ -45,14 +48,16 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
   void initState() {
     _scrollController = ScrollController()..addListener(_scrollListener);
     controller.textController.addListener(controller.onTextChanged);
-    controller.getChef(false, "1", true);
+    controller.getUser(false, "1", true);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Chef List"),
+      appBar: appBar(
+        text: "Sub-Admin",
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
@@ -78,9 +83,9 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                             ),
                             InkWell(
                               onTap: () async {
-                                await Get.to(() => AddChefScreen())!
+                                await Get.to(() => AddAdminScreen())!
                                     .then((value) {
-                                  controller.getChef(false, "1", false);
+                                  controller.getUser(false, "1", false);
                                 });
                               },
                               child: Row(
@@ -103,7 +108,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                     width: 2,
                                   ),
                                   const Text(
-                                    " Add Chef",
+                                    " Add Admin",
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600),
@@ -128,7 +133,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                   },
                                   child: const Icon(Icons.cancel))
                               : null,
-                          hintText: "Search for Chef"),
+                          hintText: "Search for Admin User"),
                       const SizedBox(
                         height: 15,
                       ),
@@ -149,7 +154,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                     color: AppColors.textGreyColor,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 15),
+                                          horizontal: 17, vertical: 15),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.end,
@@ -262,34 +267,43 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.end,
                                                 children: [
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Get.to(
-                                                          () => AddChefScreen(
-                                                                id: controller
-                                                                    .userList
-                                                                    .value
-                                                                    .data!
-                                                                    .chefList![
-                                                                        index]
-                                                                    .id
-                                                                    .toString(),
-                                                                isEdit: true,
-                                                              ));
+                                                  NewOrderButtonWidget(
+                                                    clr: AppColors.primaryColor,
+                                                    ic: Icons.edit,
+                                                    text: "",
+                                                    ontap: () async {
+                                                      await Get.to(
+                                                              AddAdminScreen(
+                                                        id: controller
+                                                            .userList
+                                                            .value
+                                                            .data!
+                                                            .chefList![index]
+                                                            .id
+                                                            .toString(),
+                                                        isEdit: true,
+                                                      ))!
+                                                          .then((value) {
+                                                        controller.getUser(
+                                                            false,
+                                                            controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .currentPage!
+                                                                .toString(),
+                                                            false);
+                                                      });
                                                     },
-                                                    child: const Icon(
-                                                      Icons.edit,
-                                                      size: 17,
-                                                    ),
                                                   ),
-                                                  const SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  InkWell(
-                                                    onTap: () {
+                                                  NewOrderButtonWidget(
+                                                    clr: AppColors.redColor,
+                                                    ic: Icons.delete,
+                                                    text: "",
+                                                    ontap: () async {
                                                       showDeleteItemDialoug(
                                                           description:
-                                                              "Are you sure you want to DELETE the Chef?",
+                                                              "Are you sure you want to DELETE the Admin User?",
                                                           context: context,
                                                           url: controller
                                                               .userList
@@ -303,7 +317,8 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                                 .loadingDialog();
                                                             await AppInterface()
                                                                 .deleteUser(
-                                                              role: "chef",
+                                                              role: controller
+                                                                  .role,
                                                               id: controller
                                                                   .userList
                                                                   .value
@@ -320,7 +335,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                                       200) {
                                                                 appWidgets
                                                                     .hideDialog();
-                                                                controller.getChef(
+                                                                controller.getUser(
                                                                     false,
                                                                     controller
                                                                         .userList
@@ -341,7 +356,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                                     heading:
                                                                         "Hurray!",
                                                                     text:
-                                                                        "Chef Deleted Successfully",
+                                                                        "Admin User Deleted Successfully",
                                                                     headingStyle: TextStyle(
                                                                         fontSize:
                                                                             32,
@@ -354,11 +369,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                             });
                                                           });
                                                     },
-                                                    child: const Icon(
-                                                      Icons.delete,
-                                                      size: 17,
-                                                    ),
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                             ],

@@ -1,15 +1,19 @@
 import 'dart:io';
 
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
+import '../../../common/common.dart';
 import '../../../core/contstants.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
+import '../../../utils/widget/custom_drop_down_widget.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import 'signup_controller.dart';
 
@@ -30,7 +34,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState() {
     // TODO: implement initState
     controller.vendorID = widget.chefID ?? "";
+    if (widget.addVendor == true || widget.isEdit == true) {
+      controller.addVendor = true;
+      controller.getVendorGroups(true);
+    }
     if (widget.isEdit == true) {
+      controller.isEdit = true;
       controller.getData(widget.chefID!);
     }
     super.initState();
@@ -206,6 +215,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           controller: controller.phoneController,
                           hintText: "Enter Phone Number",
                           validator: Helper.validateNumber,
+                          keyboardType: TextInputType.number,
                           prefixIcon: Icon(
                             Icons.phone,
                             size: 16,
@@ -215,51 +225,133 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(
                           height: 14,
                         ),
-                        Obx(
-                          () => Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightGreyColor,
-                              borderRadius: BorderRadius.circular(23.0),
-                            ),
-                            child: DropdownButton<String>(
-                              icon: Icon(
-                                Icons.arrow_drop_down,
-                                size: 16,
-                                color: AppColors.textFiledGrey,
-                              ),
-                              isExpanded: true,
-                              value:
-                                  controller.selectedRadioValue!.value.isEmpty
-                                      ? null
-                                      : controller.selectedRadioValue!.value,
-                              style: TextStyle(
-                                  color: AppColors.greyColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500),
-                              hint: Text(
-                                "--select--",
-                                style: TextStyle(
-                                    color: AppColors.greyColor, fontSize: 17),
-                              ),
-                              underline: const SizedBox(),
-                              items: <String>[
-                                'wholesaler',
-                                'catering',
-                              ].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                controller.selectedRadioValue!.value =
-                                    newValue!;
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightGreyColor,
+                            borderRadius: BorderRadius.circular(23.0),
+                          ),
+                          child: CustomDropdown<String>(
+                            initialItem:
+                                controller.selectedRadioValue!.value.isEmpty
+                                    ? controller.list[0]
+                                    : controller.selectedRadioValue!.value,
+                            decoration: CustomDropdownDecoration(
+                                expandedFillColor: AppColors.lightGreyColor,
+                                closedFillColor: Colors.transparent,
+                                listItemStyle: const TextStyle(fontSize: 14),
+                                headerStyle: const TextStyle(fontSize: 14),
+                                hintStyle: TextStyle(
+                                    color: AppColors.greyColor, fontSize: 14),
+                                closedBorder: null),
+                            hintText: 'Select Service Type',
+                            items: controller.list,
+                            onChanged: (value) {
+                              controller.selectedRadioValue!.value = value!;
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        Visibility(
+                          visible:
+                              widget.addVendor == true || widget.isEdit == true,
+                          child: Obx(
+                            () => CustomDropdownSearch(
+                              showSearch: true,
+                              height: Get.height * 0.25,
+                              items: controller.groupList.value,
+                              hintText: "Group",
+                              onChanged: (value) {
+                                if (value!.id == -1) {
+                                  controller.addVendorDialoug(
+                                      description:
+                                          "Are you sure you want to LOGOUT?",
+                                      yesBtnText: "Add",
+                                      context: context,
+                                      url: Common.loginReponse.value.data!
+                                              .profileImage ??
+                                          "",
+                                      onYes: () async {
+                                        if (controller
+                                            .groupNameController.text.isEmpty) {
+                                          appWidgets().showToast(
+                                              "Sorry", "Please add group name");
+                                        } else {
+                                          Get.back();
+                                          appWidgets.loadingDialog();
+                                          await AppInterface()
+                                              .createVendorGroup(controller
+                                                  .groupNameController.text)
+                                              .then((value) {
+                                            appWidgets.hideDialog();
+                                            if (value == 200) {
+                                              controller.getVendorGroups(false);
+                                              appWidgets().showToast("Added",
+                                                  "Group Successfully Added");
+                                            }
+                                          });
+                                        }
+                                      });
+                                }
+                                setState(() {
+                                  controller.selectedGroupList = value;
+                                });
                               },
+                              selectedItem: controller.selectedGroupList,
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 20, vertical: 5),
+                        //   decoration: BoxDecoration(
+                        //     color: AppColors.lightGreyColor,
+                        //     borderRadius: BorderRadius.circular(23.0),
+                        //   ),
+                        //   child: DropdownButton<String>(
+                        //     icon: Icon(
+                        //       Icons.arrow_drop_down,
+                        //       size: 16,
+                        //       color: AppColors.textFiledGrey,
+                        //     ),
+                        //     isExpanded: true,
+                        //     value:
+                        //         controller.selectedRadioValue!.value.isEmpty
+                        //             ? null
+                        //             : controller.selectedRadioValue!.value,
+                        //     style: TextStyle(
+                        //         color: AppColors.greyColor,
+                        //         fontSize: 16,
+                        //         fontWeight: FontWeight.w500),
+                        //     hint: Text(
+                        //       "--select--",
+                        //       style: TextStyle(
+                        //           color: AppColors.greyColor, fontSize: 17),
+                        //     ),
+                        //     underline: const SizedBox(),
+                        //     items: <String>[
+                        //       'wholesaler',
+                        //       'catering',
+                        //     ].map((String value) {
+                        //       return DropdownMenuItem<String>(
+                        //         value: value,
+                        //         child: Text(value),
+                        //       );
+                        //     }).toList(),
+                        //     onChanged: (newValue) {
+                        //       controller.selectedRadioValue!.value =
+                        //           newValue!;
+                        //     },
+                        //   ),
+                        // ),
+
                         // CustomTextField(
                         //   controller: controller.dummyController,
                         //   hintText: "--Select--",
@@ -270,9 +362,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         //     color: AppColors.textFiledGrey,
                         //   ),
                         // ),
-                        const SizedBox(
-                          height: 14,
-                        ),
+
                         // RadioButtonRow(
                         //   onValueChanged: controller.handleRadioValueChanged,
                         // ),
@@ -282,7 +372,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         CustomTextField(
                           controller: controller.taxController,
                           hintText: "Enter Tax(%)",
-                          validator: Helper.validateNumber,
+                          keyboardType: TextInputType.number,
+                          validator: Helper.validateFloat,
                           prefixIcon: Icon(
                             Icons.percent,
                             size: 16,
@@ -319,7 +410,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         CustomTextField(
                           controller: controller.deliveryChargesController,
                           hintText: "Enter Delivery Charges (USD)",
-                          validator: Helper.validateNumber,
+                          validator: Helper.validateFloat,
+                          keyboardType: TextInputType.number,
                           prefixIcon: Icon(
                             Icons.currency_rupee,
                             size: 16,

@@ -2,6 +2,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
+import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/Vendor/all_vendor_controller.dart';
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
@@ -172,7 +173,7 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                                     .data!.chefList![index],
                                               ),
                                               const SizedBox(
-                                                height: 10,
+                                                height: 20,
                                               ),
                                               Row(
                                                 mainAxisAlignment:
@@ -183,8 +184,8 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                                     ic: Icons.edit,
                                                     text: "Edit",
                                                     clr: AppColors.primaryColor,
-                                                    ontap: () {
-                                                      Get.to(SignUpScreen(
+                                                    ontap: () async {
+                                                      await Get.to(SignUpScreen(
                                                         isEdit: true,
                                                         chefID: controller
                                                             .userList
@@ -194,7 +195,18 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                                             .id
                                                             .toString(),
                                                         addVendor: true,
-                                                      ));
+                                                      ))!
+                                                          .then((value) {
+                                                        controller.getChef(
+                                                            false,
+                                                            controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .currentPage!
+                                                                .toString(),
+                                                            false);
+                                                      });
                                                     },
                                                   ),
                                                   NewOrderButtonWidget(
@@ -334,7 +346,7 @@ class vendorListDataWidget extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
                     child: Text(
-                      data.vendorType ?? "",
+                      Helper.capitalizeFirstLetter(data.vendorType ?? ""),
                       style: const TextStyle(
                           fontSize: 10,
                           color: Colors.black,

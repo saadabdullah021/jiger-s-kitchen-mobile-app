@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 
 class BaseApi extends GetConnect {
@@ -15,6 +17,22 @@ class BaseApi extends GetConnect {
       Map<String, String>? headers,
       Map<String, dynamic>? query}) async {
     var response = await post(url, FormData(body),
+        contentType: contentType, headers: headers, query: query);
+
+    if (response.statusCode != 200) {
+      print(response.statusCode.toString());
+      print(response.bodyBytes.toString());
+      print(response.bodyString.toString());
+      return null;
+    }
+    return response;
+  }
+
+  Future<Response?> sendPostRaw(String? url, dynamic body,
+      {String? contentType,
+      Map<String, String>? headers,
+      Map<String, dynamic>? query}) async {
+    var response = await post(url, json.encode(body),
         contentType: contentType, headers: headers, query: query);
 
     if (response.statusCode != 200) {

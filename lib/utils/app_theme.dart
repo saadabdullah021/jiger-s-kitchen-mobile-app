@@ -18,7 +18,7 @@ class AppTheme {
       backgroundColor: AppColors.textWhiteColor,
       elevation: 0,
       iconTheme: const IconThemeData(
-        color: Colors.black,
+        color: Colors.white,
       ),
       titleTextStyle: const TextStyle(color: Colors.black),
     ),

@@ -6,16 +6,18 @@ import 'package:jigers_kitchen/core/contstants.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/app_button.dart';
-import 'package:jigers_kitchen/views/Dashboard_screen/Chef/add_chef/add_chef_controller.dart';
+import 'package:jigers_kitchen/views/Dashboard_screen/chef_and_delivery_boy/add_chef/add_chef_controller.dart';
 
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/app_images.dart';
+import '../../../../utils/app_keys.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
 
 class AddChefScreen extends StatelessWidget {
   bool? isEdit;
   String? id;
-  AddChefScreen({super.key, this.isEdit, this.id});
+  String? type;
+  AddChefScreen({super.key, this.isEdit, this.id, this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +143,7 @@ class AddChefScreen extends StatelessWidget {
                           controller: controller.phoneController,
                           validator: Helper.validateNumber,
                           hintText: "Enter Phone Number",
+                          keyboardType: TextInputType.number,
                           prefixIcon: Icon(
                             Icons.phone,
                             color: AppColors.containerBg,
@@ -151,15 +154,35 @@ class AddChefScreen extends StatelessWidget {
                           height: 20,
                         ),
                         CustomButton(
-                            text: isEdit == true ? "Update Chef" : "Add chef",
+                            text: isEdit == true &&
+                                    type == AppKeys.userTypeDelivery
+                                ? "Update Delivery User"
+                                : isEdit == true && type == null
+                                    ? "Update Chef"
+                                    : isEdit == true && type != null
+                                        ? "Update Profile"
+                                        : isEdit == null &&
+                                                type == AppKeys.userTypeDelivery
+                                            ? "Add Delivery User"
+                                            : "Add chef",
                             onPressed: () {
                               if (key.currentState?.validate() ?? false) {
-                                // if (controller.imagePath.value == "") {
-                                //   appWidgets().showToast("Sorry", "Please Add image");
-                                // }
-                                isEdit == true
-                                    ? controller.editChef()
-                                    : controller.addChef();
+                                isEdit == true &&
+                                        type == AppKeys.userTypeDelivery
+                                    ? controller.editDeliveryUser()
+                                    : isEdit == true && type == null
+                                        ? controller.editChef()
+                                        : isEdit == true && type != null
+                                            ? controller.editChef()
+                                            : isEdit == null &&
+                                                    type ==
+                                                        AppKeys.userTypeDelivery
+                                                ? controller.addDelivery()
+                                                : controller.addChef();
+
+                                // isEdit == true
+                                //     ? controller.editChef()
+                                //     : controller.addChef();
                               }
                             })
                       ],

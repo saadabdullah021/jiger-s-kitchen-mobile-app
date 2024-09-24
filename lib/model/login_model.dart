@@ -40,7 +40,7 @@ class Data {
   String? shippingAddress;
   String? deliveryCharges;
   String? fcmToken;
-  String? addedBy;
+  int? addedBy;
   String? updatedBy;
   int? registeredAt;
   int? lastLoginAt;
@@ -91,7 +91,7 @@ class Data {
     deliveryCharges = json['delivery_charges'];
     fcmToken = json['fcm_token'];
     addedBy = json['added_by'];
-    updatedBy = json['updated_by'];
+    updatedBy = json['updated_by'].toString();
     registeredAt = json['registered_at'];
     lastLoginAt = json['last_login_at'];
     createdAt = json['created_at'];

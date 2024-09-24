@@ -6,12 +6,13 @@ import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/model/user_list_model.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
-class ChefListController extends GetxController {
+class AdminController extends GetxController {
   TextEditingController textController = TextEditingController();
 
   RxBool isLoading = false.obs;
   RxBool isMoreLoading = false.obs;
   Timer? _debounce;
+  String role = "subadmin";
   Rx<userListModel> userList = userListModel().obs;
   void onTextChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -22,15 +23,14 @@ class ChefListController extends GetxController {
   }
 
   Future<void> pullRefresh() async {
-    getChef(false, "1", true);
-    // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
+    getUser(false, "1", true);
   }
 
   Future<void> callApi(String query) async {
     if (query == "") {
-      getChef(false, "1", false);
+      getUser(false, "1", false);
     } else {
-      await AppInterface().searchUser(role: "chef", query: query).then((value) {
+      await AppInterface().searchUser(role: role, query: query).then((value) {
         if (value != null && value is userListModel) {
           userList.value = value;
           userList.refresh();
@@ -39,7 +39,11 @@ class ChefListController extends GetxController {
     }
   }
 
-  getChef(bool moreLoading, String page, bool showLoading) async {
+  getUser(
+    bool moreLoading,
+    String page,
+    bool showLoading,
+  ) async {
     if (moreLoading) {
       isMoreLoading.value = true;
     } else {
@@ -47,7 +51,7 @@ class ChefListController extends GetxController {
         isLoading.value = true;
       }
     }
-    await AppInterface().getUserList(role: "chef", page: page).then((value) {
+    await AppInterface().getUserList(role: role, page: page).then((value) {
       if (value is userListModel) {
         if (moreLoading) {
           userList.value.data!.chefList!.addAll(value.data!.chefList!);
