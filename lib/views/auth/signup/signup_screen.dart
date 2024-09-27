@@ -40,6 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
     if (widget.isEdit == true) {
       controller.isEdit = true;
+      controller.getVendorGroups(true);
       controller.getData(widget.chefID!);
     }
     super.initState();

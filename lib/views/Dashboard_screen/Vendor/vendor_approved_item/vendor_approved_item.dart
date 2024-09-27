@@ -1,43 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jigers_kitchen/utils/app_colors.dart';
-import 'package:jigers_kitchen/utils/widget/app_bar.dart';
-import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/price_slab/add_price_slab.dart';
-import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/vendor_request_controller.dart';
 
+import '../../../../core/contstants.dart';
+import '../../../../model/requested_item_list_model.dart';
+import '../../../../utils/app_colors.dart';
+import '../../../../utils/helper.dart';
+import '../../../../utils/widget/app_bar.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
-import '../../../core/contstants.dart';
-import '../../../model/requested_item_list_model.dart';
-import '../../../utils/helper.dart';
-import '../../../utils/widget/no_data.dart';
+import '../../../../utils/widget/no_data.dart';
+import '../../vendor_requested_item/price_slab/add_price_slab.dart';
+import 'vendor_approved_item_controller.dart';
 
-class VenderRequestItemList extends StatefulWidget {
+class VenderApprovedItemList extends StatefulWidget {
   String id;
-
-  VenderRequestItemList({
-    super.key,
-    required this.id,
-  });
+  VenderApprovedItemList({super.key, required this.id});
 
   @override
-  State<VenderRequestItemList> createState() => _VenderRequestItemListState();
+  State<VenderApprovedItemList> createState() => _VenderApprovedItemListState();
 }
 
-class _VenderRequestItemListState extends State<VenderRequestItemList> {
-  vendorRequestController controller = vendorRequestController();
+class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
+  vendorApprovedController controller = vendorApprovedController();
   ScrollController _scrollController = ScrollController();
   Future<void> _scrollListener() async {
     print(_scrollController.position.extentAfter);
     if (_scrollController.position.extentAfter < 5) {
       if (controller.isMoreLoading.isFalse) {
-        int Totalpage =
-            int.parse(controller.requestedItemList.value.data!.totalPages!);
-        int currntPage =
-            int.parse(controller.requestedItemList.value.data!.currentPage!);
+        int Totalpage = int.parse(
+            controller.requestedItemList.value.data!.totalPages!.toString());
+        int currntPage = int.parse(
+            controller.requestedItemList.value.data!.currentPage!.toString());
         int page = Totalpage > currntPage ? ++currntPage : 0;
         if (page != 0) {
           controller.getItemList(
-              true, page.toString(), true, controller.vendorID!);
+            true,
+            page.toString(),
+            true,
+          );
         }
       }
     }
@@ -48,14 +47,18 @@ class _VenderRequestItemListState extends State<VenderRequestItemList> {
     controller.vendorID = widget.id;
     _scrollController = ScrollController()..addListener(_scrollListener);
     controller.itemtextController.addListener(controller.onTextChangedList);
-    controller.getItemList(false, "1", true, controller.vendorID!);
+    controller.getItemList(
+      false,
+      "1",
+      true,
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Requested Item List"),
+      appBar: appBar(text: "Approved Item List"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
@@ -120,11 +123,14 @@ class _VenderRequestItemListState extends State<VenderRequestItemList> {
                                                     .value
                                                     .data!
                                                     .itemsList![index],
-                                                fromApproved: false,
+                                                    fromApproved: true,
                                               ))!
                                           .then((value) {
-                                        controller.getItemList(false, "1",
-                                            false, controller.vendorID!);
+                                        controller.getItemList(
+                                          false,
+                                          "1",
+                                          false,
+                                        );
                                       });
                                     },
                                     child: vendorListDataWidget(
@@ -214,7 +220,7 @@ class vendorListDataWidget extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 13),
                       child: Text(
-                        Helper.capitalizeFirstLetter("Approve"),
+                        Helper.capitalizeFirstLetter("View Price Slab"),
                         style: const TextStyle(
                             fontSize: 10,
                             color: Colors.white,

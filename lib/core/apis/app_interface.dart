@@ -4,12 +4,17 @@ import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/model/chef_drop_down_data_model.dart';
 import 'package:jigers_kitchen/model/get_menu_item_model.dart';
+import 'package:jigers_kitchen/model/get_price_slab.dart';
+import 'package:jigers_kitchen/model/get_vemdor_approved_item.dart';
 import 'package:jigers_kitchen/model/login_model.dart';
 import 'package:jigers_kitchen/model/menu_tab_model.dart';
 import 'package:jigers_kitchen/model/single_user_data.dart';
 import 'package:jigers_kitchen/model/user_data_model.dart';
 import 'package:jigers_kitchen/model/user_list_model.dart';
 
+import '../../model/get_other_vemdor_item_detail.dart';
+import '../../model/get_other_vendor_for_approved_item.dart';
+import '../../model/get_price_slab_list_model.dart';
 import '../../model/get_vendor_group.dart';
 import '../../model/menu_item_model.dart';
 import '../../model/requested_item_list_model.dart';
@@ -642,6 +647,226 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> getPriceSlabData({String? menuID, String? vendorID}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-menu-item-for-price-slab",
+      query: {
+        "menu_item_id": menuID,
+        "vendor_id": vendorID,
+      },
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      getPriceSlabModel Data = getPriceSlabModel.fromJson(response.body);
+      return Data;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getSameItemVendors({
+    String? menuID,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-same-items-vendor",
+      query: {
+        "item_id": menuID,
+      },
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      GetOtherVendorForApprovedItemModel Data =
+          GetOtherVendorForApprovedItemModel.fromJson(response.body);
+      return Data;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getOtherVendorItemDetail({
+    String? menuID,
+    String? vendorID,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-item-info-by-vendor",
+      query: {"item_id": menuID, "vendor_id": vendorID},
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      GetOtherVendorItemDetailModel Data =
+          GetOtherVendorItemDetailModel.fromJson(response.body);
+      return Data;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> deletePriceSlab({
+    String? id,
+  }) async {
+    Map<String, Object?> data = {
+      "slab_id": id,
+    };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}delete-price-slab",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getPriceSlabListData(
+      {String? menuID, String? vendorID}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-price-slabs-for-menu-item",
+      query: {
+        "menu_item_id": menuID,
+        "user_id": vendorID,
+      },
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      getPriceSlabItemListModel Data =
+          getPriceSlabItemListModel.fromJson(response.body);
+      return Data;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> addPriceSlabData(
+      {String? menuID,
+      String? vendorID,
+      String? userId,
+      quantity,
+      price}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "menu_item_id": menuID,
+      "vendor_id": vendorID,
+      'user_id': userId,
+      'quantity': quantity,
+      'price': price,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-price-slab",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> editPriceSlabData(
+      {String? vendorID, String? slabId, quantity, price}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      'slab_id': slabId,
+      "vendor_id": vendorID,
+      'quantity': quantity,
+      'price': price,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-price-slab",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> createVendorGroup(String name) async {
     Map<String, Object?> data = {"group_name": name};
     var headers = {
@@ -937,6 +1162,40 @@ class AppInterface extends BaseApi {
     }
     if (response.body['status'] == 200) {
       GetMenuItemModel menuData = GetMenuItemModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getVendorApprovedItem(
+      {required String vendorId,
+      String? searchKey,
+      String? page,
+      bool? isSearch}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-approved-items",
+      headers: headers,
+      query: isSearch == true
+          ? {"search_keyword": searchKey, "vendor_id": vendorId}
+          : {"page": page, "limit": "4", "vendor_id": vendorId},
+      //  {"vendor_id": vendorId}
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      GetVendorApprovedItemModel menuData =
+          GetVendorApprovedItemModel.fromJson(response.body);
       return menuData;
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
