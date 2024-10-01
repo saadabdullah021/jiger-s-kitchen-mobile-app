@@ -3,10 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
-import 'package:jigers_kitchen/utils/widget/custom_textfiled.dart';
 
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
+import '../../Dashboard_screen/Menu/menu_list/menu_list.dart';
 import '../new_order_widgets.dart';
 
 class EditOrderScreen extends StatelessWidget {
@@ -145,7 +145,7 @@ class EditOrderScreen extends StatelessWidget {
       ),
       floatingActionButton: InkWell(
         onTap: () {
-          _showBottomSheet(context);
+          showCustomBottomSheet(context, null);
         },
         child: CircleAvatar(
           backgroundColor: AppColors.redColor,
@@ -189,142 +189,154 @@ Widget ItemRow({
   );
 }
 
-void _showBottomSheet(BuildContext context) {
+Future<void> showCustomBottomSheet(
+    BuildContext context, String? vednorID) async {
   showModalBottomSheet(
     backgroundColor: Colors.transparent,
     barrierColor: AppColors.primaryColor.withOpacity(0.6),
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
-      return const BottomSheetWithTabs();
+      return BottomSheetWithTabs(
+        vendorId: vednorID,
+      );
     },
   );
 }
 
 class BottomSheetWithTabs extends StatelessWidget {
-  const BottomSheetWithTabs({super.key});
+  String? vendorId;
+  BottomSheetWithTabs({super.key, this.vendorId});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController textController = TextEditingController();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Material(
-        borderRadius: BorderRadius.circular(14),
-        color: Colors.white,
-        child: SizedBox(
-          height: Get.height * 0.54,
-          child: DefaultTabController(
-            length: 3,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Select Product",
-                  style: TextStyle(
-                      color: AppColors.textBlackColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomTextField(
-                      fillColor: AppColors.lightGreyColor,
-                      controller: textController,
-                      prefixIcon: const Icon(Icons.search),
-                      hintText: "Search"),
-                ),
-                Container(
-                  color: Colors.white,
-                  child: TabBar(
-                    dividerHeight: 0,
-                    indicatorWeight: 4,
-                    tabs: const [
-                      Tab(text: 'Appetizer'),
-                      Tab(text: 'Main Courses '),
-                      Tab(text: 'Desserts'),
-                    ],
-                    labelColor: AppColors.primaryColor,
-                    indicatorColor: AppColors.primaryColor,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 13),
-                    child: TabBarView(
-                      children: [
-                        Column(
-                          children: [
-                            customAddItemRow(
-                              title: 'Marinated Halal Chicken',
-                              subtitle: '20 LBS Case',
-                              buttonLabel: 'Add',
-                              leftIcon: null,
-                              rightIcon: Icons.add,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Divider(
-                              color: AppColors.dividerGreyColor,
-                              height: 1,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            customAddItemRow(
-                              title: 'Marinated Paneer',
-                              subtitle: '16 LBS Case',
-                              buttonLabel: '2',
-                              leftIcon: Icons.remove,
-                              rightIcon: Icons.add,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Divider(
-                              color: AppColors.dividerGreyColor,
-                              height: 1,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            customAddItemRow(
-                              title: 'Tikka Masala Sauce',
-                              subtitle: '20 LBS Case',
-                              buttonLabel: 'Add',
-                              leftIcon: null,
-                              rightIcon: Icons.add,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            CustomButton(
-                              padding: 10,
-                              text: "Add Item",
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                        const Center(child: Text('Content for Tab 2')),
-                        const Center(child: Text('Content for Tab 3')),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          child: SizedBox(
+              height: Get.height * 0.7,
+              child: MenuListScreen(
+                isBottomBar: true,
+                vendorId: vendorId,
+              ))),
     );
   }
+  // Material(
+  //   borderRadius: BorderRadius.circular(14),
+  //   color: Colors.white,
+  //   child: SizedBox(
+  //     height: Get.height * 0.54,
+  //     child: DefaultTabController(
+  //       length: 3,
+  //       child: Column(
+  //         children: [
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           Text(
+  //             "Select Product",
+  //             style: TextStyle(
+  //                 color: AppColors.textBlackColor,
+  //                 fontSize: 18,
+  //                 fontWeight: FontWeight.w600),
+  //           ),
+  //           Padding(
+  //             padding: const EdgeInsets.all(8.0),
+  //             child: CustomTextField(
+  //                 fillColor: AppColors.lightGreyColor,
+  //                 controller: textController,
+  //                 prefixIcon: const Icon(Icons.search),
+  //                 hintText: "Search"),
+  //           ),
+  //           Container(
+  //             color: Colors.white,
+  //             child: TabBar(
+  //               dividerHeight: 0,
+  //               indicatorWeight: 4,
+  //               tabs: const [
+  //                 Tab(text: 'Appetizer'),
+  //                 Tab(text: 'Main Courses '),
+  //                 Tab(text: 'Desserts'),
+  //               ],
+  //               labelColor: AppColors.primaryColor,
+  //               indicatorColor: AppColors.primaryColor,
+  //             ),
+  //           ),
+  //           Expanded(
+  //             child: Padding(
+  //               padding: const EdgeInsets.symmetric(
+  //                   horizontal: 15, vertical: 13),
+  //               child: TabBarView(
+  //                 children: [
+  //                   Column(
+  //                     children: [
+  //                       customAddItemRow(
+  //                         title: 'Marinated Halal Chicken',
+  //                         subtitle: '20 LBS Case',
+  //                         buttonLabel: 'Add',
+  //                         leftIcon: null,
+  //                         rightIcon: Icons.add,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       Divider(
+  //                         color: AppColors.dividerGreyColor,
+  //                         height: 1,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       customAddItemRow(
+  //                         title: 'Marinated Paneer',
+  //                         subtitle: '16 LBS Case',
+  //                         buttonLabel: '2',
+  //                         leftIcon: Icons.remove,
+  //                         rightIcon: Icons.add,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       Divider(
+  //                         color: AppColors.dividerGreyColor,
+  //                         height: 1,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       customAddItemRow(
+  //                         title: 'Tikka Masala Sauce',
+  //                         subtitle: '20 LBS Case',
+  //                         buttonLabel: 'Add',
+  //                         leftIcon: null,
+  //                         rightIcon: Icons.add,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 10,
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       CustomButton(
+  //                         padding: 10,
+  //                         text: "Add Item",
+  //                         onPressed: () {},
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   const Center(child: Text('Content for Tab 2')),
+  //                   const Center(child: Text('Content for Tab 3')),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   ),
+  // ),
 }
 
 Widget customAddItemRow({

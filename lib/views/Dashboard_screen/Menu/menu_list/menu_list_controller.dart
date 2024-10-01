@@ -13,8 +13,10 @@ import '../../../../utils/widget/success_dialoug.dart';
 
 class MenuListController extends GetxController {
   RxBool isLoading = true.obs;
+  bool isFromBottomBar = false;
   RxBool isMoreLoading = false.obs;
   RxBool isMenuLoading = false.obs;
+  String? currentVendorID;
   Rx<GetMenuItemModel> menuItems = GetMenuItemModel().obs;
   TextEditingController textController = TextEditingController();
   menuTabModel? tabData;
@@ -25,7 +27,44 @@ class MenuListController extends GetxController {
   RxList<int> checkedIds = <int>[].obs;
   requestItems() async {
     appWidgets.loadingDialog();
-    await AppInterface().requestItem(ids: checkedIds.value).then((value) {
+    await AppInterface()
+        .requestItem(ids: checkedIds.value, addedByVendor: false)
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: true,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Item Added Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+      }
+    });
+  }
+
+  AddToCart(String id) async {
+    appWidgets.loadingDialog();
+    await AppInterface().addToCart(id: id).then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        appWidgets().showToast("Success", "Item added successfully");
+      }
+    });
+  }
+
+  addItemByAdminItems() async {
+    appWidgets.loadingDialog();
+    await AppInterface()
+        .requestItem(
+            ids: checkedIds.value,
+            addedByVendor: true,
+            vendorID: currentVendorID)
+        .then((value) {
       appWidgets.hideDialog();
       if (value == 200) {
         showDialogWithAutoDismiss(
@@ -102,7 +141,10 @@ class MenuListController extends GetxController {
       }
     }
     await AppInterface()
-        .getMenuItems(page: page, id: selectedMenuId.toString())
+        .getMenuItems(
+            page: page,
+            id: selectedMenuId.toString(),
+            isVendor: isFromBottomBar)
         .then((value) {
       if (value is GetMenuItemModel) {
         if (moreLoading) {
@@ -115,6 +157,7 @@ class MenuListController extends GetxController {
         } else {
           menuItems.value = value;
           isMenuLoading.value = false;
+          menuItems.refresh();
         }
       }
     });

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/model/chef_drop_down_data_model.dart';
+import 'package:jigers_kitchen/model/get_cart_item_model.dart';
 import 'package:jigers_kitchen/model/get_menu_item_model.dart';
 import 'package:jigers_kitchen/model/get_price_slab.dart';
 import 'package:jigers_kitchen/model/get_vemdor_approved_item.dart';
@@ -1148,12 +1149,13 @@ class AppInterface extends BaseApi {
   Future<dynamic> getMenuItems({
     required String page,
     required String id,
+    required bool isVendor,
   }) async {
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}",
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${isVendor ? "vendor" : Common.loginReponse.value.data!.role!}",
       headers: headers,
     );
     if (response == null) {
@@ -1433,8 +1435,13 @@ class AppInterface extends BaseApi {
     return null;
   }
 
-  Future<dynamic> requestItem({List<int>? ids}) async {
-    Map<String, Object?> data = {"item_id": ids};
+  Future<dynamic> requestItem(
+      {List<int>? ids, required bool addedByVendor, String? vendorID}) async {
+    Map<String, Object?> data = addedByVendor
+        ? {"item_id": ids, "added_by_admin": "1", "vendor_id": vendorID}
+        : {
+            "item_id": ids,
+          };
 
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
@@ -1447,6 +1454,59 @@ class AppInterface extends BaseApi {
     if (response == null) return null;
     if (response.body['status'] == 200) {
       return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> addToCart({
+    required String id,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {"item_id": id};
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-item-to-cart",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getCartItem() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-cart-items",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      getCartItemModel menuData = getCartItemModel.fromJson(response.body);
+      return menuData;
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);

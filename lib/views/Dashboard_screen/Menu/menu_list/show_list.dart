@@ -16,7 +16,10 @@ import 'menu_list_controller.dart';
 
 class ShowListScreen extends StatefulWidget {
   String id;
-  ShowListScreen({super.key, required this.id});
+  bool? isBottomBar;
+  bool? addToCart;
+  ShowListScreen(
+      {super.key, required this.id, this.isBottomBar, this.addToCart});
 
   @override
   State<ShowListScreen> createState() => _ShowListScreenState();
@@ -65,8 +68,11 @@ class _ShowListScreenState extends State<ShowListScreen> {
           : _controller.menuItems.value.data!.menuItemsList!.isEmpty
               ? Column(
                   children: [
-                    SizedBox(height: Get.height * 0.15),
-                    noData(),
+                    SizedBox(
+                        height: widget.isBottomBar == true
+                            ? Get.height * 0.02
+                            : Get.height * 0.15),
+                    noData(null),
                   ],
                 )
               : Column(
@@ -75,9 +81,14 @@ class _ShowListScreenState extends State<ShowListScreen> {
                       child: ListView.separated(
                           controller: _scrollController,
                           separatorBuilder: (context, index) {
-                            return const SizedBox(
-                              height: 15,
-                            );
+                            return widget.isBottomBar == true
+                                ? Divider(
+                                    color: AppColors.dividerGreyColor,
+                                    height: 1,
+                                  )
+                                : const SizedBox(
+                                    height: 15,
+                                  );
                           },
                           itemCount: _controller
                               .menuItems.value.data!.menuItemsList!.length,
@@ -93,9 +104,11 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                     horizontal: 10, vertical: 20),
                                 decoration: BoxDecoration(
                                     color: AppColors.textWhiteColor,
-                                    border: Border.all(
-                                        width: 1,
-                                        color: AppColors.newOrderGrey),
+                                    border: widget.isBottomBar == true
+                                        ? null
+                                        : Border.all(
+                                            width: 1,
+                                            color: AppColors.newOrderGrey),
                                     borderRadius: BorderRadius.circular(22)),
                                 child: Row(
                                   crossAxisAlignment:
@@ -103,21 +116,24 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                           ? CrossAxisAlignment.start
                                           : CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: AppColors.lightGreyColor,
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      height: 100,
-                                      width: 95,
-                                      child: Image.network(Constants.webUrl +
-                                          _controller
-                                              .menuItems
-                                              .value
-                                              .data!
-                                              .menuItemsList![index]
-                                              .profileImage!),
-                                    ),
+                                    widget.isBottomBar == true
+                                        ? const SizedBox()
+                                        : Container(
+                                            decoration: BoxDecoration(
+                                                color: AppColors.lightGreyColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(15)),
+                                            height: 100,
+                                            width: 95,
+                                            child: Image.network(
+                                                Constants.webUrl +
+                                                    _controller
+                                                        .menuItems
+                                                        .value
+                                                        .data!
+                                                        .menuItemsList![index]
+                                                        .profileImage!),
+                                          ),
                                     const SizedBox(
                                       width: 15,
                                     ),
@@ -161,51 +177,15 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                           const SizedBox(
                                             height: 10,
                                           ),
-                                          Row(
-                                            children: [
-                                              Visibility(
-                                                visible: Common.currentRole ==
-                                                    AppKeys.roleAdmin,
-                                                child: smallBtn(
-                                                    AppColors.textWhiteColor,
-                                                    _controller
-                                                                .menuItems
-                                                                .value
-                                                                .data!
-                                                                .menuItemsList![
-                                                                    index]
-                                                                .showInMenu ==
-                                                            1
-                                                        ? AppColors.primaryColor
-                                                        : AppColors
-                                                            .textFiledGrey,
-                                                    "Show In Menu", () async {
-                                                  appWidgets.loadingDialog();
-                                                  await AppInterface()
-                                                      .chnageMenuStatus(
-                                                          columnName:
-                                                              "show_in_menu",
-                                                          id: _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .id!
-                                                              .toString(),
-                                                          value: _controller
-                                                                      .menuItems
-                                                                      .value
-                                                                      .data!
-                                                                      .menuItemsList![
-                                                                          index]
-                                                                      .showInMenu ==
-                                                                  1
-                                                              ? 0
-                                                              : 1)
-                                                      .then((value) {
-                                                    if (value == 200) {
-                                                      appWidgets.hideDialog();
+                                          Visibility(
+                                            visible: widget.isBottomBar == null,
+                                            child: Row(
+                                              children: [
+                                                Visibility(
+                                                  visible: Common.currentRole ==
+                                                      AppKeys.roleAdmin,
+                                                  child: smallBtn(
+                                                      AppColors.textWhiteColor,
                                                       _controller
                                                                   .menuItems
                                                                   .value
@@ -214,251 +194,337 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                                                       index]
                                                                   .showInMenu ==
                                                               1
-                                                          ? _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .showInMenu = 0
-                                                          : _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .showInMenu = 1;
-                                                      _controller.menuItems
-                                                          .refresh();
-                                                      appWidgets().showToast(
-                                                          "Sucess",
-                                                          "Successfully Updated");
-                                                    }
-                                                  });
+                                                          ? AppColors
+                                                              .primaryColor
+                                                          : AppColors
+                                                              .textFiledGrey,
+                                                      "Show In Menu", () async {
+                                                    appWidgets.loadingDialog();
+                                                    await AppInterface()
+                                                        .chnageMenuStatus(
+                                                            columnName:
+                                                                "show_in_menu",
+                                                            id: _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .id!
+                                                                .toString(),
+                                                            value: _controller
+                                                                        .menuItems
+                                                                        .value
+                                                                        .data!
+                                                                        .menuItemsList![
+                                                                            index]
+                                                                        .showInMenu ==
+                                                                    1
+                                                                ? 0
+                                                                : 1)
+                                                        .then((value) {
+                                                      if (value == 200) {
+                                                        appWidgets.hideDialog();
+                                                        _controller
+                                                                    .menuItems
+                                                                    .value
+                                                                    .data!
+                                                                    .menuItemsList![
+                                                                        index]
+                                                                    .showInMenu ==
+                                                                1
+                                                            ? _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .showInMenu = 0
+                                                            : _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .showInMenu = 1;
+                                                        _controller.menuItems
+                                                            .refresh();
+                                                        appWidgets().showToast(
+                                                            "Sucess",
+                                                            "Successfully Updated");
+                                                      }
+                                                    });
+                                                  }),
+                                                ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                smallBtn(
+                                                    AppColors.textWhiteColor,
+                                                    _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .isChefSpecial ==
+                                                            1
+                                                        ? AppColors.primaryColor
+                                                        : AppColors
+                                                            .textFiledGrey,
+                                                    "Chef Special", () async {
+                                                  if (Common.currentRole ==
+                                                      AppKeys.roleAdmin) {
+                                                    appWidgets.loadingDialog();
+                                                    await AppInterface()
+                                                        .chnageMenuStatus(
+                                                            columnName:
+                                                                "is_chef_special",
+                                                            id: _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .id!
+                                                                .toString(),
+                                                            value: _controller
+                                                                        .menuItems
+                                                                        .value
+                                                                        .data!
+                                                                        .menuItemsList![
+                                                                            index]
+                                                                        .isChefSpecial ==
+                                                                    1
+                                                                ? 0
+                                                                : 1)
+                                                        .then((value) {
+                                                      if (value == 200) {
+                                                        appWidgets.hideDialog();
+                                                        _controller
+                                                                    .menuItems
+                                                                    .value
+                                                                    .data!
+                                                                    .menuItemsList![
+                                                                        index]
+                                                                    .isChefSpecial ==
+                                                                1
+                                                            ? _controller
+                                                                    .menuItems
+                                                                    .value
+                                                                    .data!
+                                                                    .menuItemsList![
+                                                                        index]
+                                                                    .isChefSpecial =
+                                                                0
+                                                            : _controller
+                                                                .menuItems
+                                                                .value
+                                                                .data!
+                                                                .menuItemsList![
+                                                                    index]
+                                                                .isChefSpecial = 1;
+                                                        _controller.menuItems
+                                                            .refresh();
+                                                        appWidgets().showToast(
+                                                            "Sucess",
+                                                            "Successfully Updated");
+                                                      }
+                                                    });
+                                                  }
                                                 }),
-                                              ),
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              smallBtn(
-                                                  AppColors.textWhiteColor,
-                                                  _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .isChefSpecial ==
-                                                          1
-                                                      ? AppColors.primaryColor
-                                                      : AppColors.textFiledGrey,
-                                                  "Chef Special", () async {
-                                                if (Common.currentRole ==
-                                                    AppKeys.roleAdmin) {
-                                                  appWidgets.loadingDialog();
-                                                  await AppInterface()
-                                                      .chnageMenuStatus(
-                                                          columnName:
-                                                              "is_chef_special",
-                                                          id: _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .id!
-                                                              .toString(),
-                                                          value: _controller
-                                                                      .menuItems
-                                                                      .value
-                                                                      .data!
-                                                                      .menuItemsList![
-                                                                          index]
-                                                                      .isChefSpecial ==
-                                                                  1
-                                                              ? 0
-                                                              : 1)
-                                                      .then((value) {
-                                                    if (value == 200) {
-                                                      appWidgets.hideDialog();
-                                                      _controller
-                                                                  .menuItems
-                                                                  .value
-                                                                  .data!
-                                                                  .menuItemsList![
-                                                                      index]
-                                                                  .isChefSpecial ==
-                                                              1
-                                                          ? _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .isChefSpecial = 0
-                                                          : _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .isChefSpecial = 1;
-                                                      _controller.menuItems
-                                                          .refresh();
-                                                      appWidgets().showToast(
-                                                          "Sucess",
-                                                          "Successfully Updated");
-                                                    }
-                                                  });
-                                                }
-                                              }),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          Visibility(
-                                            visible: Common.currentRole ==
-                                                AppKeys.roleAdmin,
-                                            child: Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      await Get.to(
-                                                              AddMenuScreen(
-                                                        id: _controller
-                                                            .menuItems
-                                                            .value
-                                                            .data!
-                                                            .menuItemsList![
-                                                                index]
-                                                            .id!
-                                                            .toString(),
-                                                        isEdit: true,
-                                                      ))!
-                                                          .then((value) {
-                                                        _controller.geteMenu(
-                                                          false,
-                                                          false,
-                                                          _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .currentPage
-                                                              .toString(),
-                                                        );
-                                                      });
-                                                    },
-                                                    child: CircleAvatar(
-                                                      backgroundColor: AppColors
-                                                          .dividerGreyColor,
-                                                      radius: 15,
-                                                      child: const Icon(
-                                                        Icons.edit,
-                                                        size: 20,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      showDeleteItemDialoug(
-                                                          description:
-                                                              "Are you sure you want to DELETE the Item?",
-                                                          context: context,
-                                                          url: _controller
-                                                              .menuItems
-                                                              .value
-                                                              .data!
-                                                              .menuItemsList![
-                                                                  index]
-                                                              .profileImage,
-                                                          onYes: () async {
-                                                            Get.back();
-                                                            appWidgets
-                                                                .loadingDialog();
-                                                            await AppInterface()
-                                                                .deleteMenuItem(
-                                                              id: _controller
-                                                                  .menuItems
-                                                                  .value
-                                                                  .data!
-                                                                  .menuItemsList![
-                                                                      index]
-                                                                  .id
-                                                                  .toString(),
-                                                            )
-                                                                .then((value) {
-                                                              if (value !=
-                                                                      null &&
-                                                                  value ==
-                                                                      200) {
-                                                                _controller
-                                                                    .geteMenu(
-                                                                  false,
-                                                                  false,
-                                                                  _controller
-                                                                      .menuItems
-                                                                      .value
-                                                                      .data!
-                                                                      .currentPage
-                                                                      .toString(),
-                                                                );
-                                                                appWidgets
-                                                                    .hideDialog();
-                                                                showDialogWithAutoDismiss(
-                                                                    context: Get
-                                                                        .context,
-                                                                    doubleBack:
-                                                                        false,
-                                                                    img: AppImages
-                                                                        .successDialougIcon,
-                                                                    autoDismiss:
-                                                                        true,
-                                                                    heading:
-                                                                        "Hurray!",
-                                                                    text:
-                                                                        "Item Deleted Successfully",
-                                                                    headingStyle: TextStyle(
-                                                                        fontSize:
-                                                                            32,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w600,
-                                                                        color: AppColors
-                                                                            .textBlackColor));
-                                                              }
-                                                            });
-                                                          });
-                                                    },
-                                                    child: CircleAvatar(
-                                                      backgroundColor: AppColors
-                                                          .dividerGreyColor,
-                                                      radius: 15,
-                                                      child: const Icon(
-                                                        Icons.delete,
-                                                        size: 20,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                              ],
                                             ),
-                                          )
+                                          ),
+                                          SizedBox(
+                                            height: widget.isBottomBar == true
+                                                ? 0
+                                                : 20,
+                                          ),
+                                          widget.isBottomBar == true
+                                              ? const SizedBox()
+                                              : Visibility(
+                                                  visible: Common.currentRole ==
+                                                          AppKeys.roleAdmin ||
+                                                      widget.addToCart == true,
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.bottomRight,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        widget.addToCart == true
+                                                            ? smallBtn(
+                                                                AppColors
+                                                                    .textWhiteColor,
+                                                                _controller
+                                                                            .menuItems
+                                                                            .value
+                                                                            .data!
+                                                                            .menuItemsList![
+                                                                                index]
+                                                                            .showInMenu ==
+                                                                        1
+                                                                    ? AppColors
+                                                                        .primaryColor
+                                                                    : AppColors
+                                                                        .textFiledGrey,
+                                                                "Add to cart",
+                                                                () async {
+                                                                _controller.AddToCart(_controller
+                                                                    .menuItems
+                                                                    .value
+                                                                    .data!
+                                                                    .menuItemsList![
+                                                                        index]
+                                                                    .id!
+                                                                    .toString());
+                                                              })
+                                                            : InkWell(
+                                                                onTap:
+                                                                    () async {
+                                                                  await Get.to(
+                                                                          AddMenuScreen(
+                                                                    id: _controller
+                                                                        .menuItems
+                                                                        .value
+                                                                        .data!
+                                                                        .menuItemsList![
+                                                                            index]
+                                                                        .id!
+                                                                        .toString(),
+                                                                    isEdit:
+                                                                        true,
+                                                                  ))!
+                                                                      .then(
+                                                                          (value) {
+                                                                    _controller
+                                                                        .geteMenu(
+                                                                      false,
+                                                                      false,
+                                                                      _controller
+                                                                          .menuItems
+                                                                          .value
+                                                                          .data!
+                                                                          .currentPage
+                                                                          .toString(),
+                                                                    );
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    CircleAvatar(
+                                                                  backgroundColor:
+                                                                      AppColors
+                                                                          .dividerGreyColor,
+                                                                  radius: 15,
+                                                                  child:
+                                                                      const Icon(
+                                                                    Icons.edit,
+                                                                    size: 20,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                        const SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            showDeleteItemDialoug(
+                                                                description:
+                                                                    "Are you sure you want to DELETE the Item?",
+                                                                context:
+                                                                    context,
+                                                                url: _controller
+                                                                    .menuItems
+                                                                    .value
+                                                                    .data!
+                                                                    .menuItemsList![
+                                                                        index]
+                                                                    .profileImage,
+                                                                onYes:
+                                                                    () async {
+                                                                  Get.back();
+                                                                  appWidgets
+                                                                      .loadingDialog();
+                                                                  await AppInterface()
+                                                                      .deleteMenuItem(
+                                                                    id: _controller
+                                                                        .menuItems
+                                                                        .value
+                                                                        .data!
+                                                                        .menuItemsList![
+                                                                            index]
+                                                                        .id
+                                                                        .toString(),
+                                                                  )
+                                                                      .then(
+                                                                          (value) {
+                                                                    if (value !=
+                                                                            null &&
+                                                                        value ==
+                                                                            200) {
+                                                                      _controller
+                                                                          .geteMenu(
+                                                                        false,
+                                                                        false,
+                                                                        _controller
+                                                                            .menuItems
+                                                                            .value
+                                                                            .data!
+                                                                            .currentPage
+                                                                            .toString(),
+                                                                      );
+                                                                      appWidgets
+                                                                          .hideDialog();
+                                                                      showDialogWithAutoDismiss(
+                                                                          context: Get
+                                                                              .context,
+                                                                          doubleBack:
+                                                                              false,
+                                                                          img: AppImages
+                                                                              .successDialougIcon,
+                                                                          autoDismiss:
+                                                                              true,
+                                                                          heading:
+                                                                              "Hurray!",
+                                                                          text:
+                                                                              "Item Deleted Successfully",
+                                                                          headingStyle: TextStyle(
+                                                                              fontSize: 32,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: AppColors.textBlackColor));
+                                                                    }
+                                                                  });
+                                                                });
+                                                          },
+                                                          child: CircleAvatar(
+                                                            backgroundColor:
+                                                                AppColors
+                                                                    .dividerGreyColor,
+                                                            radius: 15,
+                                                            child: const Icon(
+                                                              Icons.delete,
+                                                              size: 20,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
                                         ],
                                       ),
                                     ),
                                     Visibility(
-                                      visible: Common.currentRole !=
-                                          AppKeys.roleAdmin,
+                                      visible: (Common.currentRole !=
+                                                  AppKeys.roleAdmin ||
+                                              widget.isBottomBar == true) &&
+                                          widget.addToCart == null,
                                       child: Obx(
                                         () => Checkbox(
                                           activeColor: AppColors.appColor,

@@ -149,7 +149,7 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                             ? Column(
                                 children: [
                                   SizedBox(height: Get.height * 0.15),
-                                  noData(),
+                                  noData(null),
                                 ],
                               )
                             : ListView.builder(

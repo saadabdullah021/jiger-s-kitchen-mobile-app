@@ -142,7 +142,7 @@ class _AdminListState extends State<AdminList> {
                             ? Column(
                                 children: [
                                   SizedBox(height: Get.height * 0.15),
-                                  noData(),
+                                 noData(null),
                                 ],
                               )
                             : ListView.builder(

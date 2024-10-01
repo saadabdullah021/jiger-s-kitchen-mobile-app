@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
+import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/utils/app_keys.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/Menu/add_menu/add_menu_screen.dart';
@@ -13,9 +14,10 @@ import '../../../../utils/widget/custom_textfiled.dart';
 import 'menu_list_controller.dart';
 
 class MenuListScreen extends StatefulWidget {
-  const MenuListScreen({
-    super.key,
-  });
+  bool? isBottomBar;
+  String? vendorId;
+  bool? addToCard;
+  MenuListScreen({super.key, this.isBottomBar, this.vendorId, this.addToCard});
 
   @override
   State<MenuListScreen> createState() => _MenuListScreenState();
@@ -26,130 +28,150 @@ class _MenuListScreenState extends State<MenuListScreen> {
   @override
   void initState() {
     // TODO: implement initState
-
+    _controller.isFromBottomBar = widget.isBottomBar ?? false;
+    _controller.currentVendorID = widget.vendorId;
     _controller.textController.addListener(_controller.onTextChanged);
+    // if (widget.isBottomBar == true) {
+    //   _controller.approvedController = Get.lazyPut();
+    // }
     _controller.getTabData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(
-          text: Common.currentRole == AppKeys.roleAdmin
-              ? "Menu"
-              : "Request Item"),
-      body: Obx(
-        () => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-          child: _controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Obx(
-                          () => Text(
-                            _controller.menuItems.value.data == null
-                                ? ""
-                                : "Result: ${_controller.menuItems.value.data!.totalRecords.toString()}",
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Visibility(
-                          visible: Common.currentRole == AppKeys.roleAdmin,
-                          child: InkWell(
-                            onTap: () async {
-                              Get.to(AddMenuScreen())!.then((value) {
-                                _controller.geteMenu(false, false, "1");
-                                _controller.menuItems.refresh();
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                    height: 15,
-                                    width: 15,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: AppColors.jetBlackColor),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: const Center(
-                                        child: Icon(
-                                      Icons.add,
-                                      size: 12,
-                                    ))),
-                                const SizedBox(
-                                  width: 2,
-                                ),
-                                const Text(
-                                  " Add Menu",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+    return ClipRRect(
+      borderRadius:
+          BorderRadius.circular(widget.isBottomBar == true ? 20.0 : 0),
+      child: Scaffold(
+        appBar: widget.isBottomBar == true
+            ? null
+            : appBar(
+                text: Common.currentRole == AppKeys.roleAdmin ||
+                        widget.addToCard == true
+                    ? "Menu"
+                    : "Request Item"),
+        body: Obx(
+          () => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+            child: _controller.isLoading.isTrue
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Obx(
-                      () => CustomTextField(
-                          fillColor: AppColors.lightGreyColor,
-                          controller: _controller.textController,
-                          prefixIcon: const Icon(Icons.search),
-                          suffixIcon: _controller.showCrossBtn.isTrue
-                              ? InkWell(
-                                  onTap: () {
-                                    _controller.textController.clear();
-                                  },
-                                  child: const Icon(Icons.cancel))
-                              : null,
-                          hintText: "Search for Menu"),
-                    ),
-                    Expanded(
-                      child: Column(
+                  )
+                : Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              child: tabContainer()),
-                          Expanded(
-                            child: ShowListScreen(
-                              id: _controller.selectedMenuId.toString(),
+                          Obx(
+                            () => Text(
+                              _controller.menuItems.value.data == null
+                                  ? ""
+                                  : "Result: ${_controller.menuItems.value.data!.totalRecords.toString()}",
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600),
                             ),
-                          )
+                          ),
+                          Visibility(
+                            visible: Common.currentRole == AppKeys.roleAdmin &&
+                                widget.isBottomBar == null,
+                            child: InkWell(
+                              onTap: () async {
+                                Get.to(AddMenuScreen())!.then((value) {
+                                  _controller.geteMenu(false, false, "1");
+                                  _controller.menuItems.refresh();
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                      height: 15,
+                                      width: 15,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: AppColors.jetBlackColor),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: const Center(
+                                          child: Icon(
+                                        Icons.add,
+                                        size: 12,
+                                      ))),
+                                  const SizedBox(
+                                    width: 2,
+                                  ),
+                                  const Text(
+                                    " Add Menu",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Obx(
+                        () => CustomTextField(
+                            fillColor: AppColors.lightGreyColor,
+                            controller: _controller.textController,
+                            prefixIcon: const Icon(Icons.search),
+                            suffixIcon: _controller.showCrossBtn.isTrue
+                                ? InkWell(
+                                    onTap: () {
+                                      _controller.textController.clear();
+                                    },
+                                    child: const Icon(Icons.cancel))
+                                : null,
+                            hintText: "Search for Menu"),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
+                                child: tabContainer()),
+                            Expanded(
+                              child: ShowListScreen(
+                                addToCart: widget.addToCard,
+                                isBottomBar: widget.isBottomBar,
+                                id: _controller.selectedMenuId.toString(),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
         ),
-      ),
-      // ${_controller.checkedIds.value.isEmpty ? "" : _controller.checkedIds.value.length}
-      bottomNavigationBar: Common.currentRole != AppKeys.roleAdmin
-          ? Visibility(
-              child: Obx(
-                () => BottomAppBar(
+        // ${_controller.checkedIds.value.isEmpty ? "" : _controller.checkedIds.value.length}
+        bottomNavigationBar: Common.currentRole != AppKeys.roleAdmin ||
+                widget.isBottomBar == true
+            ? Visibility(
+                child: BottomAppBar(
                     color: Colors.transparent,
                     child: GestureDetector(
-                      onTap: () {
-                        if (_controller.checkedIds.isNotEmpty) {
-                          _controller.requestItems();
+                      onTap: () async {
+                        if (widget.addToCard == true) {
+                          await AppInterface().getCartItem();
                         } else {
-                          appWidgets().showToast(
-                              "Sorry", "Please select atleast one item");
+                          if (_controller.checkedIds.isNotEmpty) {
+                            widget.isBottomBar == true
+                                ? _controller.addItemByAdminItems()
+                                : _controller.requestItems();
+                          } else {
+                            appWidgets().showToast(
+                                "Sorry", "Please select at least one item");
+                          }
                         }
                       },
                       child: Container(
@@ -163,21 +185,30 @@ class _MenuListScreenState extends State<MenuListScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Request Item",
+                              widget.isBottomBar == true
+                                  ? "Add Item"
+                                  : widget.addToCard == true
+                                      ? "Proceed"
+                                      : "Request Item",
                               style: TextStyle(
                                 color: AppColors.textWhiteColor,
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: AppColors.redColor,
-                              child: Text(
-                                "${_controller.checkedIds.value.isEmpty ? "0" : _controller.checkedIds.value.length}",
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            )
+                            widget.addToCard == true
+                                ? const SizedBox()
+                                : Obx(
+                                    () => CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: AppColors.redColor,
+                                      child: Text(
+                                        "${_controller.checkedIds.value.isEmpty ? "0" : _controller.checkedIds.value.length}",
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  )
                           ],
                         ),
                       ),
@@ -193,9 +224,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                     //       }
                     //     })
                     ),
-              ),
-            )
-          : null,
+              )
+            : null,
+      ),
     );
   }
 

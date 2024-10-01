@@ -89,7 +89,7 @@ class _VenderRequestItemState extends State<VenderRequestItem> {
                         ? Column(
                             children: [
                               SizedBox(height: Get.height * 0.15),
-                              noData(),
+                          noData(null),
                             ],
                           )
                         : Expanded(

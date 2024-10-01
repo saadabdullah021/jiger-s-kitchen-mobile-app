@@ -53,7 +53,11 @@ class vendorApprovedController extends GetxController {
 
   Future<void> callSearchApiForList(String query) async {
     if (query == "") {
-      getItemList(false, "1", false,);
+      getItemList(
+        false,
+        "1",
+        false,
+      );
     } else {
       await AppInterface()
           .getVendorApprovedItem(
@@ -99,7 +103,10 @@ class vendorApprovedController extends GetxController {
   // }
 
   getItemList(
-      bool moreLoading, String page, bool showLoading,) async {
+    bool moreLoading,
+    String page,
+    bool showLoading,
+  ) async {
     if (moreLoading) {
       isMoreLoading.value = true;
     } else {
@@ -123,6 +130,7 @@ class vendorApprovedController extends GetxController {
           requestedItemList.refresh();
         } else {
           requestedItemList.value = value;
+          requestedItemList.refresh();
         }
         if (moreLoading) {
           isMoreLoading.value = false;

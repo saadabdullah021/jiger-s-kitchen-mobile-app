@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../app_colors.dart';
 import '../app_images.dart';
 
-Widget noData() {
+Widget noData(double? height) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       Center(
         child: CircleAvatar(
           backgroundColor: AppColors.primaryColor,
-          radius: 100,
+          radius: height ?? 100,
           child: Center(
             child: Image.asset(
               AppImages.chef,
-              height: 150,
+              height: height ?? 150,
             ),
           ),
         ),

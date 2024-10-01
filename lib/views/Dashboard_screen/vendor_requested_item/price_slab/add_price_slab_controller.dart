@@ -76,7 +76,7 @@ class AddPriceSlabController extends GetxController {
           otherPriceList.value.add(ChefData(
               id: otherVendorItemDetail!.data![i].id,
               name:
-                  "${Helper.capitalizeFirstLetter(unitController.text)}--${otherVendorItemDetail!.data![i].quantity}"));
+                  "${Helper.capitalizeFirstLetter(unitController.text)} - ${otherVendorItemDetail!.data![i].quantity}"));
         }
         otherPriceList.refresh();
       }

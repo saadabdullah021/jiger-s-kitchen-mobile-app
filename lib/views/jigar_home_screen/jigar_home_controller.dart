@@ -121,7 +121,7 @@ class HomeController extends GetxController {
         Get.to(() => const DashboardScreen());
         break;
       case 1:
-        Get.to(() => const MenuListScreen());
+        Get.to(() => MenuListScreen());
         break;
       case 2:
         Get.to(() => const VenderRequestItem());
@@ -140,8 +140,13 @@ class HomeController extends GetxController {
               type: AppKeys.userTypeDelivery,
             ));
         break;
+      case 10:
+        Get.to(() => MenuListScreen(
+              addToCard: true,
+            ));
+        break;
       case 13:
-        Get.to(() => const MenuListScreen());
+        Get.to(() => MenuListScreen());
         break;
       default:
     }

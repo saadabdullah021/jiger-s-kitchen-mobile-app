@@ -6,8 +6,10 @@ import '../../../../model/requested_item_list_model.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/helper.dart';
 import '../../../../utils/widget/app_bar.dart';
+import '../../../../utils/widget/app_button.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
 import '../../../../utils/widget/no_data.dart';
+import '../../../new_order_screens/edit_order/edit_order_screen.dart';
 import '../../vendor_requested_item/price_slab/add_price_slab.dart';
 import 'vendor_approved_item_controller.dart';
 
@@ -58,100 +60,117 @@ class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Approved Item List"),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-        child: Obx(
-          () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 13),
-                      child: Text(
-                        "Result: ${controller.requestedItemList.value.data!.totalRecords.toString()}",
-                        style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w600),
+        appBar: appBar(text: "Approved Item List"),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+          child: Obx(
+            () => controller.isLoading.isTrue
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 13),
+                        child: Text(
+                          "Result: ${controller.requestedItemList.value.data!.totalRecords.toString()}",
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    CustomTextField(
-                        fillColor: AppColors.lightGreyColor,
-                        controller: controller.itemtextController,
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: controller.itemtextController.text != ""
-                            ? InkWell(
-                                onTap: () {
-                                  controller.itemtextController.clear();
-                                },
-                                child: const Icon(Icons.cancel))
-                            : null,
-                        hintText: "Search for Item"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    controller.requestedItemList.value.data!.itemsList!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                              noData(),
-                            ],
-                          )
-                        : Expanded(
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) {
-                                  return const SizedBox(
-                                    height: 10,
-                                  );
-                                },
-                                controller: _scrollController,
-                                itemCount: controller.requestedItemList.value
-                                    .data!.itemsList!.length,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () async {
-                                      await Get.to(() => AddPriceSlabScreen(
-                                                requestedData: controller
-                                                    .requestedItemList
-                                                    .value
-                                                    .data!
-                                                    .itemsList![index],
-                                                    fromApproved: true,
-                                              ))!
-                                          .then((value) {
-                                        controller.getItemList(
-                                          false,
-                                          "1",
-                                          false,
-                                        );
-                                      });
-                                    },
-                                    child: vendorListDataWidget(
-                                      data: controller.requestedItemList.value
-                                          .data!.itemsList![index],
-                                    ),
-                                  );
-                                }),
-                          ),
-                    controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      CustomTextField(
+                          fillColor: AppColors.lightGreyColor,
+                          controller: controller.itemtextController,
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: controller.itemtextController.text != ""
+                              ? InkWell(
+                                  onTap: () {
+                                    controller.itemtextController.clear();
+                                  },
+                                  child: const Icon(Icons.cancel))
+                              : null,
+                          hintText: "Search for Item"),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      controller
+                              .requestedItemList.value.data!.itemsList!.isEmpty
+                          ? Column(
+                              children: [
+                                SizedBox(height: Get.height * 0.15),
+                                noData(null),
+                              ],
+                            )
+                          : Expanded(
+                              child: ListView.separated(
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(
+                                      height: 10,
+                                    );
+                                  },
+                                  controller: _scrollController,
+                                  itemCount: controller.requestedItemList.value
+                                      .data!.itemsList!.length,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () async {
+                                        await Get.to(() => AddPriceSlabScreen(
+                                                  requestedData: controller
+                                                      .requestedItemList
+                                                      .value
+                                                      .data!
+                                                      .itemsList![index],
+                                                  fromApproved: true,
+                                                ))!
+                                            .then((value) {
+                                          controller.getItemList(
+                                            false,
+                                            "1",
+                                            false,
+                                          );
+                                        });
+                                      },
+                                      child: vendorListDataWidget(
+                                        data: controller.requestedItemList.value
+                                            .data!.itemsList![index],
+                                      ),
+                                    );
+                                  }),
                             ),
-                          )
-                        : const SizedBox()
-                  ],
-                ),
+                      controller.isMoreLoading.isTrue
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryColor,
+                              ),
+                            )
+                          : const SizedBox()
+                    ],
+                  ),
+          ),
         ),
-      ),
-    );
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+              height: Get.height * 0.06,
+              child: CustomButton(
+                  text: "Add Item",
+                  onPressed: () async {
+                    await showCustomBottomSheet(context, controller.vendorID)
+                        .then((value) {
+                      controller.getItemList(
+                        false,
+                        "1",
+                        false,
+                      );
+                    });
+                  })),
+        ));
   }
 }
 
