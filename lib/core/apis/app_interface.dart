@@ -1,8 +1,10 @@
 import 'dart:io';
 
-import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
+import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/model/chef_drop_down_data_model.dart';
+import 'package:jigers_kitchen/model/chef_order_model.dart';
+import 'package:jigers_kitchen/model/dashboad_counter_model.dart';
 import 'package:jigers_kitchen/model/get_cart_item_model.dart';
 import 'package:jigers_kitchen/model/get_menu_item_model.dart';
 import 'package:jigers_kitchen/model/get_price_slab.dart';
@@ -18,6 +20,7 @@ import '../../model/get_other_vendor_for_approved_item.dart';
 import '../../model/get_price_slab_list_model.dart';
 import '../../model/get_vendor_group.dart';
 import '../../model/menu_item_model.dart';
+import '../../model/order_list_model.dart';
 import '../../model/requested_item_list_model.dart';
 import '../../model/single_vendor_data.dart';
 import '../../utils/app_keys.dart';
@@ -619,6 +622,77 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> getOrderList(
+      {String? searchKey, String? page, bool? isSearch, String? status}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-orders-list",
+      query: isSearch == true
+          ? {
+              "search_keyword": searchKey,
+              "role": Common.currentRole,
+              "order_status": status ?? ""
+            }
+          : {
+              "page": page,
+              "limit": "20",
+              "role": Common.currentRole,
+              "order_status": status ?? ""
+            },
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      OrderListModel userData = OrderListModel.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getChefOrderList(
+      {String? searchKey, String? page, bool? isSearch, String? status}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-chef-order-list",
+      query: isSearch == true
+          ? {
+              "search_keyword": searchKey,
+              // "role": Common.currentRole,
+              "order_status": status ?? ""
+            }
+          : {
+              "page": page,
+              "limit": "20",
+              // "role": Common.currentRole,
+              "order_status": status ?? ""
+            },
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      GetChefOrderListModel userData =
+          GetChefOrderListModel.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> getRequestUserList(
       {String? searchKey, String? page, bool? isSearch}) async {
     var headers = {
@@ -768,6 +842,90 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> deleteAccount() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}delete-user-account",
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> deleteOrder({
+    String? id,
+  }) async {
+    Map<String, Object?> data = {
+      "order_id": id,
+    };
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}delete-order",
+      headers: headers,
+      query: data,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> deleteCartItem({
+    String? id,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}delete-cart-item",
+      headers: headers,
+      query: {
+        "item_id": id,
+      },
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> getPriceSlabListData(
       {String? menuID, String? vendorID}) async {
     var headers = {
@@ -817,6 +975,36 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}add-price-slab",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> updateOrderStatusByChef(
+      {String? orderID, String? orderStatus}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      'order_status': orderStatus,
+      'order_id': orderID,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}change-order-status-by-chef",
       data,
       headers: headers,
     );
@@ -1149,13 +1337,13 @@ class AppInterface extends BaseApi {
   Future<dynamic> getMenuItems({
     required String page,
     required String id,
-    required bool isVendor,
+    required bool isApproved,
   }) async {
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${isVendor ? "vendor" : Common.loginReponse.value.data!.role!}",
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved ? "1" : "0"}",
       headers: headers,
     );
     if (response == null) {
@@ -1515,5 +1703,206 @@ class AppInterface extends BaseApi {
       Constants.internalServerErrorToast();
     }
     return null;
+  }
+
+  Future<dynamic> getDashBoardCounter() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {"role": Common.loginReponse.value.data!.role!};
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-dashboard-counter",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      dashBoardCounterModel menuData =
+          dashBoardCounterModel.fromJson(response.body);
+      return menuData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getInvoice(String id) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {"order_id": id};
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}generate-order-invoice",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getInvoiceLink(String startDate, String endDate) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {"from_date": startDate, "to_date": endDate};
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}generate-purchase-order-report",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getChefInvoiceLink(
+      String startDate, String endDate, String chefID) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {"from_date": startDate, "to_date": endDate, "chef_id": chefID};
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-chef-orders-report",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> placeOrder({
+    String? tax,
+    String? shippingCharges,
+    String? subTotal,
+    String? totalAmount,
+    String? isSelf,
+    String? orderBillingAddress,
+    String? orderNotes,
+    String? paymentType,
+    var orderItems,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "tax": tax,
+      "shipping_charges": shippingCharges,
+      'sub_total': totalAmount,
+      'total_amount': subTotal,
+      'is_self_pickup': isSelf,
+      "order_note": orderNotes,
+      "order_billing_address": orderBillingAddress,
+      'order_items': orderItems,
+      'payment_type': paymentType,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}create-order",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> assignOrderToChef({
+    String? itemId,
+    String? chefId,
+    String? orderID,
+    String? date,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "item_id": itemId,
+      "chef_id": chefId,
+      "order_id": orderID,
+      "preperation_date": date
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}assign-order-to-chef",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+      return null;
+    } else {
+      try {
+        if (response.body['status'] == 200) {
+          return 200;
+        } else if (response.body['status'] == 400) {
+          appWidgets.hideDialog();
+          appWidgets().showToast("Sorry", response.body['message']);
+          return 400;
+        } else {
+          appWidgets.hideDialog();
+          Constants.internalServerErrorToast();
+        }
+        return null;
+      } catch (e) {
+        appWidgets.hideDialog();
+        Constants.soryyTryAgainToast();
+      }
+    }
   }
 }

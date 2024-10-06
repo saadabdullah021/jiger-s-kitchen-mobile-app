@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../model/order_list_model.dart';
+import '../../core/contstants.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_images.dart';
 
 class ExpandedData extends StatelessWidget {
-  const ExpandedData({
+  OrdersList data;
+  ExpandedData({
+    required this.data,
     super.key,
   });
 
@@ -27,7 +31,7 @@ class ExpandedData extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  "07/20/2024, 11:10 am",
+                  data.orderCreatedAt ?? "",
                   style: TextStyle(fontSize: 12, color: AppColors.newOrderGrey),
                   softWrap: true,
                   maxLines: 2,
@@ -38,29 +42,30 @@ class ExpandedData extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            const ItemRow(
+            ItemRow(
               leading: "Item:",
-              desc: "Smosa",
+              desc: data.ordersItems![0].menuItemInfo!.itemName!,
             ),
             const SizedBox(
               height: 5,
             ),
-            const ItemRow(
+            ItemRow(
               leading: "Qty:",
-              desc: "150",
+              desc: data.ordersItems![0].itemQuantity,
             ),
             const SizedBox(
               height: 10,
             ),
-            const ItemRow(
+            ItemRow(
               leading: "Vendor: ",
-              desc: "DSCC",
+              desc: data.vendorInfo!.name!,
             ),
           ],
         ),
-        const CircleAvatar(
+        CircleAvatar(
           radius: 60,
-          backgroundImage: AssetImage("assets/images/smosa.png"),
+          backgroundImage: NetworkImage(Constants.webUrl +
+              data.ordersItems![0].menuItemInfo!.profileImage!),
         )
       ],
     );

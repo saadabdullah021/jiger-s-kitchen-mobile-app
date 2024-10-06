@@ -220,6 +220,7 @@ class BottomSheetWithTabs extends StatelessWidget {
               child: MenuListScreen(
                 isBottomBar: true,
                 vendorId: vendorId,
+                screenType: "",
               ))),
     );
   }

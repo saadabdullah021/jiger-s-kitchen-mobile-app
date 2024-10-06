@@ -129,6 +129,15 @@ class _NavDrawerState extends State<NavDrawer> {
               },
               child: DraweRow(item: controller.drawerExtraItems[1]),
             ),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+              onTap: () {
+                Common.logout(context);
+              },
+              child: DraweRow(item: controller.drawerExtraItems[2]),
+            ),
           ],
         ),
       ),

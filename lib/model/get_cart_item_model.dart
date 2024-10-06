@@ -98,12 +98,18 @@ class MenuItem {
   int? id;
   String? itemName;
   String? itemQuantity;
+  double? totalCount;
+  double? basePrice;
   String? itemDescription;
+  String? notes;
   String? profileImage;
 
   MenuItem(
       {this.id,
       this.itemName,
+      this.totalCount,
+      this.notes,
+      this.basePrice,
       this.itemQuantity,
       this.itemDescription,
       this.profileImage});
@@ -112,6 +118,9 @@ class MenuItem {
     id = json['id'];
     itemName = json['item_name'];
     itemQuantity = json['item_quantity'];
+    totalCount = 1;
+    notes = "";
+    basePrice = 0;
     itemDescription = json['item_description'];
     profileImage = json['profile_image'];
   }

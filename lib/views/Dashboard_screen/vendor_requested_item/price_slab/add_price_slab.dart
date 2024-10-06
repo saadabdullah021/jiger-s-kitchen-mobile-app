@@ -92,6 +92,7 @@ class AddPriceSlabScreen extends StatelessWidget {
                       ),
                       CustomTextField(
                         controller: controller.quantityController,
+                        keyboardType: TextInputType.number,
                         validator: Helper.validateNumber,
                         hintText: "Enter Quantity",
                       ),
@@ -101,6 +102,7 @@ class AddPriceSlabScreen extends StatelessWidget {
                       CustomTextField(
                         controller: controller.priceController,
                         validator: Helper.validateFloat,
+                        keyboardType: TextInputType.number,
                         hintText: "Write Price (USD)",
                       ),
                       const SizedBox(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
-import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/utils/app_keys.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/Menu/add_menu/add_menu_screen.dart';
@@ -11,13 +10,20 @@ import '../../../../model/menu_tab_model.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/widget/appwidgets.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../cart/view_cart.dart';
 import 'menu_list_controller.dart';
 
 class MenuListScreen extends StatefulWidget {
   bool? isBottomBar;
   String? vendorId;
   bool? addToCard;
-  MenuListScreen({super.key, this.isBottomBar, this.vendorId, this.addToCard});
+  String? screenType;
+  MenuListScreen(
+      {super.key,
+      this.isBottomBar,
+      this.vendorId,
+      this.addToCard,
+      required this.screenType});
 
   @override
   State<MenuListScreen> createState() => _MenuListScreenState();
@@ -28,6 +34,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    _controller.ScreenType = widget.screenType ?? "";
     _controller.isFromBottomBar = widget.isBottomBar ?? false;
     _controller.currentVendorID = widget.vendorId;
     _controller.textController.addListener(_controller.onTextChanged);
@@ -162,7 +169,8 @@ class _MenuListScreenState extends State<MenuListScreen> {
                     child: GestureDetector(
                       onTap: () async {
                         if (widget.addToCard == true) {
-                          await AppInterface().getCartItem();
+                          Get.to(() => const ViewCart());
+                          //
                         } else {
                           if (_controller.checkedIds.isNotEmpty) {
                             widget.isBottomBar == true

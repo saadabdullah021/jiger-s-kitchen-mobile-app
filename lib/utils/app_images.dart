@@ -10,6 +10,9 @@ class AppImages {
   static String mailIcon = "${imgePath}Mail.png";
   static String splash = "${imgePath}splash.png";
   static String chef = "${imgePath}chef.png";
+  static String payPal = "${imgePath}paypal.png";
+  static String visa = "${imgePath}card.png";
+  static String atm = "${imgePath}atm.png";
   //svg
   static String successDialougIcon = "${imgePath}success_dialoug_icon.svg";
   static String splashBG = "${imgePath}splashbg.svg";

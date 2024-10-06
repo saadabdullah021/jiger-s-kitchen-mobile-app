@@ -8,7 +8,9 @@ import 'package:jigers_kitchen/views/welcome_page/welcome_page.dart';
 import '../../common/common.dart';
 import '../../utils/app_keys.dart';
 import '../../utils/local_db_helper.dart';
+import '../Dashboard_screen/dashboard_screen.dart';
 import '../jigar_home_screen/jiagar_home.dart';
+import '../jigar_home_screen/jigar_home_controller.dart';
 
 class SplashController extends GetxController {
   @override
@@ -37,7 +39,13 @@ class SplashController extends GetxController {
       await AppInterface().getUserByToken(token).then((value) async {
         if (value == 200) {
           await AppInterface().updateFcm();
-          Get.off(const JigarHome());
+
+          if (Common.currentRole == "chef") {
+            Get.put(HomeController());
+            Get.off(const DashboardScreen());
+          } else {
+            Get.off(const JigarHome());
+          }
         } else if (value == 400) {
           SharedPref.getInstance().addStringToSF(AppKeys.accessToken, "");
           Get.off(() => const LoginScreen());

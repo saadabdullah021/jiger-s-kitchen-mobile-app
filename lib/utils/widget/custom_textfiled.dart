@@ -9,20 +9,24 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool obscureText;
   final bool? readOnly;
+  final VoidCallback? ontap;
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
   final void Function(String)? onChanged;
   final Widget? prefixIcon; // Optional prefix icon
   final Widget? suffixIcon; // Optional suffix icon
   final VoidCallback? onSuffixIconTap; // Callback for suffix icon tap
+  final int? maxLines;
 
   const CustomTextField({
     super.key,
     required this.controller,
+    this.ontap,
     required this.hintText,
     this.keyboardType = TextInputType.text,
     this.fillColor,
     this.readOnly,
+    this.maxLines,
     this.obscureText = false,
     this.textInputAction = TextInputAction.done,
     this.onChanged,
@@ -38,10 +42,13 @@ class CustomTextField extends StatelessWidget {
       validator: validator ?? Helper.validateEmpty,
       readOnly: readOnly == true ? true : false,
       controller: controller,
+      minLines: 1,
+      maxLines: maxLines ?? 1,
       keyboardType: keyboardType,
       obscureText: obscureText,
       textInputAction: textInputAction,
       onChanged: onChanged,
+      onTap: ontap,
       decoration: InputDecoration(
         filled: true,
         fillColor: fillColor ?? AppColors.lightGreyColor,

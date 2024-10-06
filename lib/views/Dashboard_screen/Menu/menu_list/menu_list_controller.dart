@@ -17,6 +17,7 @@ class MenuListController extends GetxController {
   RxBool isMoreLoading = false.obs;
   RxBool isMenuLoading = false.obs;
   String? currentVendorID;
+  String ScreenType = '';
   Rx<GetMenuItemModel> menuItems = GetMenuItemModel().obs;
   TextEditingController textController = TextEditingController();
   menuTabModel? tabData;
@@ -52,7 +53,7 @@ class MenuListController extends GetxController {
     await AppInterface().addToCart(id: id).then((value) {
       appWidgets.hideDialog();
       if (value == 200) {
-        appWidgets().showToast("Success", "Item added successfully");
+        appWidgets().showToast("Success", "Added to cart");
       }
     });
   }
@@ -144,7 +145,7 @@ class MenuListController extends GetxController {
         .getMenuItems(
             page: page,
             id: selectedMenuId.toString(),
-            isVendor: isFromBottomBar)
+            isApproved: ScreenType == "request_item" ? false : true)
         .then((value) {
       if (value is GetMenuItemModel) {
         if (moreLoading) {
