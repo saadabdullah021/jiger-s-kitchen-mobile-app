@@ -21,11 +21,25 @@ class newORderListController extends GetxController {
   TextEditingController textController = TextEditingController();
   DashboardController dashboardController = Get.find();
   RxBool isLoading = false.obs;
+  RxBool isAllCompleted = false.obs;
   RxBool isMoreLoading = false.obs;
   Rx<OrderListModel> orderList = OrderListModel().obs;
   Rx<OrdersList> selectedOrder = OrdersList().obs;
   int? selectedItemIndex;
   Timer? _debounce;
+  checkAllStatus() {
+    bool isCompleted = false;
+    for (int i = 0; i < selectedOrder.value.ordersItems!.length; i++) {
+      if (selectedOrder.value.ordersItems![i].chefStatus == "completed") {
+        isCompleted = true;
+      } else {
+        isCompleted = false;
+        return;
+      }
+      isAllCompleted.value = isCompleted;
+    }
+  }
+
   void onTextChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
@@ -34,16 +48,16 @@ class newORderListController extends GetxController {
     });
   }
 
-  Future<void> showCustomBottomSheet(
-    BuildContext context,
-  ) async {
+  Future<void> showCustomBottomSheet(BuildContext context, String? type) async {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       barrierColor: AppColors.primaryColor.withOpacity(0.6),
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return const OpenChefBottomSheet();
+        return OpenChefBottomSheet(
+          type: type,
+        );
       },
     );
   }
@@ -248,6 +262,35 @@ class newORderListController extends GetxController {
         headingStyle: TextStyle(color: AppColors.greyColor));
   }
 
+  Future<void> _onDeliverSelected(ChefList chef) async {
+    Get.back();
+    appWidgets.loadingDialog();
+    await AppInterface()
+        .assignOrderToDeliveryUSer(
+            orderID: selectedOrder.value.id.toString(),
+            deliveryUserId: chef.id.toString())
+        .then((value) {
+      if (value == 200) {
+        appWidgets.hideDialog;
+        Get.back();
+        getOrder(false, "1", false, false, "");
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: true,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Item Assigned Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+      }
+    });
+
+    print('Selected BOY: ${chef.name}');
+  }
+
   showTImePicker() {
     showDatePicker(
       context: Get.context!,
@@ -281,7 +324,9 @@ class newORderListController extends GetxController {
 }
 
 class OpenChefBottomSheet extends StatelessWidget {
-  const OpenChefBottomSheet({
+  String? type;
+  OpenChefBottomSheet({
+    this.type,
     super.key,
   });
 
@@ -296,7 +341,10 @@ class OpenChefBottomSheet extends StatelessWidget {
           child: SizedBox(
               height: Get.height * 0.7,
               child: AllChefListScreen(
-                onChefSelected: controller._onChefSelected,
+                type: type,
+                onChefSelected: type != null
+                    ? controller._onDeliverSelected
+                    : controller._onChefSelected,
                 isBottombar: true,
               ))),
     );

@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 
 import '../../../core/apis/app_interface.dart';
 import '../../../model/order_list_model.dart';
+import '../../../utils/app_colors.dart';
+import '../../../utils/app_images.dart';
 import '../../../utils/widget/appwidgets.dart';
+import '../../../utils/widget/success_dialoug.dart';
 
 class ORderListController extends GetxController {
   TextEditingController textController = TextEditingController();
@@ -15,6 +18,37 @@ class ORderListController extends GetxController {
   Rx<OrderListModel> orderList = OrderListModel().obs;
   Timer? _debounce;
   String? status;
+  final List<String> items = [
+    'NEW ORDER',
+    'PICK UP',
+    'OUT FOR DELIVERY',
+    'DELIVERED',
+    "CANCELLED"
+  ];
+  updateStatus(String orderID, String orderStatus) async {
+    appWidgets.loadingDialog();
+    String status = orderStatus.toLowerCase().replaceAll(" ", "_");
+    await AppInterface()
+        .updateOrderStatusByDeliveryUuser(orderID: orderID, orderStatus: status)
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: false,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Status Updated Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+        getOrder(false, "1", false, false, "");
+      }
+    });
+  }
+
   void onTextChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 

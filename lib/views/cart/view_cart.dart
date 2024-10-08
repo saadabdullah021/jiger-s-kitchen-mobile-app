@@ -341,6 +341,10 @@ class _ViewCartState extends State<ViewCart> {
                                                   height: 10,
                                                 ),
                                                 Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: [
                                                     const Text(
                                                       "Desc:",
@@ -352,13 +356,18 @@ class _ViewCartState extends State<ViewCart> {
                                                     const SizedBox(
                                                       width: 5,
                                                     ),
-                                                    Text(_controller
-                                                            .cartData
-                                                            .value
-                                                            .data![index]
-                                                            .menuItem!
-                                                            .itemDescription ??
-                                                        "")
+                                                    Expanded(
+                                                      child: Text(
+                                                        _controller
+                                                                .cartData
+                                                                .value
+                                                                .data![index]
+                                                                .menuItem!
+                                                                .itemDescription ??
+                                                            "",
+                                                        maxLines: 2,
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
                                                 Visibility(

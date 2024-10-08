@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 
@@ -6,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final Color? fillColor;
+  List<TextInputFormatter>? formater;
   final TextInputType keyboardType;
   final bool obscureText;
   final bool? readOnly;
@@ -18,10 +20,11 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onSuffixIconTap; // Callback for suffix icon tap
   final int? maxLines;
 
-  const CustomTextField({
+  CustomTextField({
     super.key,
     required this.controller,
     this.ontap,
+    this.formater,
     required this.hintText,
     this.keyboardType = TextInputType.text,
     this.fillColor,
@@ -49,6 +52,7 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       onChanged: onChanged,
       onTap: ontap,
+      inputFormatters: formater ?? [],
       decoration: InputDecoration(
         filled: true,
         fillColor: fillColor ?? AppColors.lightGreyColor,

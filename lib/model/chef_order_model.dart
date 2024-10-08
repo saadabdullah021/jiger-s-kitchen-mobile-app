@@ -210,7 +210,7 @@ class OrderInfo {
   String? subTotal;
   String? totalAmount;
   int? isSelfPickup;
-  Null orderNote;
+  String? orderNote;
   String? orderCreatedAt;
 
   OrderInfo(

@@ -114,7 +114,8 @@ class HomeController extends GetxController {
       "img": AppImages.home2Image,
       "name": "Order List",
       "show": Common.currentRole == AppKeys.roleAdmin ||
-              Common.currentRole == "chef"
+              Common.currentRole == "chef" ||
+              Common.currentRole == "delivery_user"
           ? false
           : true,
       "show_drawer": true

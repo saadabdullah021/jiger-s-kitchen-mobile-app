@@ -64,6 +64,7 @@ class Data {
 
 class OrdersList {
   int? id;
+  int? deliveryUserForOrder;
   String? orderIdentifier;
   int? orderBy;
   String? tax;
@@ -73,6 +74,7 @@ class OrdersList {
   int? isSelfPickup;
   String? orderNote;
   String? orderStatus;
+  String? deliveryStatus;
   String? orderBillingAddress;
   String? orderCreatedAt;
   List<OrdersItems>? ordersItems;
@@ -83,7 +85,8 @@ class OrdersList {
       this.orderIdentifier,
       this.orderBy,
       this.tax,
-      this.shippingCharges,
+      this.deliveryStatus,
+      this.deliveryUserForOrder,
       this.subTotal,
       this.totalAmount,
       this.isSelfPickup,
@@ -96,6 +99,8 @@ class OrdersList {
 
   OrdersList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    deliveryUserForOrder = json['delivery_user_for_order'];
+    deliveryStatus = json['deliver_user_status'];
     orderIdentifier = json['order_identifier'];
     orderBy = json['order_by'];
     tax = json['tax'];

@@ -19,7 +19,7 @@ import '../jigar_home_screen/jiagar_home.dart';
 
 class ViewCartController extends GetxController {
   Rx<getCartItemModel> cartData = getCartItemModel().obs;
-  RxInt selectedPayment = 1.obs;
+  RxInt selectedPayment = 2.obs;
   RxBool isLoading = false.obs;
   RxString deliveryDate = "".obs;
   RxBool checkedValue = false.obs;

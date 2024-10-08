@@ -18,10 +18,12 @@ class MenuListScreen extends StatefulWidget {
   String? vendorId;
   bool? addToCard;
   String? screenType;
+  Function(bool)? onCompleted;
   MenuListScreen(
       {super.key,
       this.isBottomBar,
       this.vendorId,
+      this.onCompleted,
       this.addToCard,
       required this.screenType});
 
@@ -35,6 +37,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
   void initState() {
     // TODO: implement initState
     _controller.ScreenType = widget.screenType ?? "";
+    _controller.checkedIds.clear();
     _controller.isFromBottomBar = widget.isBottomBar ?? false;
     _controller.currentVendorID = widget.vendorId;
     _controller.textController.addListener(_controller.onTextChanged);
@@ -172,6 +175,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                           Get.to(() => const ViewCart());
                           //
                         } else {
+                          widget.onCompleted != null
+                              ? widget.onCompleted!(true)
+                              : null;
                           if (_controller.checkedIds.isNotEmpty) {
                             widget.isBottomBar == true
                                 ? _controller.addItemByAdminItems()

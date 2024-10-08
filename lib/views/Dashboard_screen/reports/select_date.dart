@@ -16,6 +16,8 @@ class SelectReportDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ReportController controller = Get.put(ReportController());
+    controller.startController.clear();
+    controller.endController.clear();
     controller.chefID = chefID ?? "";
     return Scaffold(
       appBar:
@@ -42,7 +44,7 @@ class SelectReportDate extends StatelessWidget {
                     },
                     controller: controller.startController,
                     fillColor: AppColors.textGreyColor,
-                    hintText: "Select Start Date",
+                    hintText: "Start Date",
                   ),
                 ),
                 const SizedBox(
@@ -61,7 +63,7 @@ class SelectReportDate extends StatelessWidget {
                     },
                     controller: controller.endController,
                     fillColor: AppColors.textGreyColor,
-                    hintText: "Select End Date",
+                    hintText: "End Date",
                   ),
                 ),
               ],

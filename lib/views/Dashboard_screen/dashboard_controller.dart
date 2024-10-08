@@ -56,7 +56,11 @@ class DashboardController extends GetxController {
             ? Get.to(() => ChefOrderListScreen(
                   status: "new_order",
                 ))
-            : Get.to(() => const newOrderListScreen());
+            : Common.currentRole == "delivery_user"
+                ? Get.to(OrderListScreen(
+                    status: "new_order",
+                  ))
+                : Get.to(() => const newOrderListScreen());
         break;
       case 1:
         Get.to(OrderListScreen(
@@ -122,7 +126,8 @@ class DashboardController extends GetxController {
       "img": AppImages.dashboard2,
       "name": "Pick Up",
       "key": "pickup_orders",
-      "show": Common.currentRole == "admin",
+      "show": Common.currentRole == "admin" ||
+          Common.currentRole == "delivery_user",
       "color": AppColors.dashBoardText2,
       "bgColor": AppColors.dashBoardBg2,
       "count": 0,
@@ -130,9 +135,10 @@ class DashboardController extends GetxController {
     },
     {
       "img": AppImages.dashboard3,
-      "name": "Out for delivery",
+      "name": "Out for Delivery",
       "color": AppColors.dashBoardText3,
-      "show": Common.currentRole == "admin",
+      "show": Common.currentRole == "admin" ||
+          Common.currentRole == "delivery_user",
       "bgColor": AppColors.dashBoardBg3,
       "count": 0,
       "key": "out_of_delivery",
@@ -140,7 +146,7 @@ class DashboardController extends GetxController {
     },
     {
       "img": AppImages.dashboard4,
-      "name": "Delivered",
+      "name": Common.currentRole == "chef" ? "Completed" : "Delivered",
       "color": AppColors.dashBoardText4,
       "show": true,
       "bgColor": AppColors.dashBoardBg4,
@@ -170,9 +176,9 @@ class DashboardController extends GetxController {
     },
     {
       "img": AppImages.dashboard7,
-      "name": "In-Progress",
+      "name": Common.currentRole == "delivery_user" ? "Pick Up" : "In-Progress",
       "color": AppColors.dashBoardText7,
-      "show": true,
+      "show": Common.currentRole != "delivery_user",
       "bgColor": AppColors.dashBoardBg7,
       "count": 0,
       "key": "in_progress_orders",

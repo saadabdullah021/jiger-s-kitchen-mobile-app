@@ -704,7 +704,7 @@ class AppInterface extends BaseApi {
           ? {"search_keyword": searchKey}
           : {
               "page": page,
-              "limit": "4",
+              "limit": "20",
             },
       headers: headers,
     );
@@ -1005,6 +1005,36 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}change-order-status-by-chef",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> updateOrderStatusByDeliveryUuser(
+      {String? orderID, String? orderStatus}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      'order_status': orderStatus,
+      'order_id': orderID,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}change-order-status",
       data,
       headers: headers,
     );
@@ -1343,7 +1373,7 @@ class AppInterface extends BaseApi {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved ? "1" : "0"}",
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}",
       headers: headers,
     );
     if (response == null) {
@@ -1879,6 +1909,46 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}assign-order-to-chef",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+      return null;
+    } else {
+      try {
+        if (response.body['status'] == 200) {
+          return 200;
+        } else if (response.body['status'] == 400) {
+          appWidgets.hideDialog();
+          appWidgets().showToast("Sorry", response.body['message']);
+          return 400;
+        } else {
+          appWidgets.hideDialog();
+          Constants.internalServerErrorToast();
+        }
+        return null;
+      } catch (e) {
+        appWidgets.hideDialog();
+        Constants.soryyTryAgainToast();
+      }
+    }
+  }
+
+  Future<dynamic> assignOrderToDeliveryUSer({
+    String? deliveryUserId,
+    String? orderID,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "order_id": orderID,
+      "delivery_user_id": deliveryUserId,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}assign-order-to-delivery-user",
       headers: headers,
       data,
     );

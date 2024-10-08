@@ -430,86 +430,91 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                                         const SizedBox(
                                                           width: 5,
                                                         ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            showDeleteItemDialoug(
-                                                                description:
-                                                                    "Are you sure you want to DELETE the Item?",
-                                                                context:
-                                                                    context,
-                                                                url: _controller
-                                                                    .menuItems
-                                                                    .value
-                                                                    .data!
-                                                                    .menuItemsList![
-                                                                        index]
-                                                                    .profileImage,
-                                                                onYes:
-                                                                    () async {
-                                                                  Get.back();
-                                                                  appWidgets
-                                                                      .loadingDialog();
-                                                                  await AppInterface()
-                                                                      .deleteMenuItem(
-                                                                    id: _controller
-                                                                        .menuItems
-                                                                        .value
-                                                                        .data!
-                                                                        .menuItemsList![
-                                                                            index]
-                                                                        .id
-                                                                        .toString(),
-                                                                  )
-                                                                      .then(
-                                                                          (value) {
-                                                                    if (value !=
-                                                                            null &&
-                                                                        value ==
-                                                                            200) {
-                                                                      _controller
-                                                                          .geteMenu(
-                                                                        false,
-                                                                        false,
+                                                        Visibility(
+                                                          visible: Common
+                                                                  .currentRole ==
+                                                              "admin",
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              showDeleteItemDialoug(
+                                                                  description:
+                                                                      "Are you sure you want to DELETE the Item?",
+                                                                  context:
+                                                                      context,
+                                                                  url: _controller
+                                                                      .menuItems
+                                                                      .value
+                                                                      .data!
+                                                                      .menuItemsList![
+                                                                          index]
+                                                                      .profileImage,
+                                                                  onYes:
+                                                                      () async {
+                                                                    Get.back();
+                                                                    appWidgets
+                                                                        .loadingDialog();
+                                                                    await AppInterface()
+                                                                        .deleteMenuItem(
+                                                                      id: _controller
+                                                                          .menuItems
+                                                                          .value
+                                                                          .data!
+                                                                          .menuItemsList![
+                                                                              index]
+                                                                          .id
+                                                                          .toString(),
+                                                                    )
+                                                                        .then(
+                                                                            (value) {
+                                                                      if (value !=
+                                                                              null &&
+                                                                          value ==
+                                                                              200) {
                                                                         _controller
-                                                                            .menuItems
-                                                                            .value
-                                                                            .data!
-                                                                            .currentPage
-                                                                            .toString(),
-                                                                      );
-                                                                      appWidgets
-                                                                          .hideDialog();
-                                                                      showDialogWithAutoDismiss(
-                                                                          context: Get
-                                                                              .context,
-                                                                          doubleBack:
-                                                                              false,
-                                                                          img: AppImages
-                                                                              .successDialougIcon,
-                                                                          autoDismiss:
-                                                                              true,
-                                                                          heading:
-                                                                              "Hurray!",
-                                                                          text:
-                                                                              "Item Deleted Successfully",
-                                                                          headingStyle: TextStyle(
-                                                                              fontSize: 32,
-                                                                              fontWeight: FontWeight.w600,
-                                                                              color: AppColors.textBlackColor));
-                                                                    }
+                                                                            .geteMenu(
+                                                                          false,
+                                                                          false,
+                                                                          _controller
+                                                                              .menuItems
+                                                                              .value
+                                                                              .data!
+                                                                              .currentPage
+                                                                              .toString(),
+                                                                        );
+                                                                        appWidgets
+                                                                            .hideDialog();
+                                                                        showDialogWithAutoDismiss(
+                                                                            context: Get
+                                                                                .context,
+                                                                            doubleBack:
+                                                                                false,
+                                                                            img: AppImages
+                                                                                .successDialougIcon,
+                                                                            autoDismiss:
+                                                                                true,
+                                                                            heading:
+                                                                                "Hurray!",
+                                                                            text:
+                                                                                "Item Deleted Successfully",
+                                                                            headingStyle: TextStyle(
+                                                                                fontSize: 32,
+                                                                                fontWeight: FontWeight.w600,
+                                                                                color: AppColors.textBlackColor));
+                                                                      }
+                                                                    });
                                                                   });
-                                                                });
-                                                          },
-                                                          child: CircleAvatar(
-                                                            backgroundColor:
-                                                                AppColors
-                                                                    .dividerGreyColor,
-                                                            radius: 15,
-                                                            child: const Icon(
-                                                              Icons.delete,
-                                                              size: 20,
-                                                              color:
-                                                                  Colors.grey,
+                                                            },
+                                                            child: CircleAvatar(
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .dividerGreyColor,
+                                                              radius: 15,
+                                                              child: const Icon(
+                                                                Icons.delete,
+                                                                size: 20,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
                                                             ),
                                                           ),
                                                         )

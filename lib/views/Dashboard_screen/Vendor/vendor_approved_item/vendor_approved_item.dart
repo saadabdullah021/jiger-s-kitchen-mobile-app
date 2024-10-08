@@ -22,7 +22,7 @@ class VenderApprovedItemList extends StatefulWidget {
 }
 
 class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
-  vendorApprovedController controller = vendorApprovedController();
+  vendorApprovedController controller = Get.put(vendorApprovedController());
   ScrollController _scrollController = ScrollController();
   Future<void> _scrollListener() async {
     print(_scrollController.position.extentAfter);
@@ -161,7 +161,8 @@ class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
               child: CustomButton(
                   text: "Add Item",
                   onPressed: () async {
-                    await showCustomBottomSheet(context, controller.vendorID)
+                    await showCustomBottomSheet(
+                            context, controller.vendorID, true)
                         .then((value) {
                       controller.getItemList(
                         false,

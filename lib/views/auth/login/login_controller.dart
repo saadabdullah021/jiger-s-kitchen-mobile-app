@@ -22,7 +22,8 @@ class LoginController extends GetxController {
         .then((value) {
       if (value == 200) {
         appWidgets.hideDialog();
-        if (Common.currentRole == "chef") {
+        if (Common.currentRole == "chef" ||
+            Common.currentRole == "delivery_user") {
           Get.off(const DashboardScreen());
         } else {
           Get.off(const JigarHome());

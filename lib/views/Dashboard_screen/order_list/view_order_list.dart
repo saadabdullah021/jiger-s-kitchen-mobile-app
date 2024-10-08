@@ -7,6 +7,7 @@ import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/order_list/view_order_list_controller.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../common/common.dart';
 import '../../../utils/widget/no_data.dart';
 import '../../new_order_screens/new_order_widgets.dart';
 import '../invoice/view_invoices.dart';
@@ -140,7 +141,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                             .primaryColor),
                                                   ),
                                                   Container(
-                                                    width: 80,
+                                                    // width: 80,
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -402,6 +403,81 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                             .orangeColor,
                                                       ),
                                                     ],
+                                                  ),
+                                                  Visibility(
+                                                      visible:
+                                                          Common.currentRole ==
+                                                              "delivery_user",
+                                                      child: const Divider()),
+                                                  Visibility(
+                                                    visible:
+                                                        Common.currentRole ==
+                                                            "delivery_user",
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 16.0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: DropdownButton<
+                                                          String>(
+                                                        hint: const Text(
+                                                          'Select an option',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                        value: Helper
+                                                            .capitalizeFirstLetter(
+                                                          controller
+                                                              .orderList
+                                                              .value
+                                                              .data!
+                                                              .ordersList![
+                                                                  index]
+                                                              .deliveryStatus
+                                                              .toString()
+                                                              .replaceAll(
+                                                                  "_", " "),
+                                                        ).toUpperCase(),
+                                                        isExpanded: true,
+                                                        underline:
+                                                            const SizedBox(), // Removes the underline
+                                                        onChanged:
+                                                            (String? newValue) {
+                                                          controller.updateStatus(
+                                                              controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .id
+                                                                  .toString(),
+                                                              newValue!);
+                                                        },
+                                                        items: controller.items.map<
+                                                            DropdownMenuItem<
+                                                                String>>((String
+                                                            value) {
+                                                          return DropdownMenuItem<
+                                                              String>(
+                                                            value: value,
+                                                            child: Text(
+                                                              value,
+                                                              style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ))));

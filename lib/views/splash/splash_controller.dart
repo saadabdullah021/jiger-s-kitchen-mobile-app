@@ -40,7 +40,8 @@ class SplashController extends GetxController {
         if (value == 200) {
           await AppInterface().updateFcm();
 
-          if (Common.currentRole == "chef") {
+          if (Common.currentRole == "chef" ||
+              Common.currentRole == "delivery_user") {
             Get.put(HomeController());
             Get.off(const DashboardScreen());
           } else {

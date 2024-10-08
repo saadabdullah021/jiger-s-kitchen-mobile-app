@@ -40,9 +40,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     }
     return Scaffold(
-      drawer: Common.currentRole == "chef" ? const NavDrawer() : null,
+      drawer:
+          Common.currentRole == "chef" || Common.currentRole == "delivery_user"
+              ? const NavDrawer()
+              : null,
       appBar: appBar(
-          showDrawer: Common.currentRole == "chef" ? true : false,
+          showDrawer: Common.currentRole == "chef" ||
+                  Common.currentRole == "delivery_user"
+              ? true
+              : false,
           text: "Dashboard",
           actions: [
             Container(

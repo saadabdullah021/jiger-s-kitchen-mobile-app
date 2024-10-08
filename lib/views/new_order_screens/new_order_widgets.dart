@@ -63,7 +63,7 @@ class ExpandedData extends StatelessWidget {
           ],
         ),
         CircleAvatar(
-          radius: 60,
+          radius: 30,
           backgroundImage: NetworkImage(Constants.webUrl +
               data.ordersItems![0].menuItemInfo!.profileImage!),
         )
@@ -173,12 +173,17 @@ class ItemRow extends StatelessWidget {
         const SizedBox(
           width: 5,
         ),
-        Text(
-          desc ?? 'Description',
-          style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textBlackColor),
+        SizedBox(
+          width: 180,
+          child: Text(
+            desc ?? 'Description',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textBlackColor),
+          ),
         ),
       ],
     );

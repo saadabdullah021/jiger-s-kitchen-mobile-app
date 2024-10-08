@@ -7,6 +7,7 @@ import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
 import '../../Dashboard_screen/Menu/menu_list/menu_list.dart';
+import '../../Dashboard_screen/Vendor/vendor_approved_item/vendor_approved_item_controller.dart';
 import '../new_order_widgets.dart';
 
 class EditOrderScreen extends StatelessWidget {
@@ -145,7 +146,7 @@ class EditOrderScreen extends StatelessWidget {
       ),
       floatingActionButton: InkWell(
         onTap: () {
-          showCustomBottomSheet(context, null);
+          showCustomBottomSheet(context, null, false);
         },
         child: CircleAvatar(
           backgroundColor: AppColors.redColor,
@@ -189,8 +190,18 @@ Widget ItemRow({
   );
 }
 
+void _onSelected(
+  bool value,
+) {
+  vendorApprovedController controller = Get.find();
+  controller.getItemList(false, "1", false);
+}
+
 Future<void> showCustomBottomSheet(
-    BuildContext context, String? vednorID) async {
+  BuildContext context,
+  String? vednorID,
+  bool? isVendor,
+) async {
   showModalBottomSheet(
     backgroundColor: Colors.transparent,
     barrierColor: AppColors.primaryColor.withOpacity(0.6),
@@ -218,6 +229,7 @@ class BottomSheetWithTabs extends StatelessWidget {
           child: SizedBox(
               height: Get.height * 0.7,
               child: MenuListScreen(
+                onCompleted: vendorId != null ? _onSelected : null,
                 isBottomBar: true,
                 vendorId: vendorId,
                 screenType: "",
