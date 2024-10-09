@@ -10,12 +10,15 @@ import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/app_images.dart';
 import '../../../../utils/widget/success_dialoug.dart';
+import '../../../new_order_screens/new_order_list/new_order_list_controller.dart';
 
 class MenuListController extends GetxController {
   RxBool isLoading = true.obs;
   bool isFromBottomBar = false;
   RxBool isMoreLoading = false.obs;
   RxBool isMenuLoading = false.obs;
+  String? editOrderId;
+  String? editVendorId;
   String? currentVendorID;
   String ScreenType = '';
   Rx<GetMenuItemModel> menuItems = GetMenuItemModel().obs;
@@ -75,6 +78,35 @@ class MenuListController extends GetxController {
             autoDismiss: true,
             heading: "Hurray!",
             text: "Item Added Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+      }
+    });
+  }
+
+  addItemToAnOrder() async {
+    appWidgets.loadingDialog();
+    newORderListController controller = Get.find();
+    await AppInterface()
+        .AddItemToAnOrder(
+      ids: checkedIds.value,
+      orderId: controller.editOrderDetail.value.data!.id.toString(),
+      vendorID:
+          controller.editOrderDetail.value.data!.vendorInfo!.id.toString(),
+    )
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        controller.getEditOrder(false);
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: true,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Items Added Successfully",
             headingStyle: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w600,

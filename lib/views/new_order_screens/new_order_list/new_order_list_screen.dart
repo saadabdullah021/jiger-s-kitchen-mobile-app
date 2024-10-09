@@ -293,7 +293,17 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                                                             .primaryColor,
                                                         ontap: () {
                                                           Get.to(() =>
-                                                              const EditOrderScreen());
+                                                              EditOrderScreen(
+                                                                
+                                                                orderID: controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .ordersList![
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                              ));
                                                         },
                                                       ),
                                                       NewOrderButtonWidget(

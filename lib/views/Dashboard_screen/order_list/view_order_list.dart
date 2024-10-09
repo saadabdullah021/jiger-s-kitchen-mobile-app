@@ -409,76 +409,79 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                           Common.currentRole ==
                                                               "delivery_user",
                                                       child: const Divider()),
-                                                  Visibility(
-                                                    visible:
-                                                        Common.currentRole ==
-                                                            "delivery_user",
-                                                    child: Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 16.0),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                      ),
-                                                      child: DropdownButton<
-                                                          String>(
-                                                        hint: const Text(
-                                                          'Select an option',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.grey),
-                                                        ),
-                                                        value: Helper
-                                                            .capitalizeFirstLetter(
-                                                          controller
-                                                              .orderList
-                                                              .value
-                                                              .data!
-                                                              .ordersList![
-                                                                  index]
-                                                              .deliveryStatus
-                                                              .toString()
-                                                              .replaceAll(
-                                                                  "_", " "),
-                                                        ).toUpperCase(),
-                                                        isExpanded: true,
-                                                        underline:
-                                                            const SizedBox(), // Removes the underline
-                                                        onChanged:
-                                                            (String? newValue) {
-                                                          controller.updateStatus(
+                                                  Common.currentRole ==
+                                                          "delivery_user"
+                                                      ? Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      16.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                          ),
+                                                          child: DropdownButton<
+                                                              String>(
+                                                            hint: const Text(
+                                                              'Select an option',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .grey),
+                                                            ),
+                                                            value: Helper
+                                                                .capitalizeFirstLetter(
                                                               controller
                                                                   .orderList
                                                                   .value
                                                                   .data!
                                                                   .ordersList![
                                                                       index]
-                                                                  .id
-                                                                  .toString(),
-                                                              newValue!);
-                                                        },
-                                                        items: controller.items.map<
-                                                            DropdownMenuItem<
-                                                                String>>((String
-                                                            value) {
-                                                          return DropdownMenuItem<
-                                                              String>(
-                                                            value: value,
-                                                            child: Text(
-                                                              value,
-                                                              style: const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors
-                                                                      .black),
-                                                            ),
-                                                          );
-                                                        }).toList(),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                                  .deliveryStatus
+                                                                  .toString()
+                                                                  .replaceAll(
+                                                                      "_", " "),
+                                                            ).toUpperCase(),
+                                                            isExpanded: true,
+                                                            underline:
+                                                                const SizedBox(), // Removes the underline
+                                                            onChanged: (String?
+                                                                newValue) {
+                                                              controller.updateStatus(
+                                                                  controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                  newValue!);
+                                                            },
+                                                            items: controller.items.map<
+                                                                DropdownMenuItem<
+                                                                    String>>((String
+                                                                value) {
+                                                              return DropdownMenuItem<
+                                                                  String>(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .black),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        )
+                                                      : const SizedBox(),
                                                 ],
                                               ))));
                                 }),

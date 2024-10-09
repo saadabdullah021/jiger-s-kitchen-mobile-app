@@ -14,6 +14,7 @@ import '../../utils/widget/delete_item_dialoug.dart';
 import '../Dashboard_screen/Vendor/all_vendor_screen.dart';
 import '../Dashboard_screen/chef_and_delivery_boy/chef_list/chef_list_screen.dart';
 import '../Dashboard_screen/order_list/view_order_list.dart';
+import '../Dashboard_screen/reports/get_generaic_report.dart';
 import '../Dashboard_screen/reports/select_date.dart';
 import '../Dashboard_screen/vendor_requested_item/vender_vendor_list.dart';
 import '../auth/login/login_screen.dart';
@@ -151,7 +152,7 @@ class HomeController extends GetxController {
         Get.to(() => AllChefListScreen());
         break;
       case 4:
-        Get.to(() => const AllVendorListScreen());
+        Get.to(() =>  AllVendorListScreen());
         break;
       case 5:
         Get.to(() => const AdminList());
@@ -164,6 +165,8 @@ class HomeController extends GetxController {
       case 7:
         Get.to(() => OrderListScreen());
         break;
+      case 8:
+        Get.to(() => const SelectGenraicReportDate());
       case 9:
         Get.to(() => SelectReportDate());
         break;

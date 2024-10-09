@@ -15,6 +15,7 @@ import 'package:jigers_kitchen/model/single_user_data.dart';
 import 'package:jigers_kitchen/model/user_data_model.dart';
 import 'package:jigers_kitchen/model/user_list_model.dart';
 
+import '../../model/edit_order_model.dart';
 import '../../model/get_other_vemdor_item_detail.dart';
 import '../../model/get_other_vendor_for_approved_item.dart';
 import '../../model/get_price_slab_list_model.dart';
@@ -646,6 +647,29 @@ class AppInterface extends BaseApi {
     if (response == null) return null;
     if (response.body['status'] == 200) {
       OrderListModel userData = OrderListModel.fromJson(response.body);
+      return userData;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getSingleOrder({String? id}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-single-order",
+      query: {"order_id": id},
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      editItemModel userData = editItemModel.fromJson(response.body);
       return userData;
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
@@ -1682,6 +1706,71 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> AddItemToAnOrder(
+      {List<int>? ids, required String orderId, String? vendorID}) async {
+    String result = ids?.isNotEmpty == true ? ids!.join(',') : '';
+    Map<String, Object?> data = {
+      "item_id": result,
+      "vendor_id": vendorID,
+      "order_id": orderId
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}add-item-to-order",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> editItemToAnOrder(
+      {String? id,
+      required String orderId,
+      String? vendorID,
+      String? itemQty,
+      String? itmPrice}) async {
+    Map<String, Object?> data = {
+      "item_id": id,
+      "vendor_id": vendorID,
+      "order_id": orderId,
+      "item_qty": itemQty,
+      "item_price": itmPrice,
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}edit-order-item",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> addToCart({
     required String id,
   }) async {
@@ -1835,6 +1924,47 @@ class AppInterface extends BaseApi {
       return null;
     }
     if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getGeneraicInvoiceLink(String startDate, String endDate,
+      String? chefID, String reportType) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = chefID == null
+        ? {
+            "from_date": startDate,
+            "to_date": endDate,
+            "report_type":
+                reportType.toString().replaceAll(" ", "_").toLowerCase()
+          }
+        : {
+            "from_date": startDate,
+            "to_date": endDate,
+            "vendor_id": chefID,
+            "report_type":
+                reportType.toString().replaceAll(" ", "_").toLowerCase()
+          };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-generic-report",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      appWidgets.hideDialog();
       return response.body['data']['invoice_url'];
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();

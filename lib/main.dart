@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/core/services/notifixation_services.dart';
 import 'package:jigers_kitchen/firebase_option.dart';
 import 'package:jigers_kitchen/utils/app_theme.dart';
 import 'package:jigers_kitchen/views/splash/splash_screen.dart';
@@ -43,6 +44,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NotificationServices notificationService = NotificationServices();
+    notificationService.initializelocalnotifications();
+    notificationService.firebaseInit();
+    notificationService.setupInteractMessage();
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,

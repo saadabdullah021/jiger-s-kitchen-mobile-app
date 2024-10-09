@@ -8,10 +8,25 @@ import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
 import '../../Dashboard_screen/Menu/menu_list/menu_list.dart';
 import '../../Dashboard_screen/Vendor/vendor_approved_item/vendor_approved_item_controller.dart';
+import '../new_order_list/new_order_list_controller.dart';
 import '../new_order_widgets.dart';
 
-class EditOrderScreen extends StatelessWidget {
-  const EditOrderScreen({super.key});
+class EditOrderScreen extends StatefulWidget {
+  String? orderID;
+  EditOrderScreen({super.key, this.orderID});
+
+  @override
+  State<EditOrderScreen> createState() => _EditOrderScreenState();
+}
+
+class _EditOrderScreenState extends State<EditOrderScreen> {
+  newORderListController controller = Get.find();
+  @override
+  void initState() {
+    controller.EditorderID = widget.orderID!;
+    controller.getEditOrder(true);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,128 +35,206 @@ class EditOrderScreen extends StatelessWidget {
       appBar: appBar(text: "Edit Order"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-        child: Column(
-          children: [
-            Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
+        child: Obx(
+          () => controller.isEditOrderLoading.isTrue
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.appColor,
+                  ),
+                )
+              : ListView(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              "Order NO.",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.newOrderGrey,
-                              ),
-                            ),
-                            Text(
-                              "J01579",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SvgPicture.asset(
-                                  AppImages.clock,
-                                  height: 15,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Order NO.",
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.newOrderGrey,
+                                      ),
+                                    ),
+                                    Text(
+                                      controller.editOrderDetail.value.data!
+                                              .orderIdentifier ??
+                                          "",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  "07/20/2024,",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.newOrderGrey),
-                                  softWrap: true,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppImages.clock,
+                                          height: 15,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          controller.editOrderDetail.value.data!
+                                                  .orderCreatedAt!
+                                                  .split(" ")[0] ??
+                                              "",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.newOrderGrey),
+                                          softWrap: true,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Text(
+                                        controller.editOrderDetail.value.data!
+                                                .orderCreatedAt!
+                                                .split(" ")[1] ??
+                                            "",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.newOrderGrey),
+                                        softWrap: true,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Text(
-                                "11:45 AM",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.newOrderGrey),
-                                softWrap: true,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            const SizedBox(
+                              height: 10,
                             ),
+                            ItemRow(
+                                leftText: "Total Amount:",
+                                rightText: controller
+                                    .editOrderDetail.value.data!.totalAmount!),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            DottedDivider(
+                              height: 2.0,
+                              color: AppColors.newOrderGrey,
+                              dotSize: 2.0,
+                              dotSpacing: 3.0,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            for (int i = 0;
+                                i <
+                                    controller.editOrderDetail.value.data!
+                                        .ordersItems!.length;
+                                i++) ...{
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              ItemRow(
+                                  leftText: "item:",
+                                  rightText: controller
+                                          .editOrderDetail
+                                          .value
+                                          .data!
+                                          .ordersItems![i]
+                                          .menuItemInfo!
+                                          .itemName ??
+                                      ""),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              ItemRow(
+                                  leftText: "Qty:",
+                                  rightText: controller
+                                          .editOrderDetail
+                                          .value
+                                          .data!
+                                          .ordersItems![i]
+                                          .itemQuantity! ??
+                                      ""),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              ItemRow(
+                                  leftText: "Price",
+                                  rightText: controller
+                                          .editOrderDetail
+                                          .value
+                                          .data!
+                                          .ordersItems![i]
+                                          .itemBasePrice! ??
+                                      ""),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  NewOrderButtonWidget(
+                                    text: "Edit",
+                                    clr: AppColors.primaryColor,
+                                    ic: Icons.edit,
+                                    ontap: () {
+                                      controller.selectedOrderItem = controller
+                                          .editOrderDetail
+                                          .value
+                                          .data!
+                                          .ordersItems![i];
+                                      controller.PriceController.text =
+                                          controller.editOrderDetail.value.data!
+                                              .ordersItems![i].itemBasePrice!
+                                              .toString();
+                                      controller.quantityController.text =
+                                          controller.editOrderDetail.value.data!
+                                              .ordersItems![i].itemQuantity!
+                                              .toString();
+                                      controller.chnagePriceAndQty(
+                                        context: context,
+                                        onBtnTap: () {},
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                              DottedDivider(
+                                height: 2.0,
+                                color: AppColors.newOrderGrey,
+                                dotSize: 2.0,
+                                dotSpacing: 3.0,
+                              ),
+                            }
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ItemRow(leftText: "Total Amount:", rightText: "\$450"),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    DottedDivider(
-                      height: 2.0,
-                      color: AppColors.newOrderGrey,
-                      dotSize: 2.0,
-                      dotSpacing: 3.0,
+                      ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    ItemRow(leftText: "tem:", rightText: "Samosa"),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ItemRow(leftText: "Qty:", rightText: "88"),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ItemRow(leftText: "Price", rightText: "\$3"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        NewOrderButtonWidget(
-                          text: "Edit",
-                          clr: AppColors.primaryColor,
-                          ic: Icons.edit,
-                          ontap: () {},
-                        ),
-                      ],
+                    CustomButton(
+                      padding: 10,
+                      text: "Update Order",
+                      onPressed: () {},
                     ),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            CustomButton(
-              padding: 10,
-              text: "Update Order",
-              onPressed: () {},
-            ),
-          ],
         ),
       ),
       floatingActionButton: InkWell(
@@ -232,124 +325,10 @@ class BottomSheetWithTabs extends StatelessWidget {
                 onCompleted: vendorId != null ? _onSelected : null,
                 isBottomBar: true,
                 vendorId: vendorId,
-                screenType: "",
+                screenType: "edit_item",
               ))),
     );
   }
-  // Material(
-  //   borderRadius: BorderRadius.circular(14),
-  //   color: Colors.white,
-  //   child: SizedBox(
-  //     height: Get.height * 0.54,
-  //     child: DefaultTabController(
-  //       length: 3,
-  //       child: Column(
-  //         children: [
-  //           const SizedBox(
-  //             height: 10,
-  //           ),
-  //           Text(
-  //             "Select Product",
-  //             style: TextStyle(
-  //                 color: AppColors.textBlackColor,
-  //                 fontSize: 18,
-  //                 fontWeight: FontWeight.w600),
-  //           ),
-  //           Padding(
-  //             padding: const EdgeInsets.all(8.0),
-  //             child: CustomTextField(
-  //                 fillColor: AppColors.lightGreyColor,
-  //                 controller: textController,
-  //                 prefixIcon: const Icon(Icons.search),
-  //                 hintText: "Search"),
-  //           ),
-  //           Container(
-  //             color: Colors.white,
-  //             child: TabBar(
-  //               dividerHeight: 0,
-  //               indicatorWeight: 4,
-  //               tabs: const [
-  //                 Tab(text: 'Appetizer'),
-  //                 Tab(text: 'Main Courses '),
-  //                 Tab(text: 'Desserts'),
-  //               ],
-  //               labelColor: AppColors.primaryColor,
-  //               indicatorColor: AppColors.primaryColor,
-  //             ),
-  //           ),
-  //           Expanded(
-  //             child: Padding(
-  //               padding: const EdgeInsets.symmetric(
-  //                   horizontal: 15, vertical: 13),
-  //               child: TabBarView(
-  //                 children: [
-  //                   Column(
-  //                     children: [
-  //                       customAddItemRow(
-  //                         title: 'Marinated Halal Chicken',
-  //                         subtitle: '20 LBS Case',
-  //                         buttonLabel: 'Add',
-  //                         leftIcon: null,
-  //                         rightIcon: Icons.add,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Divider(
-  //                         color: AppColors.dividerGreyColor,
-  //                         height: 1,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       customAddItemRow(
-  //                         title: 'Marinated Paneer',
-  //                         subtitle: '16 LBS Case',
-  //                         buttonLabel: '2',
-  //                         leftIcon: Icons.remove,
-  //                         rightIcon: Icons.add,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Divider(
-  //                         color: AppColors.dividerGreyColor,
-  //                         height: 1,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       customAddItemRow(
-  //                         title: 'Tikka Masala Sauce',
-  //                         subtitle: '20 LBS Case',
-  //                         buttonLabel: 'Add',
-  //                         leftIcon: null,
-  //                         rightIcon: Icons.add,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 10,
-  //                       ),
-  //                       const SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       CustomButton(
-  //                         padding: 10,
-  //                         text: "Add Item",
-  //                         onPressed: () {},
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   const Center(child: Text('Content for Tab 2')),
-  //                   const Center(child: Text('Content for Tab 3')),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ),
-  // ),
 }
 
 Widget customAddItemRow({

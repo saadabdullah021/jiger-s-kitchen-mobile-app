@@ -179,9 +179,12 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               ? widget.onCompleted!(true)
                               : null;
                           if (_controller.checkedIds.isNotEmpty) {
-                            widget.isBottomBar == true
-                                ? _controller.addItemByAdminItems()
-                                : _controller.requestItems();
+                            widget.isBottomBar == true &&
+                                    widget.screenType == "edit_item"
+                                ? _controller.addItemToAnOrder()
+                                : widget.isBottomBar == true
+                                    ? _controller.addItemByAdminItems()
+                                    : _controller.requestItems();
                           } else {
                             appWidgets().showToast(
                                 "Sorry", "Please select at least one item");

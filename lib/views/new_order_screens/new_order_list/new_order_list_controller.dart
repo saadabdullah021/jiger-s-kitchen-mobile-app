@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:jigers_kitchen/model/edit_order_model.dart';
+import 'package:jigers_kitchen/utils/helper.dart';
 
 import '../../../core/apis/app_interface.dart';
 import '../../../model/order_list_model.dart';
@@ -19,14 +21,169 @@ import '../../Dashboard_screen/dashboard_controller.dart';
 
 class newORderListController extends GetxController {
   TextEditingController textController = TextEditingController();
+  TextEditingController PriceController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
   DashboardController dashboardController = Get.find();
   RxBool isLoading = false.obs;
+  RxBool isEditOrderLoading = false.obs;
+  OrdersItems? selectedOrderItem;
   RxBool isAllCompleted = false.obs;
+  String? EditorderID;
   RxBool isMoreLoading = false.obs;
   Rx<OrderListModel> orderList = OrderListModel().obs;
+  Rx<editItemModel> editOrderDetail = editItemModel().obs;
   Rx<OrdersList> selectedOrder = OrdersList().obs;
   int? selectedItemIndex;
   Timer? _debounce;
+  void chnagePriceAndQty({
+    BuildContext? context,
+    VoidCallback? onBtnTap,
+    TextStyle? headingStyle = const TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+    TextStyle? textStyle = const TextStyle(
+        fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+    String? btnText,
+  }) {
+    final GlobalKey<FormState> key = GlobalKey();
+    showDialog(
+      barrierColor: AppColors.primaryColor.withOpacity(0.6),
+      context: context!,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20), // Adjust horizontal padding here
+          child: Container(
+            width: double.infinity, // Full width of the screen
+            decoration: BoxDecoration(
+              color: AppColors.dialougBG,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Form(
+              key: key,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Edit Item",
+                        textAlign: TextAlign.center,
+                        style: headingStyle,
+                      ),
+                      const SizedBox(height: 8.0),
+                      const Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          child: Text(
+                            "Add Price",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomTextField(
+                          validator: Helper.validateNumber,
+                          keyboardType: TextInputType.number,
+                          controller: PriceController,
+                          fillColor: AppColors.textWhiteColor,
+                          hintText: "Add Price",
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          child: Text(
+                            "Add Quantity",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomTextField(
+                          controller: quantityController,
+                          validator: Helper.validateNumber,
+                          keyboardType: TextInputType.number,
+                          fillColor: AppColors.textWhiteColor,
+                          hintText: "Add Qty",
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomButton(
+                      text: "SUBMIT",
+                      onPressed: () {
+                        if (key.currentState?.validate() ?? false) {
+                          if (quantityController.text == "0" ||
+                              PriceController.text == "0") {
+                            appWidgets().showToast(
+                                "Sorry",
+                                quantityController.text == "0"
+                                    ? "Invalid Quantity"
+                                    : "Invalid Price");
+                          } else {
+                            Get.back();
+                            editSelectedOrderItem();
+                          }
+                        }
+                      },
+                      padding: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 35.0),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  editSelectedOrderItem() async {
+    appWidgets.loadingDialog();
+    await AppInterface()
+        .editItemToAnOrder(
+            id: selectedOrderItem!.itemId.toString(),
+            orderId: editOrderDetail.value.data!.id.toString(),
+            vendorID: editOrderDetail.value.data!.vendorInfo!.id.toString(),
+            itmPrice: PriceController.text,
+            itemQty: quantityController.text)
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        getEditOrder(false);
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: false,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Items Added Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+      }
+    });
+  }
+
   checkAllStatus() {
     bool isCompleted = false;
     for (int i = 0; i < selectedOrder.value.ordersItems!.length; i++) {
@@ -38,6 +195,26 @@ class newORderListController extends GetxController {
       }
       isAllCompleted.value = isCompleted;
     }
+  }
+
+  getEditOrder(bool showLoading) async {
+    if (showLoading) {
+      isEditOrderLoading.value = true;
+    }
+
+    await AppInterface()
+        .getSingleOrder(id: EditorderID.toString())
+        .then((value) {
+      if (value is editItemModel) {
+        isEditOrderLoading.value = false;
+        editOrderDetail.value = value;
+        if (!showLoading) {
+          editOrderDetail.refresh();
+        }
+      } else {
+        Get.back();
+      }
+    });
   }
 
   void onTextChanged() {
