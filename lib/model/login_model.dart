@@ -46,12 +46,14 @@ class Data {
   int? lastLoginAt;
   String? createdAt;
   String? updatedAt;
+  String? cartConter;
 
   Data(
       {this.id,
       this.name,
       this.email,
       this.emailVerifiedAt,
+      this.cartConter,
       this.phoneNumber,
       this.role,
       this.profileImage,
@@ -77,6 +79,7 @@ class Data {
     name = json['name'];
     email = json['email'];
     emailVerifiedAt = json['email_verified_at'];
+    cartConter = json["cart_counter"].toString();
     phoneNumber = json['phone_number'];
     role = json['role'];
     profileImage = json['profile_image'];

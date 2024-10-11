@@ -593,6 +593,27 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> logout() async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}logout",
+      headers: headers,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> getUserList({
     String? role,
     String? page,
@@ -624,7 +645,11 @@ class AppInterface extends BaseApi {
   }
 
   Future<dynamic> getOrderList(
-      {String? searchKey, String? page, bool? isSearch, String? status}) async {
+      {String? searchKey,
+      String? page,
+      bool? isSearch,
+      String? status,
+      String? vendorID}) async {
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
@@ -634,11 +659,13 @@ class AppInterface extends BaseApi {
           ? {
               "search_keyword": searchKey,
               "role": Common.currentRole,
-              "order_status": status ?? ""
+              "order_status": status ?? "",
+              "vendor_id": vendorID
             }
           : {
               "page": page,
               "limit": "20",
+              "vendor_id": vendorID,
               "role": Common.currentRole,
               "order_status": status ?? ""
             },
@@ -1078,6 +1105,36 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> updateOrderStatusByAdminUuser(
+      {String? orderID, String? orderStatus}) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      'order_status': orderStatus,
+      'order_id': orderID,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}change-order-status-by-admin",
+      data,
+      headers: headers,
+    );
+    if (response == null) {
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> editPriceSlabData(
       {String? vendorID, String? slabId, quantity, price}) async {
     var headers = {
@@ -1391,13 +1448,14 @@ class AppInterface extends BaseApi {
   Future<dynamic> getMenuItems({
     required String page,
     required String id,
+    required bool isPriceSlabAdded,
     required bool isApproved,
   }) async {
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}",
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}&is_price_slab_added=${isPriceSlabAdded == true ? "1" : "0"}",
       headers: headers,
     );
     if (response == null) {
@@ -1915,6 +1973,70 @@ class AppInterface extends BaseApi {
     var data = {"from_date": startDate, "to_date": endDate, "chef_id": chefID};
     var response = await sendGet(
       "${Constants.API_BASE_URL}get-chef-orders-report",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getDeliveryInvoiceLink(
+      String startDate, String endDate, String chefID) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "from_date": startDate,
+      "to_date": endDate,
+      "delivery_user_id": chefID
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-delivery-user-orders-report",
+      query: data,
+      headers: headers,
+    );
+    if (response == null) {
+      Get.back();
+      Constants.internalServerErrorToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return response.body['data']['invoice_url'];
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> getSubAdminInvoiceLink(
+      String startDate, String endDate, String adminID) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "from_date": startDate,
+      "to_date": endDate,
+      "subadmin_id": adminID
+    };
+    var response = await sendGet(
+      "${Constants.API_BASE_URL}get-subadmin-user-orders-report",
       query: data,
       headers: headers,
     );

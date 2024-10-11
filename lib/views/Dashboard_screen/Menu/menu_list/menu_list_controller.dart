@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/model/get_menu_item_model.dart';
 import 'package:jigers_kitchen/model/menu_tab_model.dart';
@@ -17,6 +18,7 @@ class MenuListController extends GetxController {
   bool isFromBottomBar = false;
   RxBool isMoreLoading = false.obs;
   RxBool isMenuLoading = false.obs;
+  bool addToCart = false;
   String? editOrderId;
   String? editVendorId;
   String? currentVendorID;
@@ -53,9 +55,16 @@ class MenuListController extends GetxController {
 
   AddToCart(String id) async {
     appWidgets.loadingDialog();
-    await AppInterface().addToCart(id: id).then((value) {
+    await AppInterface().addToCart(id: id).then((value) async {
       appWidgets.hideDialog();
       if (value == 200) {
+        await AppInterface()
+            .getUserByToken(Common.loginReponse.value.data!.token!)
+            .then((value) {
+          if (value == 200) {
+            Common.loginReponse.refresh();
+          }
+        });
         appWidgets().showToast("Success", "Added to cart");
       }
     });
@@ -96,7 +105,7 @@ class MenuListController extends GetxController {
       vendorID:
           controller.editOrderDetail.value.data!.vendorInfo!.id.toString(),
     )
-        .then((value) {
+        .then((value) async {
       appWidgets.hideDialog();
       if (value == 200) {
         controller.getEditOrder(false);
@@ -176,6 +185,7 @@ class MenuListController extends GetxController {
     await AppInterface()
         .getMenuItems(
             page: page,
+            isPriceSlabAdded: addToCart,
             id: selectedMenuId.toString(),
             isApproved: ScreenType == "request_item" ? false : true)
         .then((value) {

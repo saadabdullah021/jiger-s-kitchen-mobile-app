@@ -12,8 +12,11 @@ import 'order_list/view_order_list.dart';
 class DashboardController extends GetxController {
   RxBool isLoading = false.obs;
   @override
-  getCount() async {
-    isLoading.value = true;
+  getCount(bool showLoading) async {
+    if (showLoading) {
+      isLoading.value = true;
+    }
+
     await AppInterface().getDashBoardCounter().then((dashboardCounter) {
       if (dashboardCounter is dashBoardCounterModel) {
         if (dashboardCounter.data != null) {
@@ -127,7 +130,8 @@ class DashboardController extends GetxController {
       "name": "Pick Up",
       "key": "pickup_orders",
       "show": Common.currentRole == "admin" ||
-          Common.currentRole == "delivery_user",
+          Common.currentRole == "delivery_user" ||
+          Common.currentRole == "subadmin",
       "color": AppColors.dashBoardText2,
       "bgColor": AppColors.dashBoardBg2,
       "count": 0,
@@ -138,7 +142,8 @@ class DashboardController extends GetxController {
       "name": "Out for Delivery",
       "color": AppColors.dashBoardText3,
       "show": Common.currentRole == "admin" ||
-          Common.currentRole == "delivery_user",
+          Common.currentRole == "delivery_user" ||
+          Common.currentRole == "subadmin",
       "bgColor": AppColors.dashBoardBg3,
       "count": 0,
       "key": "out_of_delivery",
@@ -169,7 +174,7 @@ class DashboardController extends GetxController {
       "name": "Paid",
       "color": AppColors.dashBoardText6,
       "bgColor": AppColors.dashBoardBg6,
-      "show": Common.currentRole == "admin",
+      "show": Common.currentRole == "admin" || Common.currentRole == "subadmin",
       "count": 0,
       "key": "paid_orders",
       "onTap": () {}

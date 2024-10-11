@@ -38,6 +38,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
     // TODO: implement initState
     _controller.ScreenType = widget.screenType ?? "";
     _controller.checkedIds.clear();
+    _controller.addToCart = widget.addToCard ?? false;
     _controller.isFromBottomBar = widget.isBottomBar ?? false;
     _controller.currentVendorID = widget.vendorId;
     _controller.textController.addListener(_controller.onTextChanged);
@@ -60,7 +61,48 @@ class _MenuListScreenState extends State<MenuListScreen> {
                 text: Common.currentRole == AppKeys.roleAdmin ||
                         widget.addToCard == true
                     ? "Menu"
-                    : "Request Item"),
+                    : "Request Item",
+                actions: [
+                    widget.addToCard == true
+                        ? InkWell(
+                            onTap: () {
+                              Get.to(() => const ViewCart());
+                            },
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(11),
+                                color: AppColors.textWhiteColor,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.shopping_cart,
+                                      color: AppColors.redColor,
+                                    ),
+                                    Center(
+                                      child: Obx(
+                                        () => Text(
+                                          Common.loginReponse.value.data!
+                                                  .cartConter
+                                                  .toString() ??
+                                              "",
+                                          style: TextStyle(
+                                              color: AppColors.redColor,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
+                  ]),
         body: Obx(
           () => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
@@ -180,7 +222,8 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               : null;
                           if (_controller.checkedIds.isNotEmpty) {
                             widget.isBottomBar == true &&
-                                    widget.screenType == "edit_item"
+                                    widget.screenType == "edit_item" &&
+                                    widget.vendorId == null
                                 ? _controller.addItemToAnOrder()
                                 : widget.isBottomBar == true
                                     ? _controller.addItemByAdminItems()

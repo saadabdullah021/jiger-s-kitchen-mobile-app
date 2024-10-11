@@ -33,7 +33,8 @@ class HomeController extends GetxController {
       "img": AppImages.home1Image,
       "name": "Dashboard",
       "show": Common.currentRole == AppKeys.roleAdmin ||
-              Common.currentRole == "chef"
+              Common.currentRole == "chef" ||
+              Common.currentRole == "subadmin"
           ? true
           : false,
       "show_drawer": true
@@ -77,19 +78,28 @@ class HomeController extends GetxController {
     {
       "img": AppImages.home8Image,
       "name": "Order History",
-      "show": Common.currentRole == AppKeys.roleAdmin ? true : false,
+      "show": Common.currentRole == AppKeys.roleAdmin ||
+              Common.currentRole == "subadmin"
+          ? true
+          : false,
       "show_drawer": true
     },
     {
       "img": AppImages.home9Image,
       "name": "Reports",
-      "show": Common.currentRole == AppKeys.roleAdmin ? true : false,
+      "show": Common.currentRole == AppKeys.roleAdmin ||
+              Common.currentRole == "subadmin"
+          ? true
+          : false,
       "show_drawer": false
     },
     {
       "img": AppImages.home10Image,
       "name": "Purchase Order\nReport",
-      "show": Common.currentRole == AppKeys.roleAdmin ? true : false,
+      "show": Common.currentRole == AppKeys.roleAdmin ||
+              Common.currentRole == "subadmin"
+          ? true
+          : false,
       "show_drawer": false
     },
 
@@ -116,7 +126,8 @@ class HomeController extends GetxController {
       "name": "Order List",
       "show": Common.currentRole == AppKeys.roleAdmin ||
               Common.currentRole == "chef" ||
-              Common.currentRole == "delivery_user"
+              Common.currentRole == "delivery_user" ||
+              Common.currentRole == "subadmin"
           ? false
           : true,
       "show_drawer": true
@@ -152,7 +163,7 @@ class HomeController extends GetxController {
         Get.to(() => AllChefListScreen());
         break;
       case 4:
-        Get.to(() =>  AllVendorListScreen());
+        Get.to(() => AllVendorListScreen());
         break;
       case 5:
         Get.to(() => const AdminList());
@@ -190,7 +201,8 @@ class HomeController extends GetxController {
 
   deleteAccount(BuildContext context) async {
     showDeleteItemDialoug(
-        description: "Are you sure you want to DELETE the Account?",
+        description:
+            "Are you sure you want to DELETE the Account?\nOnce deleted you can't recover it.",
         context: context,
         url: Common.loginReponse.value.data!.profileImage!,
         onYes: () async {

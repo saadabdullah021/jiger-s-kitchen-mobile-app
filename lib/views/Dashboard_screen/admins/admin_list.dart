@@ -27,7 +27,7 @@ class AdminList extends StatefulWidget {
 }
 
 class _AdminListState extends State<AdminList> {
-  AdminController controller = AdminController();
+  AdminController controller = Get.put(AdminController());
   ScrollController _scrollController = ScrollController();
 
   Future<void> _scrollListener() async {
@@ -142,7 +142,7 @@ class _AdminListState extends State<AdminList> {
                             ? Column(
                                 children: [
                                   SizedBox(height: Get.height * 0.15),
-                                 noData(null),
+                                  noData(null),
                                 ],
                               )
                             : ListView.builder(
@@ -243,23 +243,39 @@ class _AdminListState extends State<AdminList> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15),
-                                                    color: Colors.white),
-                                                child: const Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 13),
-                                                  child: Text(
-                                                    "Print Orders",
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w600),
+                                              InkWell(
+                                                onTap: () {
+                                                  controller.selectedAdminId =
+                                                      controller
+                                                          .userList
+                                                          .value
+                                                          .data!
+                                                          .chefList![index]
+                                                          .id
+                                                          .toString();
+                                                  controller
+                                                      .showCustomBottomSheet(
+                                                          context, "subadmin");
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      color: Colors.white),
+                                                  child: const Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8,
+                                                            horizontal: 13),
+                                                    child: Text(
+                                                      "Print Orders",
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
                                                   ),
                                                 ),
                                               ),

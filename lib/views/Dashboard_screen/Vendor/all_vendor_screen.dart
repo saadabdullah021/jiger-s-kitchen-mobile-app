@@ -17,6 +17,7 @@ import '../../../utils/widget/delete_item_dialoug.dart';
 import '../../../utils/widget/no_data.dart';
 import '../../../utils/widget/success_dialoug.dart';
 import '../../new_order_screens/new_order_widgets.dart';
+import '../order_list/view_order_list.dart';
 import 'vendor_approved_item/vendor_approved_item.dart';
 
 class AllVendorListScreen extends StatefulWidget {
@@ -316,7 +317,19 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                                                       NewOrderButtonWidget(
                                                         ic: Icons.receipt,
                                                         text: "Orders",
-                                                        ontap: () {},
+                                                        ontap: () {
+                                                          Get.to(
+                                                              OrderListScreen(
+                                                            vendorId: controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .chefList![
+                                                                    index]
+                                                                .id!
+                                                                .toString(),
+                                                          ));
+                                                        },
                                                         clr: AppColors
                                                             .orangeColor,
                                                       ),

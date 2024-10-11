@@ -8,6 +8,8 @@ import 'package:jigers_kitchen/views/new_order_screens/new_order_list/assign_ord
 import 'package:jigers_kitchen/views/new_order_screens/new_order_list/new_order_list_controller.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../common/common.dart';
+import '../../../utils/helper.dart';
 import '../../../utils/widget/no_data.dart';
 import '../edit_order/edit_order_screen.dart';
 import '../new_order_widgets.dart';
@@ -105,14 +107,19 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                                 itemBuilder: (context, index) {
                                   return InkWell(
                                     onTap: () async {
-                                      await Get.to(AssignOrder(
-                                        orderData: controller.orderList.value
-                                            .data!.ordersList![index],
-                                      ))!
-                                          .then((value) {
-                                        controller.getOrder(
-                                            false, "1", false, false, "");
-                                      });
+                                      Common.currentRole == "subadmin"
+                                          ? null
+                                          : await Get.to(AssignOrder(
+                                              orderData: controller
+                                                  .orderList
+                                                  .value
+                                                  .data!
+                                                  .ordersList![index],
+                                            ))!
+                                              .then((value) {
+                                              controller.getOrder(
+                                                  false, "1", false, false, "");
+                                            });
                                     },
                                     child: Card(
                                         color: Colors.white,
@@ -141,7 +148,7 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                                                               fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .normal,
+                                                                      .bold,
                                                               color: AppColors
                                                                   .primaryColor),
                                                         )
@@ -282,44 +289,59 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                                                     height: 10,
                                                   ),
                                                   Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
+                                                    mainAxisAlignment: Common
+                                                                .currentRole ==
+                                                            "subadmin"
+                                                        ? MainAxisAlignment.end
+                                                        : MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.edit,
-                                                        text: "Edit",
-                                                        clr: AppColors
-                                                            .primaryColor,
-                                                        ontap: () {
-                                                          Get.to(() =>
-                                                              EditOrderScreen(
-                                                                
-                                                                orderID: controller
-                                                                    .orderList
-                                                                    .value
-                                                                    .data!
-                                                                    .ordersList![
-                                                                        index]
-                                                                    .id
-                                                                    .toString(),
-                                                              ));
-                                                        },
-                                                      ),
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.delete,
-                                                        text: "Delete",
-                                                        ontap: () {
-                                                          controller.deleteOrder(
-                                                              controller
+                                                      Visibility(
+                                                        visible: Common
+                                                                .currentRole !=
+                                                            "subadmin",
+                                                        child:
+                                                            NewOrderButtonWidget(
+                                                          ic: Icons.edit,
+                                                          text: "Edit",
+                                                          clr: AppColors
+                                                              .primaryColor,
+                                                          ontap: () {
+                                                            Get.to(() =>
+                                                                EditOrderScreen(
+                                                                  orderID: controller
                                                                       .orderList
                                                                       .value
                                                                       .data!
                                                                       .ordersList![
-                                                                  index],
-                                                              context);
-                                                        },
-                                                        clr: AppColors.redColor,
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                ));
+                                                          },
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                        visible: Common
+                                                                .currentRole !=
+                                                            "subadmin",
+                                                        child:
+                                                            NewOrderButtonWidget(
+                                                          ic: Icons.delete,
+                                                          text: "Delete",
+                                                          ontap: () {
+                                                            controller.deleteOrder(
+                                                                controller
+                                                                        .orderList
+                                                                        .value
+                                                                        .data!
+                                                                        .ordersList![
+                                                                    index],
+                                                                context);
+                                                          },
+                                                          clr: AppColors
+                                                              .redColor,
+                                                        ),
                                                       ),
                                                       NewOrderButtonWidget(
                                                         ic: Icons.receipt,
@@ -349,6 +371,93 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                                                       ),
                                                     ],
                                                   ),
+                                                  Visibility(
+                                                    visible:
+                                                        Common.currentRole !=
+                                                            "subadmin",
+                                                    child: Divider(
+                                                      height: 2,
+                                                      thickness: 1,
+                                                      color: AppColors
+                                                          .dividerGreyColor,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Common.currentRole ==
+                                                          "subadmin"
+                                                      ? const SizedBox()
+                                                      : Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      16.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                          ),
+                                                          child: DropdownButton<
+                                                              String>(
+                                                            hint: const Text(
+                                                              'Select an option',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .grey),
+                                                            ),
+                                                            value: Helper
+                                                                .capitalizeFirstLetter(
+                                                              controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .orderStatus
+                                                                  .toString()
+                                                                  .replaceAll(
+                                                                      "_", " "),
+                                                            ).toUpperCase(),
+                                                            isExpanded: true,
+                                                            underline:
+                                                                const SizedBox(), // Removes the underline
+                                                            onChanged: (String?
+                                                                newValue) {
+                                                              controller.updateStatus(
+                                                                  controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                  newValue!);
+                                                            },
+                                                            items: controller.items.map<
+                                                                DropdownMenuItem<
+                                                                    String>>((String
+                                                                value) {
+                                                              return DropdownMenuItem<
+                                                                  String>(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .black),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        )
                                                 ],
                                               )),
                                         )),

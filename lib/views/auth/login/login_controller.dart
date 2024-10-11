@@ -6,6 +6,7 @@ import '../../../common/common.dart';
 import '../../../utils/widget/appwidgets.dart';
 import '../../Dashboard_screen/dashboard_screen.dart';
 import '../../jigar_home_screen/jiagar_home.dart';
+import '../../jigar_home_screen/jigar_home_controller.dart';
 
 class LoginController extends GetxController {
   TextEditingController nameController = TextEditingController();
@@ -24,8 +25,10 @@ class LoginController extends GetxController {
         appWidgets.hideDialog();
         if (Common.currentRole == "chef" ||
             Common.currentRole == "delivery_user") {
+          Get.put(HomeController());
           Get.off(const DashboardScreen());
         } else {
+          Get.delete<HomeController>();
           Get.off(const JigarHome());
         }
       }

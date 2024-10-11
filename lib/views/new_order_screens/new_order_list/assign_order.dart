@@ -168,6 +168,26 @@ class _AssignOrderState extends State<AssignOrder> {
                                               .ordersItems![index].chefId !=
                                           null,
                                       child: ItemRow(
+                                        leftText: "Chef Name",
+                                        rightText: Helper.capitalizeFirstLetter(
+                                            _controller
+                                                    .selectedOrder
+                                                    .value
+                                                    .ordersItems![index]
+                                                    .chefName ??
+                                                ""
+                                                    .replaceAll("_", " ")
+                                                    .toUpperCase()),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Visibility(
+                                      visible: _controller.selectedOrder.value
+                                              .ordersItems![index].chefId !=
+                                          null,
+                                      child: ItemRow(
                                         leftText: "Chef Status",
                                         rightText: Helper.capitalizeFirstLetter(
                                             _controller.selectedOrder.value
@@ -216,7 +236,8 @@ class _AssignOrderState extends State<AssignOrder> {
                 child: CustomButton(
                     text:
                         _controller.selectedOrder.value.deliveryUserForOrder !=
-                                null
+                                    null &&
+                                widget.orderData.isSelfPickup != 1
                             ? "Already Assigned to Delivery User"
                             : "Assign to Delivery User",
                     onPressed: () {

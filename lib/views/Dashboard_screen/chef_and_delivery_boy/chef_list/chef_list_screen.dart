@@ -296,8 +296,9 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                                   .toString();
                                                           controller
                                                               .showCustomBottomSheet(
-                                                            context,
-                                                          );
+                                                                  context,
+                                                                  widget.type ??
+                                                                      "");
                                                         },
                                                         child: Container(
                                                           decoration: BoxDecoration(

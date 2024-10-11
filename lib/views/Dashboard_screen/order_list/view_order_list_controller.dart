@@ -9,6 +9,7 @@ import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/appwidgets.dart';
 import '../../../utils/widget/success_dialoug.dart';
+import '../dashboard_controller.dart';
 
 class ORderListController extends GetxController {
   TextEditingController textController = TextEditingController();
@@ -17,6 +18,7 @@ class ORderListController extends GetxController {
   RxBool isMoreLoading = false.obs;
   Rx<OrderListModel> orderList = OrderListModel().obs;
   Timer? _debounce;
+  String? vendorID;
   String? status;
   final List<String> items = [
     'NEW ORDER',
@@ -26,13 +28,15 @@ class ORderListController extends GetxController {
     "CANCELLED"
   ];
   updateStatus(String orderID, String orderStatus) async {
+    DashboardController dashboardController = Get.find();
     appWidgets.loadingDialog();
     String status = orderStatus.toLowerCase().replaceAll(" ", "_");
     await AppInterface()
-        .updateOrderStatusByDeliveryUuser(orderID: orderID, orderStatus: status)
+        .updateOrderStatusByAdminUuser(orderID: orderID, orderStatus: status)
         .then((value) {
       appWidgets.hideDialog();
       if (value == 200) {
+        dashboardController.getCount(true);
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: false,
@@ -82,6 +86,7 @@ class ORderListController extends GetxController {
         .getOrderList(
             page: page,
             isSearch: isSearching,
+            vendorID: vendorID ?? "",
             searchKey: searchKeyWord,
             status: status)
         .then((value) {

@@ -125,7 +125,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             InkWell(
               onTap: () {
-                Common.logout(context);
+                controller.deleteAccount(context);
               },
               child: DraweRow(item: controller.drawerExtraItems[1]),
             ),

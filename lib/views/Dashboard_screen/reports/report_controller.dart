@@ -13,10 +13,9 @@ class ReportController extends GetxController {
   TextEditingController startController = TextEditingController();
   TextEditingController endController = TextEditingController();
   String chefID = "";
-  RxString SelectedOrderReportType = "ITEM SUMMARY".obs;
+  RxString SelectedOrderReportType = "DATE RANGE SALES REPORT".obs;
   final List<String> items = [
     'CUSTOMER REPORT',
-    'ITEM SUMMARY',
     'DATE RANGE SALES REPORT',
   ];
   void showDatePickerOnly(bool isStart) {
@@ -54,16 +53,38 @@ class ReportController extends GetxController {
     });
   }
 
-  getChefReport() async {
+  getChefReport(String type) async {
     appWidgets.loadingDialog();
-    await AppInterface()
-        .getChefInvoiceLink(startController.text, endController.text, chefID)
-        .then((value) {
-      appWidgets.hideDialog();
-      if (value is String) {
-        Get.to(InvoiceWithScreen(url: value));
-      }
-    });
+    if (type == "subadmin") {
+      await AppInterface()
+          .getSubAdminInvoiceLink(
+              startController.text, endController.text, chefID)
+          .then((value) {
+        appWidgets.hideDialog();
+        if (value is String) {
+          Get.to(InvoiceWithScreen(url: value));
+        }
+      });
+    } else if (type == "delivery_user") {
+      await AppInterface()
+          .getDeliveryInvoiceLink(
+              startController.text, endController.text, chefID)
+          .then((value) {
+        appWidgets.hideDialog();
+        if (value is String) {
+          Get.to(InvoiceWithScreen(url: value));
+        }
+      });
+    } else {
+      await AppInterface()
+          .getChefInvoiceLink(startController.text, endController.text, chefID)
+          .then((value) {
+        appWidgets.hideDialog();
+        if (value is String) {
+          Get.to(InvoiceWithScreen(url: value));
+        }
+      });
+    }
   }
 
   Future<void> showCustomBottomSheet(

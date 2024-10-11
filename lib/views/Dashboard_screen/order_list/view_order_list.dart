@@ -14,7 +14,8 @@ import '../invoice/view_invoices.dart';
 
 class OrderListScreen extends StatefulWidget {
   String? status;
-  OrderListScreen({super.key, this.status});
+  String? vendorId;
+  OrderListScreen({super.key, this.status, this.vendorId});
 
   @override
   State<OrderListScreen> createState() => _OrderListScreenState();
@@ -23,6 +24,7 @@ class OrderListScreen extends StatefulWidget {
 class _OrderListScreenState extends State<OrderListScreen> {
   ORderListController controller = ORderListController();
   ScrollController _scrollController = ScrollController();
+
   Future<void> _scrollListener() async {
     print(_scrollController.position.extentAfter);
     if (_scrollController.position.extentAfter < 5) {
@@ -41,6 +43,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   @override
   void initState() {
     controller.status = widget.status;
+    controller.vendorID = widget.vendorId;
     _scrollController = ScrollController()..addListener(_scrollListener);
     controller.textController.addListener(controller.onTextChanged);
     controller.getOrder(
@@ -56,7 +59,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Order List"),
+      appBar: appBar(text: "Order List",),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
@@ -186,6 +189,17 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  itemRow(
+                                                      "Vendor Name:",
+                                                      controller
+                                                              .orderList
+                                                              .value
+                                                              .data!
+                                                              .ordersList![
+                                                                  index]
+                                                              .vendorInfo!
+                                                              .name ??
+                                                          ""),
                                                   itemRow(
                                                       "Order Date",
                                                       controller
@@ -405,12 +419,51 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                     ],
                                                   ),
                                                   Visibility(
-                                                      visible:
-                                                          Common.currentRole ==
-                                                              "delivery_user",
+                                                      visible: (Common.currentRole ==
+                                                                  "delivery_user" ||
+                                                              Common.currentRole ==
+                                                                  "admin") &&
+                                                          (controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .orderStatus !=
+                                                                  "delivered" &&
+                                                              controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .deliveryStatus !=
+                                                                  "delivered") &&
+                                                          controller.status !=
+                                                              null,
                                                       child: const Divider()),
-                                                  Common.currentRole ==
-                                                          "delivery_user"
+                                                  (Common.currentRole ==
+                                                                  "delivery_user" ||
+                                                              Common.currentRole ==
+                                                                  "admin") &&
+                                                          (controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .orderStatus !=
+                                                                  "delivered" &&
+                                                              controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .deliveryStatus !=
+                                                                  "delivered") &&
+                                                          controller.status !=
+                                                              null
                                                       ? Container(
                                                           padding:
                                                               const EdgeInsets
@@ -435,16 +488,30 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                             ),
                                                             value: Helper
                                                                 .capitalizeFirstLetter(
-                                                              controller
-                                                                  .orderList
-                                                                  .value
-                                                                  .data!
-                                                                  .ordersList![
-                                                                      index]
-                                                                  .deliveryStatus
-                                                                  .toString()
-                                                                  .replaceAll(
-                                                                      "_", " "),
+                                                              Common.currentRole ==
+                                                                      "admin"
+                                                                  ? controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .orderStatus
+                                                                      .toString()
+                                                                      .replaceAll(
+                                                                          "_",
+                                                                          " ")
+                                                                  : controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .deliveryStatus
+                                                                      .toString()
+                                                                      .replaceAll(
+                                                                          "_",
+                                                                          " "),
                                                             ).toUpperCase(),
                                                             isExpanded: true,
                                                             underline:

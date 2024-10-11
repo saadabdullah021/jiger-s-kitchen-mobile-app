@@ -24,7 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       Get.put(HomeController());
     }
     // TODO: implement initState
-    controller.getCount();
+    controller.getCount(true);
     super.initState();
   }
 
@@ -60,7 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: InkWell(
                 onTap: () {
-                  controller.getCount();
+                  controller.getCount(true);
                 },
                 child: Icon(
                   Icons.refresh,

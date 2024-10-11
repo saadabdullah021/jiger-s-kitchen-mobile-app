@@ -5,6 +5,8 @@ class AppTheme {
   static final light = ThemeData.light().copyWith(
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
+    colorScheme: ColorScheme.light(primary: AppColors.appColor),
+    buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
     hoverColor: Colors.transparent,
     textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'Poppins',

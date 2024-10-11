@@ -6,9 +6,13 @@ import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/model/user_list_model.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
+import '../../../utils/app_colors.dart';
+import '../chef_and_delivery_boy/chef_list/chef_list_controller.dart';
+import '../reports/select_date.dart';
+
 class AdminController extends GetxController {
   TextEditingController textController = TextEditingController();
-
+  String? selectedAdminId;
   RxBool isLoading = false.obs;
   RxBool isMoreLoading = false.obs;
   Timer? _debounce;
@@ -38,7 +42,20 @@ class AdminController extends GetxController {
       });
     }
   }
-
+Future<void> showCustomBottomSheet(
+      BuildContext context, String userType) async {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      barrierColor: AppColors.primaryColor.withOpacity(0.6),
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return BottomSheetWithTabs(
+          Usertype: userType,
+        );
+      },
+    );
+  }
   getUser(
     bool moreLoading,
     String page,
@@ -70,5 +87,28 @@ class AdminController extends GetxController {
         appWidgets().showToast("Sorry", "Please try again");
       }
     });
+  }
+}
+
+class BottomSheetWithTabs extends StatelessWidget {
+  AdminController controller = Get.find();
+  String? Usertype;
+  BottomSheetWithTabs({super.key, this.Usertype});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Material(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          child: SizedBox(
+              height: Get.height * 0.4,
+              child: SelectReportDate(
+                userType: Usertype,
+                isBottomBar: true,
+                chefID: controller.selectedAdminId,
+              ))),
+    );
   }
 }

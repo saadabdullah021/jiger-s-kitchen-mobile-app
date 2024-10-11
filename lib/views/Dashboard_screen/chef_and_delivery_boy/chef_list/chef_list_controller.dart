@@ -44,14 +44,17 @@ class ChefListController extends GetxController {
     }
   }
 
-  Future<void> showCustomBottomSheet(BuildContext context) async {
+  Future<void> showCustomBottomSheet(
+      BuildContext context, String userType) async {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       barrierColor: AppColors.primaryColor.withOpacity(0.6),
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return BottomSheetWithTabs();
+        return BottomSheetWithTabs(
+          Usertype: userType,
+        );
       },
     );
   }
@@ -92,7 +95,8 @@ class ChefListController extends GetxController {
 
 class BottomSheetWithTabs extends StatelessWidget {
   ChefListController controller = Get.find();
-  BottomSheetWithTabs({super.key});
+  String? Usertype;
+  BottomSheetWithTabs({super.key, this.Usertype});
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +108,7 @@ class BottomSheetWithTabs extends StatelessWidget {
           child: SizedBox(
               height: Get.height * 0.4,
               child: SelectReportDate(
+                userType: Usertype,
                 isBottomBar: true,
                 chefID: controller.selectedChefID,
               ))),

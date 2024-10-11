@@ -11,7 +11,8 @@ import 'report_controller.dart';
 class SelectReportDate extends StatelessWidget {
   bool? isBottomBar;
   String? chefID;
-  SelectReportDate({super.key, this.isBottomBar, this.chefID});
+  String? userType;
+  SelectReportDate({super.key, this.isBottomBar, this.chefID, this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,7 @@ class SelectReportDate extends StatelessWidget {
                     appWidgets().showToast("Sorry", "Please select both dates");
                   } else {
                     isBottomBar == true
-                        ? controller.getChefReport()
+                        ? controller.getChefReport(userType ?? "")
                         : controller.getReport();
                   }
                 }),

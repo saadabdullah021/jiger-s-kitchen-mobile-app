@@ -133,17 +133,24 @@ class ViewCartController extends GetxController {
           Get.back();
           appWidgets.loadingDialog();
 
-          await AppInterface().deleteCartItem(id: id).then((value) {
+          await AppInterface().deleteCartItem(id: id).then((value) async {
             if (value == 200) {
               appWidgets.hideDialog();
               getCartItem(false);
+              await AppInterface()
+                  .getUserByToken(Common.loginReponse.value.data!.token!)
+                  .then((value) {
+                if (value == 200) {
+                  Common.loginReponse.refresh();
+                }
+              });
               showDialogWithAutoDismiss(
                   context: Get.context,
                   doubleBack: false,
                   img: AppImages.successDialougIcon,
                   autoDismiss: true,
                   heading: "Hurray!",
-                  text: "Slab Deleted Successfully",
+                  text: "Item Deleted Successfully",
                   headingStyle: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w600,

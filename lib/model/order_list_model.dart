@@ -151,6 +151,7 @@ class OrdersItems {
   int? id;
   int? chefId;
   String? chefStatus;
+  String? chefName;
   int? orderId;
   int? itemId;
   String? itemBasePrice;
@@ -163,6 +164,7 @@ class OrdersItems {
       this.orderId,
       this.itemId,
       this.chefId,
+      this.chefName,
       this.chefStatus,
       this.itemBasePrice,
       this.itemQuantity,
@@ -172,6 +174,7 @@ class OrdersItems {
   OrdersItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     orderId = json['order_id'];
+    chefName = json["chef_name"];
     itemId = json['item_id'];
     chefId = json['chef_id'];
     chefStatus = json['chef_status'];

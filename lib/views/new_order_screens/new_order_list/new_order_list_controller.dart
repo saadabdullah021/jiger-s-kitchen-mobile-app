@@ -34,6 +34,38 @@ class newORderListController extends GetxController {
   Rx<editItemModel> editOrderDetail = editItemModel().obs;
   Rx<OrdersList> selectedOrder = OrdersList().obs;
   int? selectedItemIndex;
+  final List<String> items = [
+    'NEW ORDER',
+    'PICK UP',
+    'OUT FOR DELIVERY',
+    'DELIVERED',
+    "CANCELLED"
+  ];
+  updateStatus(String orderID, String orderStatus) async {
+    appWidgets.loadingDialog();
+    String status = orderStatus.toLowerCase().replaceAll(" ", "_");
+    await AppInterface()
+        .updateOrderStatusByAdminUuser(orderID: orderID, orderStatus: status)
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        dashboardController.getCount(true);
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: false,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Status Updated Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+        getOrder(false, "1", false, false, "");
+      }
+    });
+  }
+
   Timer? _debounce;
   void chnagePriceAndQty({
     BuildContext? context,
@@ -277,7 +309,7 @@ class newORderListController extends GetxController {
                       fontSize: 32,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textBlackColor));
-              dashboardController.getCount();
+              dashboardController.getCount(true);
             }
           });
         });
