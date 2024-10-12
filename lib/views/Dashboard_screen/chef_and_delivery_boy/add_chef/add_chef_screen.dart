@@ -141,7 +141,7 @@ class AddChefScreen extends StatelessWidget {
                         ),
                         CustomTextField(
                           controller: controller.phoneController,
-                          validator: Helper.validateNumber,
+                          validator: Helper.validateEmpty,
                           hintText: "Enter Phone Number",
                           keyboardType: TextInputType.number,
                           prefixIcon: Icon(

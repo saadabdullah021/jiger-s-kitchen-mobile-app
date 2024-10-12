@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jigers_kitchen/model/single_user_data.dart';
@@ -21,7 +22,8 @@ class AddChefController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController =
+      MaskedTextController(mask: '+1 (000) 000-0000');
   getData(String id) async {
     isloading.value = true;
     await AppInterface().getUserByID(id).then((value) {

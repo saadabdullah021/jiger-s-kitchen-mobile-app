@@ -81,18 +81,23 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                   children: [
                                     Icon(
                                       Icons.shopping_cart,
+                                      size: 25,
                                       color: AppColors.redColor,
                                     ),
                                     Center(
                                       child: Obx(
-                                        () => Text(
-                                          Common.loginReponse.value.data!
-                                                  .cartConter
-                                                  .toString() ??
-                                              "",
-                                          style: TextStyle(
-                                              color: AppColors.redColor,
-                                              fontWeight: FontWeight.bold),
+                                        () => Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 20),
+                                          child: Text(
+                                            Common.loginReponse.value.data!
+                                                    .cartConter
+                                                    .toString() ??
+                                                "",
+                                            style: TextStyle(
+                                                color: AppColors.redColor,
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                         ),
                                       ),
                                     ),

@@ -40,7 +40,7 @@ class SelectGenraicReportDate extends StatelessWidget {
                     },
                     controller: controller.startController,
                     fillColor: AppColors.textGreyColor,
-                    hintText: "Start Date",
+                    hintText: "From Date",
                   ),
                 ),
                 const SizedBox(
@@ -59,7 +59,7 @@ class SelectGenraicReportDate extends StatelessWidget {
                     },
                     controller: controller.endController,
                     fillColor: AppColors.textGreyColor,
-                    hintText: "End Date",
+                    hintText: "To Date",
                   ),
                 ),
               ],

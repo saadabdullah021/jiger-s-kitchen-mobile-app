@@ -1445,17 +1445,21 @@ class AppInterface extends BaseApi {
     return null;
   }
 
-  Future<dynamic> getMenuItems({
-    required String page,
-    required String id,
-    required bool isPriceSlabAdded,
-    required bool isApproved,
-  }) async {
+  Future<dynamic> getMenuItems(
+      {required String page,
+      required String id,
+      required bool isPriceSlabAdded,
+      required bool isApproved,
+      String? vendorID}) async {
+    // String isCatering = Common.currentRole == "vendor" &&
+    //         Common.loginReponse.value.data!.vendorCategory == "catering"
+    //     ? "1"
+    //     : "0";
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}&is_price_slab_added=${isPriceSlabAdded == true ? "1" : "0"}",
+      "${Constants.API_BASE_URL}get-menu-items?menu_id=$id&page=$page&limit=10&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}&is_price_slab_added=${isPriceSlabAdded == true ? "1" : "0"}&vendor_id=${vendorID ?? ""}",
       headers: headers,
     );
     if (response == null) {
@@ -1511,14 +1515,17 @@ class AppInterface extends BaseApi {
 
   Future<dynamic> searchMenuItems({
     required String page,
+    String? vendorID,
     required String id,
     required String keyWord,
+    required bool isPriceSlabAdded,
+    required bool isApproved,
   }) async {
     var headers = {
       'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
     };
     var response = await sendGet(
-      "${Constants.API_BASE_URL}search-menu-items?menu_id=$id&page=$page&limit=10&search_keyword=$keyWord&role=${Common.loginReponse.value.data!.role!}",
+      "${Constants.API_BASE_URL}search-menu-items?menu_id=$id&page=$page&limit=10&search_keyword=$keyWord&role=${Common.loginReponse.value.data!.role!}&is_approved=${isApproved == true ? "1" : "0"}&is_price_slab_added=${isPriceSlabAdded == true ? "1" : "0"}&vendor_id=${vendorID ?? ""}",
       headers: headers,
     );
     if (response == null) {
@@ -1554,6 +1561,79 @@ class AppInterface extends BaseApi {
     var response = await sendPost(
       "${Constants.API_BASE_URL}change-menu-status",
       headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.soryyTryAgainToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> forgetPassword({
+    String? email,
+  }) async {
+    var data = {
+      "email": email,
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}reset-password",
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.soryyTryAgainToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> verifyOtp({String? email, String? Otp}) async {
+    var data = {"email": email, "otp": Otp};
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}verify-otp",
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.soryyTryAgainToast();
+      return null;
+    }
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> setNewPassword({String? email, String? password}) async {
+    var data = {"email": email, "password": password};
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}change-password",
       data,
     );
     if (response == null) {

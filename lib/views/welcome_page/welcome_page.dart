@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
+import 'package:jigers_kitchen/utils/widget/app_button.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/app_keys.dart';
@@ -43,45 +44,46 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      body: Stack(
-        children: <Widget>[
-          PageView.builder(
-            itemBuilder: (context, index) => getPage(
-                _imageList[index],
-                _titlesList[index],
-                _subtitlesList[index],
-                context,
-                (index + 1) == _imageList.length),
-            controller: pageController,
-            itemCount: _imageList.length,
-            onPageChanged: (int index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-          ),
-          Positioned(
-              right: 13,
-              bottom: 17,
-              child: InkWell(
-                  onTap: () {
-                    SharedPref.getInstance()
-                        .addBoolToSF(AppKeys.isFirstTime, false);
-                    _currentIndex != 2
-                        ? pageController.nextPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.bounceInOut)
-                        : Get.off(() => const LoginScreen());
-                  },
-                  child: Text(
-                    _currentIndex == 2 ? "Skip >" : "Next >",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.lightBlue,
-                    ),
-                  ))),
-        ],
+      backgroundColor: AppColors.textWhiteColor,
+      body: Container(
+        decoration: BoxDecoration(
+            image:
+                DecorationImage(image: AssetImage(_imageList[_currentIndex]))),
+        child: Stack(
+          children: <Widget>[
+            PageView.builder(
+              itemBuilder: (context, index) => getPage(
+                  _imageList[index],
+                  _titlesList[index],
+                  _subtitlesList[index],
+                  context,
+                  (index + 1) == _imageList.length),
+              controller: pageController,
+              itemCount: _imageList.length,
+              onPageChanged: (int index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            Positioned(
+                right: 13,
+                bottom: 17,
+                child: InkWell(
+                    onTap: () {
+                      SharedPref.getInstance()
+                          .addBoolToSF(AppKeys.isFirstTime, false);
+                      Get.off(() => const LoginScreen());
+                    },
+                    child: Text(
+                      "Skip >",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.jetBlackColor,
+                      ),
+                    ))),
+          ],
+        ),
       ),
     );
   }
@@ -92,12 +94,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        CircleAvatar(
-          backgroundColor: AppColors.textGreyColor,
-          radius: 70,
-          child: SizedBox(height: 80, child: Image.asset(image)),
-        ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.5),
         Text(
           titlesList.toString().toUpperCase(),
           textAlign: TextAlign.center,
@@ -108,16 +105,66 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         ),
         Padding(
             padding: const EdgeInsets.only(right: 35, left: 35, top: 15),
-            child: Text(
-              subtitlesList,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.greyColor,
-                height: 2,
-                letterSpacing: 1.2,
+            child: SizedBox(
+              height: Get.height * 0.1,
+              child: Text(
+                subtitlesList,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textBlackColor,
+                  height: 2,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1,
+                ),
               ),
             )),
+        const SizedBox(
+          height: 50,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            3,
+            (index) => indicator(index, _currentIndex),
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          child: CustomButton(
+              text: (_currentIndex != 2
+                  ? "NEXT"
+                  : "Let's get started".toUpperCase()),
+              onPressed: () {
+                SharedPref.getInstance()
+                    .addBoolToSF(AppKeys.isFirstTime, false);
+                _currentIndex != 2
+                    ? pageController.nextPage(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.bounceInOut)
+                    : Get.off(() => const LoginScreen());
+              }),
+        )
       ],
+    );
+  }
+
+  indicator(
+    int index,
+    int value,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      height: 4,
+      width: 40,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: index == _currentIndex
+            ? AppColors.appColor
+            : AppColors.appColor.withOpacity(0.4),
+      ),
     );
   }
 }

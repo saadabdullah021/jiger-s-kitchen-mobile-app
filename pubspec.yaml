@@ -49,7 +49,9 @@ dependencies:
   rotated_corner_decoration: ^2.1.0+1
   syncfusion_flutter_pdfviewer: ^27.1.51
   flutter_local_notifications: ^17.2.3
+  flutter_masked_text2: ^0.9.1
   share_plus: ^10.0.2
+  pin_code_fields: ^8.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

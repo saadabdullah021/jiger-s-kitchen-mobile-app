@@ -49,6 +49,16 @@ class ExpandedData extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
+            Visibility(
+              visible: data.ordersItems!.length > 1,
+              child: ItemRow(
+                leading: "\t",
+                desc: "+${data.ordersItems!.length - 1} more",
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
             ItemRow(
               leading: "Qty:",
               desc: data.ordersItems![0].itemQuantity,
@@ -174,7 +184,7 @@ class ItemRow extends StatelessWidget {
           width: 5,
         ),
         SizedBox(
-          width: 180,
+          width: 150,
           child: Text(
             desc ?? 'Description',
             overflow: TextOverflow.ellipsis,

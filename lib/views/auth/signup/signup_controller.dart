@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jigers_kitchen/core/apis/app_interface.dart';
@@ -24,7 +25,8 @@ class SignupController extends GetxController {
   TextEditingController userNameController = TextEditingController();
   TextEditingController otherEmailController = TextEditingController();
   TextEditingController invoiceEmailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController =
+      MaskedTextController(mask: '+1 (000) 000-0000');
   TextEditingController taxController = TextEditingController();
   TextEditingController billingAddressController = TextEditingController();
   TextEditingController shippingAddressController = TextEditingController();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jigers_kitchen/model/single_user_data.dart';
@@ -25,7 +26,8 @@ class AddAdminController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController =
+      MaskedTextController(mask: '+1 (000) 000-0000');
   RxList<ChefData> groupList = <ChefData>[].obs;
   bool isEdit = false;
   getData(String id) async {

@@ -7,6 +7,7 @@ import '../../../utils/widget/appwidgets.dart';
 import '../../Dashboard_screen/dashboard_screen.dart';
 import '../../jigar_home_screen/jiagar_home.dart';
 import '../../jigar_home_screen/jigar_home_controller.dart';
+import '../forget_password/otp_screen.dart';
 
 class LoginController extends GetxController {
   TextEditingController nameController = TextEditingController();
@@ -31,6 +32,21 @@ class LoginController extends GetxController {
           Get.delete<HomeController>();
           Get.off(const JigarHome());
         }
+      }
+    });
+  }
+
+  forgetPassword() async {
+    appWidgets.loadingDialog();
+    await AppInterface()
+        .forgetPassword(email: nameController.text)
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        Get.back();
+        Get.to(() => EnterOtpScreen(
+              email: nameController.text,
+            ));
       }
     });
   }

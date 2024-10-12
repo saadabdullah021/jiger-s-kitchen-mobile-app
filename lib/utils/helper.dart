@@ -57,6 +57,20 @@ class Helper {
     return null;
   }
 
+  static String? validatePhoneNumber(String? value) {
+    String pattern =
+        r'^[0-9\s\(\)]*$'; // Allow numbers, spaces, and parentheses
+    RegExp regExp = RegExp(pattern);
+
+    if (value == null || value.isEmpty) {
+      return "Please enter a number";
+    } else if (!regExp.hasMatch(value)) {
+      return "Please enter a valid number";
+    }
+
+    return null;
+  }
+
   static String capitalizeFirstLetter(String input) {
     if (input.isEmpty) return input; // Return empty string if input is empty
 

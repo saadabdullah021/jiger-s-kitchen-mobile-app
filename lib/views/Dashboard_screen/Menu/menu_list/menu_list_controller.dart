@@ -152,7 +152,12 @@ class MenuListController extends GetxController {
       showCrossBtn.value = true;
       await AppInterface()
           .searchMenuItems(
-              page: "1", id: selectedMenuId.toString(), keyWord: query)
+             vendorID: currentVendorID,
+              isPriceSlabAdded: addToCart,
+              isApproved: ScreenType == "request_item" ? false : true,
+              page: "1",
+              id: selectedMenuId.toString(),
+              keyWord: query)
           .then((value) {
         if (value != null && value is GetMenuItemModel) {
           menuItems.value = value;
@@ -186,6 +191,7 @@ class MenuListController extends GetxController {
         .getMenuItems(
             page: page,
             isPriceSlabAdded: addToCart,
+            vendorID: currentVendorID,
             id: selectedMenuId.toString(),
             isApproved: ScreenType == "request_item" ? false : true)
         .then((value) {
