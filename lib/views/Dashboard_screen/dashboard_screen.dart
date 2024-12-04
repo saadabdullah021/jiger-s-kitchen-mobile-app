@@ -20,7 +20,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DashboardController controller = Get.put(DashboardController());
   @override
   void initState() {
-    if (Common.currentRole == "chef") {
+    if (Common.currentRole == "chef" || Common.currentRole == "delivery_user") {
       Get.put(HomeController());
     }
     // TODO: implement initState

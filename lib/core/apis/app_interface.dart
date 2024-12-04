@@ -2162,6 +2162,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }

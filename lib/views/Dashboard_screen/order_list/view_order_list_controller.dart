@@ -25,7 +25,8 @@ class ORderListController extends GetxController {
     'PICK UP',
     'OUT FOR DELIVERY',
     'DELIVERED',
-    "CANCELLED"
+    "CANCELLED",
+    "PAID"
   ];
   updateStatus(String orderID, String orderStatus) async {
     DashboardController dashboardController = Get.find();

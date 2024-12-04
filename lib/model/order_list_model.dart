@@ -105,8 +105,8 @@ class OrdersList {
     orderBy = json['order_by'];
     tax = json['tax'];
     shippingCharges = json['shipping_charges'];
-    subTotal = json['sub_total'];
-    totalAmount = json['total_amount'];
+    subTotal = json['sub_total'].toString().replaceAll(",", "");
+    totalAmount = json['total_amount'].toString().replaceAll(",", "");
     isSelfPickup = json['is_self_pickup'];
     orderNote = json['order_note'];
     orderStatus = json['order_status'];
@@ -178,7 +178,7 @@ class OrdersItems {
     itemId = json['item_id'];
     chefId = json['chef_id'];
     chefStatus = json['chef_status'];
-    itemBasePrice = json['item_base_price'];
+    itemBasePrice = json['item_base_price'].toString().replaceAll(",", "");
     itemQuantity = json['item_quantity'];
     itemNote = json['item_note'];
     menuItemInfo = json['menu_item_info'] != null

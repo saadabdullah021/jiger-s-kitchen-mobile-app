@@ -30,21 +30,19 @@ class SelectReportDate extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Expanded(
-              child: CustomTextField(
-                suffixIcon: Icon(
-                  Icons.calendar_month,
-                  color: AppColors.greyColor,
-                ),
-                maxLines: 1,
-                readOnly: true,
-                ontap: () {
-                  controller.showDatePickerOnly(true);
-                },
-                controller: controller.startController,
-                fillColor: AppColors.textGreyColor,
-                hintText: "From Date",
+            child: CustomTextField(
+              suffixIcon: Icon(
+                Icons.calendar_month,
+                color: AppColors.greyColor,
               ),
+              maxLines: 1,
+              readOnly: true,
+              ontap: () {
+                controller.showDatePickerOnly(true);
+              },
+              controller: controller.startController,
+              fillColor: AppColors.textGreyColor,
+              hintText: "From Date",
             ),
           ),
           const SizedBox(
@@ -52,21 +50,19 @@ class SelectReportDate extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Expanded(
-              child: CustomTextField(
-                suffixIcon: Icon(
-                  Icons.calendar_month,
-                  color: AppColors.greyColor,
-                ),
-                maxLines: 1,
-                readOnly: true,
-                ontap: () {
-                  controller.showDatePickerOnly(false);
-                },
-                controller: controller.endController,
-                fillColor: AppColors.textGreyColor,
-                hintText: "To Date",
+            child: CustomTextField(
+              suffixIcon: Icon(
+                Icons.calendar_month,
+                color: AppColors.greyColor,
               ),
+              maxLines: 1,
+              readOnly: true,
+              ontap: () {
+                controller.showDatePickerOnly(false);
+              },
+              controller: controller.endController,
+              fillColor: AppColors.textGreyColor,
+              hintText: "To Date",
             ),
           ),
           const SizedBox(

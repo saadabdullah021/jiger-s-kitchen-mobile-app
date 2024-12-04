@@ -215,7 +215,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         CustomTextField(
                           controller: controller.phoneController,
                           hintText: "Enter Phone Number",
-                          validator: Helper.validateEmail,
+                          validator: Helper.validateEmpty,
                           keyboardType: TextInputType.number,
                           prefixIcon: Icon(
                             Icons.phone,
