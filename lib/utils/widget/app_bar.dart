@@ -8,6 +8,7 @@ AppBar appBar({
   Function()? onPressed,
   String? text,
   bool? back,
+  bool? showDrawer,
   List<Widget>? actions, // Changed from Widget? to List<Widget>?
   Color? backgroundColor,
   Color? backColor,
@@ -20,22 +21,24 @@ AppBar appBar({
       backgroundColor: backgroundColor ?? AppColors.primaryColor,
       surfaceTintColor: backgroundColor ?? AppColors.primaryColor,
       elevation: 0,
-      leading: Row(
-        children: [
-          showback != null && showback == false
-              ? const SizedBox()
-              : IconButton(
-                  constraints: const BoxConstraints(),
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: AppColors.textWhiteColor,
-                  ),
-                  onPressed: () {
-                    Get.back();
-                  },
-                ),
-        ],
-      ),
+      leading: showDrawer == true
+          ? null
+          : Row(
+              children: [
+                showback != null && showback == false
+                    ? const SizedBox()
+                    : IconButton(
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color: AppColors.textWhiteColor,
+                        ),
+                        onPressed: () {
+                          Get.back();
+                        },
+                      ),
+              ],
+            ),
       centerTitle: true,
       title: Text(
         text!,

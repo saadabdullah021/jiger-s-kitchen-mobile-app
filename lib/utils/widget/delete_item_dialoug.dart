@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/core/contstants.dart';
 import 'package:jigers_kitchen/utils/widget/app_button.dart';
 
 import '../app_colors.dart';
 
 void showDeleteItemDialoug({
   BuildContext? context,
+  String? description,
+  VoidCallback? onYes,
+  VoidCallback? onCancel,
+  String? yesBtnText,
+  String? url,
 }) {
   showDialog(
     barrierColor: AppColors.primaryColor.withOpacity(0.6),
     context: context!,
     builder: (BuildContext context) {
-      return AlertDialog(
+      return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
-        contentPadding: EdgeInsets.zero,
-        content: Padding(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -29,6 +35,12 @@ void showDeleteItemDialoug({
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  CircleAvatar(
+                    backgroundColor: AppColors.textGreyColor,
+                    backgroundImage: NetworkImage(Constants.webUrl + url!),
+                    radius: 40,
+                  ),
+                  const SizedBox(height: 14.0),
                   const Text(
                     "Alert",
                     style: TextStyle(
@@ -38,29 +50,27 @@ void showDeleteItemDialoug({
                   ),
                   const SizedBox(
                       height: 8.0), // Space between title and subtitle
-                  const Text(
-                    "Are you sure you want to DELETE the order?",
-                    style: TextStyle(
+                  Text(
+                    description ?? "",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                         color: Colors.black,
                         fontSize: 13,
                         fontWeight: FontWeight.normal),
                   ),
                   const SizedBox(height: 20.0),
                   CustomButton(
-                    padding: 10,
                     bgColor: AppColors.textGreyColor,
                     textColor: AppColors.greyColor,
-                    text: "Cacnel",
+                    text: "Cancel",
                     onPressed: () {
                       Get.back();
                     },
                   ),
                   const SizedBox(height: 20.0),
                   CustomButton(
-                    text: "Delete",
-                    onPressed: () {
-                      Get.back();
-                    },
+                    text: yesBtnText ?? "Delete",
+                    onPressed: onYes!,
                   ),
                 ],
               ),

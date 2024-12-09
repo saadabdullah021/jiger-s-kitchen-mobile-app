@@ -3,6 +3,11 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 
 class AppTheme {
   static final light = ThemeData.light().copyWith(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
+    colorScheme: ColorScheme.light(primary: AppColors.appColor),
+    buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+    hoverColor: Colors.transparent,
     textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'Poppins',
         ),
@@ -15,7 +20,7 @@ class AppTheme {
       backgroundColor: AppColors.textWhiteColor,
       elevation: 0,
       iconTheme: const IconThemeData(
-        color: Colors.black,
+        color: Colors.white,
       ),
       titleTextStyle: const TextStyle(color: Colors.black),
     ),

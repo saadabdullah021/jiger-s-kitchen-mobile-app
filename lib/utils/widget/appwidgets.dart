@@ -10,10 +10,9 @@ class appWidgets {
 
   static Widget loadingWidget({double? height, double? width}) {
     return Center(
-      child: CircularProgressIndicator(
-        color: AppColors.primaryColor,
-      ),
-    );
+        child: CircularProgressIndicator(
+      color: AppColors.primaryColor,
+    ));
   }
 
   static void hideDialog() {

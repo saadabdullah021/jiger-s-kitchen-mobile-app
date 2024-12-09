@@ -63,12 +63,15 @@ void forgetPasswordDialog({
                 ],
               ),
               const SizedBox(height: 5.0),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomButton(
-                  text: "SUBMIT",
-                  onPressed: onBtnTap!,
-                  padding: 10,
+              InkWell(
+                onTap: onBtnTap,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButton(
+                    text: "SUBMIT",
+                    onPressed: onBtnTap!,
+                    padding: 10,
+                  ),
                 ),
               ),
               const SizedBox(height: 35.0),

@@ -40,18 +40,20 @@ class Data {
   String? shippingAddress;
   String? deliveryCharges;
   String? fcmToken;
-  String? addedBy;
+  int? addedBy;
   String? updatedBy;
   int? registeredAt;
   int? lastLoginAt;
   String? createdAt;
   String? updatedAt;
+  String? cartConter;
 
   Data(
       {this.id,
       this.name,
       this.email,
       this.emailVerifiedAt,
+      this.cartConter,
       this.phoneNumber,
       this.role,
       this.profileImage,
@@ -77,6 +79,7 @@ class Data {
     name = json['name'];
     email = json['email'];
     emailVerifiedAt = json['email_verified_at'];
+    cartConter = json["cart_counter"].toString();
     phoneNumber = json['phone_number'];
     role = json['role'];
     profileImage = json['profile_image'];
@@ -91,7 +94,7 @@ class Data {
     deliveryCharges = json['delivery_charges'];
     fcmToken = json['fcm_token'];
     addedBy = json['added_by'];
-    updatedBy = json['updated_by'];
+    updatedBy = json['updated_by'].toString();
     registeredAt = json['registered_at'];
     lastLoginAt = json['last_login_at'];
     createdAt = json['created_at'];

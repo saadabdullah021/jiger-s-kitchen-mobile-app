@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/views/jigar_home_screen/jigar_home_controller.dart';
+
+import '../../utils/widget/drawer.dart';
 
 class JigarHome extends StatelessWidget {
   const JigarHome({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // print(Common.loginReponse.value.data!.vendorCategory!);
     HomeController controller = Get.put(HomeController());
+    final List<int> visibleIndices = [];
+    final List<Map<String, dynamic>> visibleItems = [];
+
+    for (int i = 0; i < controller.homeItems.length; i++) {
+      if (controller.homeItems[i]["show"] == true) {
+        visibleIndices.add(i);
+        visibleItems.add(controller.homeItems[i]);
+      }
+    }
     return Scaffold(
+        drawer: const NavDrawer(),
         backgroundColor: AppColors.textGreyColor,
-        appBar: appBar(showback: false, text: "Jigar’s Kitchen", actions: [
-          Container(
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(11),
-              color: AppColors.textWhiteColor,
-            ),
-            child: Icon(
-              Icons.more_vert,
-              color: AppColors.redColor,
-            ),
-          ),
-        ]),
+        appBar: appBar(
+            showDrawer: true,
+            showback: false,
+            text: "Jigar’s Kitchen",
+            actions: [
+              InkWell(
+                onTap: () {
+                  Common.logout(context);
+                },
+                child: Icon(
+                  Icons.logout,
+                  color: AppColors.textWhiteColor,
+                ),
+              ),
+            ]),
         body: Padding(
           padding: const EdgeInsets.only(top: 30),
           child: GridView.builder(
-            itemCount: controller.homeItems.length,
+            itemCount: visibleItems.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               childAspectRatio: 1.6,
               crossAxisSpacing: 5,
@@ -38,10 +53,12 @@ class JigarHome extends StatelessWidget {
               crossAxisCount: 2,
             ),
             itemBuilder: (context, index) {
+              final item = visibleItems[index];
+              final originalIndex = visibleIndices[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: InkWell(
-                  onTap: () => controller.onItemTap(index),
+                  onTap: () => controller.onItemTap(originalIndex),
                   child: Stack(
                     alignment: Alignment.topCenter,
                     clipBehavior: Clip.none,
@@ -60,7 +77,7 @@ class JigarHome extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5),
                               child: Text(
-                                controller.homeItems[index]["name"]!,
+                                item["name"]!,
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -98,7 +115,7 @@ class JigarHome extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(7),
                                 child: SvgPicture.asset(
-                                  controller.homeItems[index]["img"]!,
+                                  item["img"]!,
                                 ),
                               ),
                             ),

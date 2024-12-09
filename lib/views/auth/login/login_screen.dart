@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
+import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 import 'package:jigers_kitchen/views/auth/login/login_controller.dart';
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
@@ -122,7 +123,14 @@ class LoginScreen extends StatelessWidget {
                                   context: context,
                                   textController: controller.nameController,
                                   img: AppImages.forgetPassword,
-                                  onBtnTap: () {},
+                                  onBtnTap: () {
+                                    if (controller.nameController.text == "") {
+                                      appWidgets().showToast(
+                                          "Sorry", "Please add email");
+                                    } else {
+                                      controller.forgetPassword();
+                                    }
+                                  },
                                   headingStyle: TextStyle(
                                     color: AppColors.jetBlackColor,
                                     fontSize: 21,
@@ -164,7 +172,7 @@ class LoginScreen extends StatelessWidget {
                       Center(
                         child: InkWell(
                           onTap: () {
-                            Get.to(() => const SignUpScreen());
+                            Get.to(() => SignUpScreen());
                           },
                           child: Text(
                             'Create Account',

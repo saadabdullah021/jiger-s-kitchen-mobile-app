@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 class userListModel {
   String? message;
   int? status;
@@ -25,7 +27,7 @@ class userListModel {
 class Data {
   int? totalRecords;
   String? limit;
-  String? currentPage;
+  int? currentPage;
   int? totalPages;
   List<ChefList>? chefList;
 
@@ -38,12 +40,12 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     totalRecords = json['total_records'];
-    limit = json['limit'];
-    currentPage = json['current_page'];
+    limit = json['limit'].toString();
+    currentPage = int.parse(json['current_page'].toString());
     totalPages = json['total_pages'];
-    if (json['chef_list'] != null) {
+    if (json['users_list'] != null) {
       chefList = <ChefList>[];
-      json['chef_list'].forEach((v) {
+      json['users_list'].forEach((v) {
         chefList!.add(ChefList.fromJson(v));
       });
     }
@@ -56,7 +58,7 @@ class Data {
     data['current_page'] = currentPage;
     data['total_pages'] = totalPages;
     if (chefList != null) {
-      data['chef_list'] = chefList!.map((v) => v.toJson()).toList();
+      data['users_list'] = chefList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -71,21 +73,29 @@ class ChefList {
   String? profileImage;
   int? status;
   String? createdAt;
+  String? vendorType;
+  String? groupId;
+  RxBool? isExpanded = false.obs;
 
   ChefList(
       {this.id,
       this.name,
       this.email,
+      this.groupId,
       this.userName,
       this.phoneNumber,
       this.profileImage,
+      this.vendorType,
       this.status,
+      this.isExpanded,
       this.createdAt});
 
   ChefList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     email = json['email'];
+    groupId = json['group_id'];
+    vendorType = json['vendor_category'];
     userName = json['user_name'];
     phoneNumber = json['phone_number'];
     profileImage = json['profile_image'];

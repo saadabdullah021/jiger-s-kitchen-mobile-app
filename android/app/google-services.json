@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "339986732336",
+    "project_id": "jigar-s-kitchen-6ce9c",
+    "storage_bucket": "jigar-s-kitchen-6ce9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339986732336:android:1cedaf95e54a63efbf24f5",
+        "android_client_info": {
+          "package_name": "app.jigars.kitchen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy3ZXh3ABfthqwCJYpqBlGTdWwgSr-l1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

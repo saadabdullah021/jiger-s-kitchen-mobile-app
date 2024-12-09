@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../model/order_list_model.dart';
+import '../../core/contstants.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_images.dart';
 
 class ExpandedData extends StatelessWidget {
-  const ExpandedData({
+  OrdersList data;
+  ExpandedData({
+    required this.data,
     super.key,
   });
 
@@ -27,7 +31,7 @@ class ExpandedData extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  "07/20/2024, 11:10 am",
+                  data.orderCreatedAt ?? "",
                   style: TextStyle(fontSize: 12, color: AppColors.newOrderGrey),
                   softWrap: true,
                   maxLines: 2,
@@ -38,29 +42,40 @@ class ExpandedData extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            const ItemRow(
+            ItemRow(
               leading: "Item:",
-              desc: "Smosa",
+              desc: data.ordersItems![0].menuItemInfo!.itemName!,
             ),
             const SizedBox(
               height: 5,
             ),
-            const ItemRow(
+            Visibility(
+              visible: data.ordersItems!.length > 1,
+              child: ItemRow(
+                leading: "\t",
+                desc: "+${data.ordersItems!.length - 1} more",
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            ItemRow(
               leading: "Qty:",
-              desc: "150",
+              desc: data.ordersItems![0].itemQuantity,
             ),
             const SizedBox(
               height: 10,
             ),
-            const ItemRow(
+            ItemRow(
               leading: "Vendor: ",
-              desc: "DSCC",
+              desc: data.vendorInfo!.name!,
             ),
           ],
         ),
-        const CircleAvatar(
-          radius: 60,
-          backgroundImage: AssetImage("assets/images/smosa.png"),
+        CircleAvatar(
+          radius: 30,
+          backgroundImage: NetworkImage(Constants.webUrl +
+              data.ordersItems![0].menuItemInfo!.profileImage!),
         )
       ],
     );
@@ -116,8 +131,8 @@ class NewOrderButtonWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 40,
-            width: 42,
+            height: 30,
+            width: 32,
             decoration: BoxDecoration(boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
@@ -168,12 +183,17 @@ class ItemRow extends StatelessWidget {
         const SizedBox(
           width: 5,
         ),
-        Text(
-          desc ?? 'Description',
-          style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textBlackColor),
+        SizedBox(
+          width: 150,
+          child: Text(
+            desc ?? 'Description',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textBlackColor),
+          ),
         ),
       ],
     );

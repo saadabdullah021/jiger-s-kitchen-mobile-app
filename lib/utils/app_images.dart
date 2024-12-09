@@ -10,12 +10,21 @@ class AppImages {
   static String mailIcon = "${imgePath}Mail.png";
   static String splash = "${imgePath}splash.png";
   static String chef = "${imgePath}chef.png";
+  static String payPal = "${imgePath}paypal.png";
+  static String visa = "${imgePath}card.png";
+  static String atm = "${imgePath}atm.png";
   //svg
   static String successDialougIcon = "${imgePath}success_dialoug_icon.svg";
   static String splashBG = "${imgePath}splashbg.svg";
   static String error = "${imgePath}error.svg";
   static String forgetPassword = "${imgePath}forgetpassword.svg";
+  //welcomePage
+  static String onBoard1 = "${imgePath}w1.png";
+  static String onBoard2 = "${imgePath}w2.png";
+  static String onBoard3 = "${imgePath}w3.png";
   //home images
+
+  static String logout = "${imgePath}logout.svg";
   static String home1Image = "${imgePath}home_1.svg";
   static String home2Image = "${imgePath}home_2.svg";
   static String home3Image = "${imgePath}home_3.svg";
@@ -36,6 +45,7 @@ class AppImages {
   static String dashboard7 = "${dashboadImgePath}dashboard_7.svg";
   static String images = "${dashboadImgePath}images-regular.png";
   //new order
+  static String loader = "${imgePath}catering.gif";
   static String smosa = "${imgePath}smosa.svg";
   static String clock = "${imgePath}clock.svg";
 }
