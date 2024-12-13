@@ -46,16 +46,16 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCR50tewx1unnyfoCqVcwig0RMUhPWwu-8',
-    appId: '1:339986732336:ios:a35f487a110daca8bf24f5',
+    appId: '1:339986732336:ios:d6ed32727ff1b21dbf24f5',
     messagingSenderId: '339986732336',
     projectId: 'jigar-s-kitchen-6ce9c',
     databaseURL:
         'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'jigar-s-kitchen-6ce9c.appspot.com',
+    storageBucket: 'jigar-s-kitchen-6ce9c.firebasestorage.app',
     androidClientId:
         '406099696497-tvtvuiqogct1gs1s6lh114jeps7hpjm5.apps.googleusercontent.com',
     iosClientId:
         '406099696497-taeapvle10rf355ljcvq5dt134mkghmp.apps.googleusercontent.com',
-    iosBundleId: 'app.jigars.kitchen',
+    iosBundleId: 'app.jigar.kitchen',
   );
 }

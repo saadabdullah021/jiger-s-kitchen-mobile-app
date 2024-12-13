@@ -9,11 +9,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>app.jigars.kitchen</string>
+	<string>app.jigar.kitchen</string>
 	<key>PROJECT_ID</key>
 	<string>jigar-s-kitchen-6ce9c</string>
 	<key>STORAGE_BUCKET</key>
-	<string>jigar-s-kitchen-6ce9c.appspot.com</string>
+	<string>jigar-s-kitchen-6ce9c.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:339986732336:ios:a35f487a110daca8bf24f5</string>
+	<string>1:339986732336:ios:d6ed32727ff1b21dbf24f5</string>
 </dict>
 </plist>
