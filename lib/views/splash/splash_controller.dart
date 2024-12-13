@@ -16,11 +16,11 @@ class SplashController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
-    await FirebaseMessaging.instance.getToken().then((value) {
-      if (value != null) {
-        Common.fcmToken = value;
-      }
-    });
+    // await FirebaseMessaging.instance.getToken().then((value) {
+    //   if (value != null) {
+    //     Common.fcmToken = value;
+    //   }
+    // });
     bool? isFirstTime =
         SharedPref.getInstance().getBoolValuesSF(AppKeys.isFirstTime);
     String? token =
