@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="Jigar's Kitchen"
+        android:label="Jigars Kitchens"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -46,7 +46,7 @@
             android:value="2" />
               <meta-data
    android:name="com.google.firebase.messaging.default_notification_icon"
-   android:resource="@mipmap/ic_notification_icon" />
+   android:resource="@mipmap/ic_launcher" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
