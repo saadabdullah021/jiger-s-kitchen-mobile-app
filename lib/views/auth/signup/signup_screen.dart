@@ -54,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ? "Edit Vendor"
               : widget.addVendor == true
                   ? "Add Vendor"
-                  : "Jigar’s Kitchen"),
+                  : "Jigar’s Kitchens"),
       body: Obx(
         () => controller.isloading.isTrue
             ? Center(

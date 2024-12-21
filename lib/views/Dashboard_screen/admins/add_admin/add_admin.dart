@@ -39,7 +39,7 @@ class AddAdminScreen extends StatelessWidget {
 
     final GlobalKey<FormState> key = GlobalKey();
     return Scaffold(
-      appBar: appBar(text: "Jigar’s Kitchen"),
+      appBar: appBar(text: "Jigar’s Kitchens"),
       body: Form(
         key: key,
         child: Obx(

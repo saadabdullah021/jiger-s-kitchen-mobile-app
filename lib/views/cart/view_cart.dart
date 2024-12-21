@@ -144,22 +144,53 @@ class _ViewCartState extends State<ViewCart> {
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
+                                                    const Text(
+                                                      "Quantity:",
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
                                                     Text(
-                                                      Helper.capitalizeFirstLetter(
-                                                          _controller
-                                                                  .cartData
-                                                                  .value
-                                                                  .data![index]
-                                                                  .menuItem!
-                                                                  .itemQuantity!
-                                                                  .replaceAll(
-                                                                      "_",
-                                                                      " ") ??
-                                                              ""),
+                                                      _controller
+                                                          .cartData
+                                                          .value
+                                                          .data![index]
+                                                          .menuItem!
+                                                          .totalCount
+                                                          .toString(),
                                                       style: const TextStyle(
                                                           fontSize: 15,
                                                           fontWeight: FontWeight
                                                               .normal),
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        _controller.addQuantityDialog(
+                                                            index: index,
+                                                            text: _controller
+                                                                .cartData
+                                                                .value
+                                                                .data![index]
+                                                                .menuItem!
+                                                                .totalCount!
+                                                                .toString(),
+                                                            heading:
+                                                                "Add Quantity",
+                                                            context: context,
+                                                            img: _controller
+                                                                .cartData
+                                                                .value
+                                                                .data![index]
+                                                                .menuItem!
+                                                                .profileImage!);
+                                                      },
+                                                      child: Icon(
+                                                        Icons.edit,
+                                                        color:
+                                                            AppColors.greyColor,
+                                                        size: 20,
+                                                      ),
                                                     ),
                                                     const SizedBox(
                                                       width: 10,
@@ -234,79 +265,85 @@ class _ViewCartState extends State<ViewCart> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        InkWell(
-                                                          onTap: () {
-                                                            _controller
-                                                                .decreasePrice(
-                                                                    index);
-                                                          },
-                                                          child: Container(
-                                                            decoration: BoxDecoration(
-                                                                color: AppColors
-                                                                    .primaryColor,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15)),
-                                                            child:
-                                                                const Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(2.0),
-                                                              child: Icon(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  Icons.remove),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 5,
-                                                        ),
+                                                        // InkWell(
+                                                        //   onTap: () {
+                                                        //     _controller
+                                                        //         .decreasePrice(
+                                                        //             index);
+                                                        //   },
+                                                        //   child: Container(
+                                                        //     decoration: BoxDecoration(
+                                                        //         color: AppColors
+                                                        //             .primaryColor,
+                                                        //         borderRadius:
+                                                        //             BorderRadius
+                                                        //                 .circular(
+                                                        //                     15)),
+                                                        //     child:
+                                                        //         const Padding(
+                                                        //       padding:
+                                                        //           EdgeInsets
+                                                        //               .all(2.0),
+                                                        //       child: Icon(
+                                                        //           color: Colors
+                                                        //               .white,
+                                                        //           Icons.remove),
+                                                        //     ),
+                                                        //   ),
+                                                        // ),
+                                                        // const SizedBox(
+                                                        //   width: 5,
+                                                        // ),
                                                         Text(
-                                                          _controller
-                                                              .cartData
-                                                              .value
-                                                              .data![index]
-                                                              .menuItem!
-                                                              .totalCount
-                                                              .toString(),
+                                                          Helper.capitalizeFirstLetter(
+                                                              _controller
+                                                                      .cartData
+                                                                      .value
+                                                                      .data![
+                                                                          index]
+                                                                      .menuItem!
+                                                                      .itemQuantity!
+                                                                      .replaceAll(
+                                                                          "_",
+                                                                          " ") ??
+                                                                  ""),
                                                           style: const TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold),
+                                                                      .normal),
                                                         ),
-                                                        const SizedBox(
-                                                          width: 5,
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            _controller
-                                                                .increaseQuantity(
-                                                                    index);
-                                                          },
-                                                          child: Container(
-                                                            decoration: BoxDecoration(
-                                                                color: AppColors
-                                                                    .primaryColor,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15)),
-                                                            child:
-                                                                const Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(2.0),
-                                                              child: Icon(
-                                                                Icons.add,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
+
+                                                        // const SizedBox(
+                                                        //   width: 5,
+                                                        // ),
+                                                        // InkWell(
+                                                        //   onTap: () {
+                                                        //     _controller
+                                                        //         .increaseQuantity(
+                                                        //             index);
+                                                        //   },
+                                                        //   child: Container(
+                                                        //     decoration: BoxDecoration(
+                                                        //         color: AppColors
+                                                        //             .primaryColor,
+                                                        //         borderRadius:
+                                                        //             BorderRadius
+                                                        //                 .circular(
+                                                        //                     15)),
+                                                        //     child:
+                                                        //         const Padding(
+                                                        //       padding:
+                                                        //           EdgeInsets
+                                                        //               .all(2.0),
+                                                        //       child: Icon(
+                                                        //         Icons.add,
+                                                        //         color: Colors
+                                                        //             .white,
+                                                        //       ),
+                                                        //     ),
+                                                        //   ),
+                                                        // ),
                                                       ],
                                                     ),
                                                     InkWell(

@@ -5,7 +5,7 @@ class Constants {
   static String webUrl = 'https://portal.jigarskitchen.com/';
   static String INTERNET_PING = 'https://www.google.com';
 
-  static String APP_NAME = "Jigar’s Kitchen";
+  static String APP_NAME = "Jigar’s Kitchens";
 
   static soryyTryAgainToast() {
     appWidgets().showToast("Sorry", "Please Try again");

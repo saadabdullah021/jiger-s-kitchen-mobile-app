@@ -30,7 +30,7 @@ class JigarHome extends StatelessWidget {
         appBar: appBar(
             showDrawer: true,
             showback: false,
-            text: "Jigar’s Kitchen",
+            text: "Jigar’s Kitchens",
             actions: [
               InkWell(
                 onTap: () {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/core/contstants.dart';
+import 'package:jigers_kitchen/utils/helper.dart';
 
 import '../../core/apis/app_interface.dart';
 import '../../model/crate_item_data_model.dart';
@@ -265,6 +266,95 @@ class ViewCartController extends GetxController {
                       cartData.value.data![index!].menuItem!.notes =
                           textController.text;
                       cartData.refresh();
+                    },
+                    padding: 10,
+                  ),
+                ),
+                const SizedBox(height: 35.0),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void addQuantityDialog({
+    BuildContext? context,
+    String? img,
+    int? index,
+    String? heading,
+    String? text,
+    VoidCallback? onBtnTap,
+    TextStyle? headingStyle = const TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+    TextStyle? textStyle = const TextStyle(
+        fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+    String? btnText,
+  }) {
+    TextEditingController textController = TextEditingController();
+    textController.text = text ?? "";
+    showDialog(
+      barrierColor: AppColors.primaryColor.withOpacity(0.6),
+      context: context!,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20), // Adjust horizontal padding here
+          child: Container(
+            width: double.infinity, // Full width of the screen
+            decoration: BoxDecoration(
+              color: AppColors.dialougBG,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                Image.network(
+                  Constants.webUrl + img!,
+                  height: 80.0,
+                ),
+                const SizedBox(height: 5.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      heading!,
+                      textAlign: TextAlign.center,
+                      style: headingStyle,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomTextField(
+                        validator: Helper.validateNumber,
+                        maxLines: 5,
+                        controller: textController,
+                        fillColor: AppColors.textWhiteColor,
+                        hintText: "Add Quantity",
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButton(
+                    text: "Add Quantity",
+                    onPressed: () {
+                      if (textController.text == "" ||
+                          double.parse(textController.text) == 0) {
+                        appWidgets()
+                            .showToast("Sorry", "Please add valid quantity");
+                      } else {
+                        Get.back();
+                        cartData.value.data![index!].menuItem!.totalCount =
+                            double.parse(textController.text);
+                        setPrice(index);
+                        cartData.refresh();
+                      }
                     },
                     padding: 10,
                   ),
