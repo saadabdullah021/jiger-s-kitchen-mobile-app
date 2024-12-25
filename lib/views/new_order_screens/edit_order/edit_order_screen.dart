@@ -183,6 +183,19 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                           .itemBasePrice! ??
                                       ""),
                               const SizedBox(
+                                height: 10,
+                              ),
+                              if (controller.editOrderDetail.value.data!
+                                      .ordersItems![i].itemNote !=
+                                  "")
+                                ItemRow(
+                                    leftText: "Item Notes",
+                                    rightText:
+                                        // "hdjsfghads fajsdhf asdhj jaghsdjka sgdkajs dagjksd ajksdgajksdga "
+                                        controller.editOrderDetail.value.data!
+                                                .ordersItems![i].itemNote! ??
+                                            ""),
+                              const SizedBox(
                                 height: 20,
                               ),
                               Row(
@@ -205,6 +218,10 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                       controller.quantityController.text =
                                           controller.editOrderDetail.value.data!
                                               .ordersItems![i].itemQuantity!
+                                              .toString();
+                                      controller.notesController.text =
+                                          controller.editOrderDetail.value.data!
+                                              .ordersItems![i].itemNote!
                                               .toString();
                                       controller.chnagePriceAndQty(
                                         context: context,
@@ -269,15 +286,18 @@ Widget ItemRow({
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      Text(
-        rightText,
-        softWrap: true,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
-            color: AppColors.textBlackColor),
+      Flexible(
+        child: Text(
+          rightText,
+          softWrap: true,
+          textAlign: TextAlign.right,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              color: AppColors.textBlackColor),
+        ),
       ),
     ],
   );

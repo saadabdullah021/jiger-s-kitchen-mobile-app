@@ -90,6 +90,10 @@ class Helper {
     return null;
   }
 
+  static String? noValidation(String? value) {
+    return null;
+  }
+
   static String? validateEmpty(String? value) {
     if (value == "") {
       return "This field is required";

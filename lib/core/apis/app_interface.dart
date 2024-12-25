@@ -1879,6 +1879,7 @@ class AppInterface extends BaseApi {
       required String orderId,
       String? vendorID,
       String? itemQty,
+      String? itemNotes,
       String? itmPrice}) async {
     Map<String, Object?> data = {
       "item_id": id,
@@ -1886,6 +1887,7 @@ class AppInterface extends BaseApi {
       "order_id": orderId,
       "item_qty": itemQty,
       "item_price": itmPrice,
+      "item_notes": itemNotes,
     };
 
     var headers = {

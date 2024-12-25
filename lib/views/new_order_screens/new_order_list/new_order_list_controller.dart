@@ -23,6 +23,7 @@ class newORderListController extends GetxController {
   TextEditingController textController = TextEditingController();
   TextEditingController PriceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  TextEditingController notesController = TextEditingController();
   DashboardController dashboardController = Get.find();
   RxBool isLoading = false.obs;
   RxBool isEditOrderLoading = false.obs;
@@ -121,7 +122,7 @@ class newORderListController extends GetxController {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: CustomTextField(
-                          validator: Helper.validateNumber,
+                          validator: Helper.validateFloat,
                           keyboardType: TextInputType.number,
                           controller: PriceController,
                           fillColor: AppColors.textWhiteColor,
@@ -147,10 +148,35 @@ class newORderListController extends GetxController {
                         padding: const EdgeInsets.all(8.0),
                         child: CustomTextField(
                           controller: quantityController,
-                          validator: Helper.validateNumber,
+                          validator: Helper.validateFloat,
                           keyboardType: TextInputType.number,
                           fillColor: AppColors.textWhiteColor,
-                          hintText: "Add Qty",
+                          hintText: "Item Notes",
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          child: Text(
+                            "Item Notes",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomTextField(
+                          controller: notesController,
+                          validator: Helper.noValidation,
+                          keyboardType: TextInputType.number,
+                          fillColor: AppColors.textWhiteColor,
+                          hintText: "Item Notes",
                         ),
                       ),
                     ],
@@ -196,6 +222,7 @@ class newORderListController extends GetxController {
             orderId: editOrderDetail.value.data!.id.toString(),
             vendorID: editOrderDetail.value.data!.vendorInfo!.id.toString(),
             itmPrice: PriceController.text,
+            itemNotes: notesController.text,
             itemQty: quantityController.text)
         .then((value) {
       appWidgets.hideDialog();
