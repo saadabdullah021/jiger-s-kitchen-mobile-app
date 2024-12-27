@@ -124,13 +124,6 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                             const SizedBox(
                               height: 10,
                             ),
-                            ItemRow(
-                                leftText: "Total Amount:",
-                                rightText: controller
-                                    .editOrderDetail.value.data!.totalAmount!),
-                            const SizedBox(
-                              height: 10,
-                            ),
                             DottedDivider(
                               height: 2.0,
                               color: AppColors.newOrderGrey,
@@ -149,7 +142,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                 height: 10,
                               ),
                               ItemRow(
-                                  leftText: "item:",
+                                  leftText: "Item:",
                                   rightText: controller
                                           .editOrderDetail
                                           .value
@@ -237,7 +230,64 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                 dotSize: 2.0,
                                 dotSpacing: 3.0,
                               ),
-                            }
+                            },
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ItemRow(
+                                leftText: "Total Amount:",
+                                rightText: controller
+                                    .editOrderDetail.value.data!.totalAmount!),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Visibility(
+                              visible: controller
+                                      .editOrderDetail.value.data!.orderNote !=
+                                  null,
+                              child: ItemRow(
+                                  leftText: "Order Notes:", rightText: ""),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              controller
+                                      .editOrderDetail.value.data!.orderNote ??
+                                  "",
+                              softWrap: true,
+                              textAlign: TextAlign.start,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: AppColors.textBlackColor),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(),
+                                NewOrderButtonWidget(
+                                  text: "Edit Order Notes",
+                                  clr: AppColors.primaryColor,
+                                  ic: Icons.edit,
+                                  ontap: () {
+                                    controller.orderNotesController.text =
+                                        controller.editOrderDetail.value.data!
+                                            .orderNote
+                                            .toString();
+                                    controller.chnageOrderNotes(
+                                      context: context,
+                                      onBtnTap: () {},
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),

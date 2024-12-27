@@ -1911,6 +1911,36 @@ class AppInterface extends BaseApi {
     return null;
   }
 
+  Future<dynamic> editOrderNotes({
+    required String orderId,
+    String? itemNotes,
+  }) async {
+    Map<String, Object?> data = {
+      "order_id": orderId,
+      "order_notes": itemNotes,
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-order-notes",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
   Future<dynamic> addToCart({
     required String id,
   }) async {

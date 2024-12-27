@@ -24,6 +24,7 @@ class newORderListController extends GetxController {
   TextEditingController PriceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController notesController = TextEditingController();
+  TextEditingController orderNotesController = TextEditingController();
   DashboardController dashboardController = Get.find();
   RxBool isLoading = false.obs;
   RxBool isEditOrderLoading = false.obs;
@@ -151,7 +152,7 @@ class newORderListController extends GetxController {
                           validator: Helper.validateFloat,
                           keyboardType: TextInputType.number,
                           fillColor: AppColors.textWhiteColor,
-                          hintText: "Item Notes",
+                          hintText: "Add Quantity",
                         ),
                       ),
                       const SizedBox(
@@ -214,6 +215,92 @@ class newORderListController extends GetxController {
     );
   }
 
+  void chnageOrderNotes({
+    BuildContext? context,
+    VoidCallback? onBtnTap,
+    TextStyle? headingStyle = const TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+    TextStyle? textStyle = const TextStyle(
+        fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+    String? btnText,
+  }) {
+    final GlobalKey<FormState> key = GlobalKey();
+    showDialog(
+      barrierColor: AppColors.primaryColor.withOpacity(0.6),
+      context: context!,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20), // Adjust horizontal padding here
+          child: Container(
+            width: double.infinity, // Full width of the screen
+            decoration: BoxDecoration(
+              color: AppColors.dialougBG,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Form(
+              key: key,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Edit Order Notes",
+                        textAlign: TextAlign.center,
+                        style: headingStyle,
+                      ),
+                      const SizedBox(height: 8.0),
+                      const Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          child: Text(
+                            "Order Notes",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomTextField(
+                          maxLines: 20,
+                          controller: orderNotesController,
+                          validator: Helper.noValidation,
+                          keyboardType: TextInputType.number,
+                          fillColor: AppColors.textWhiteColor,
+                          hintText: "Order Notes",
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomButton(
+                      text: "SUBMIT",
+                      onPressed: () {
+                        Get.back();
+                        editSelectedOrderNotes();
+                      },
+                      padding: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 35.0),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   editSelectedOrderItem() async {
     appWidgets.loadingDialog();
     await AppInterface()
@@ -235,6 +322,32 @@ class newORderListController extends GetxController {
             autoDismiss: true,
             heading: "Hurray!",
             text: "Items Added Successfully",
+            headingStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textBlackColor));
+      }
+    });
+  }
+
+  editSelectedOrderNotes() async {
+    appWidgets.loadingDialog();
+    await AppInterface()
+        .editOrderNotes(
+      orderId: editOrderDetail.value.data!.id.toString(),
+      itemNotes: orderNotesController.text,
+    )
+        .then((value) {
+      appWidgets.hideDialog();
+      if (value == 200) {
+        getEditOrder(false);
+        showDialogWithAutoDismiss(
+            context: Get.context,
+            doubleBack: false,
+            img: AppImages.successDialougIcon,
+            autoDismiss: true,
+            heading: "Hurray!",
+            text: "Notes Updated Successfully",
             headingStyle: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w600,
