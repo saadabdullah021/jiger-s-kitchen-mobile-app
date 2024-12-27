@@ -59,7 +59,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Order List",),
+      appBar: appBar(
+        text: "Order List",
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
@@ -189,8 +191,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  itemRow(
-                                                      "Vendor Name:",
+                                                  Center(
+                                                    child: Text(
                                                       controller
                                                               .orderList
                                                               .value
@@ -199,15 +201,30 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                   index]
                                                               .vendorInfo!
                                                               .name ??
-                                                          ""),
-                                                  itemRow(
-                                                      "Order Date",
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontWeight: FontWeight
+                                                              .normal),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Center(
+                                                    child: Text(
                                                       controller
-                                                          .orderList
-                                                          .value
-                                                          .data!
-                                                          .ordersList![index]
-                                                          .orderCreatedAt!),
+                                                              .orderList
+                                                              .value
+                                                              .data!
+                                                              .ordersList![
+                                                                  index]
+                                                              .orderCreatedAt! ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontWeight: FontWeight
+                                                              .normal),
+                                                    ),
+                                                  ),
                                                   const Divider(),
                                                   for (int i = 0;
                                                       i <

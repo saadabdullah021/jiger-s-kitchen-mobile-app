@@ -77,37 +77,20 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppImages.clock,
-                                          height: 15,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          controller.editOrderDetail.value.data!
-                                                  .orderCreatedAt!
-                                                  .split(" ")[0] ??
-                                              "",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.newOrderGrey),
-                                          softWrap: true,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Text(
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppImages.clock,
+                                        height: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
                                         controller.editOrderDetail.value.data!
-                                                .orderCreatedAt!
-                                                .split(" ")[1] ??
+                                                .orderCreatedAt ??
                                             "",
                                         style: TextStyle(
                                             fontSize: 12,
@@ -116,8 +99,8 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

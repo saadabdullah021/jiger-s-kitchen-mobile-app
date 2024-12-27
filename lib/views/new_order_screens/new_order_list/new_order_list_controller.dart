@@ -175,7 +175,7 @@ class newORderListController extends GetxController {
                         child: CustomTextField(
                           controller: notesController,
                           validator: Helper.noValidation,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           fillColor: AppColors.textWhiteColor,
                           hintText: "Item Notes",
                         ),
@@ -272,7 +272,7 @@ class newORderListController extends GetxController {
                           maxLines: 20,
                           controller: orderNotesController,
                           validator: Helper.noValidation,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           fillColor: AppColors.textWhiteColor,
                           hintText: "Order Notes",
                         ),
