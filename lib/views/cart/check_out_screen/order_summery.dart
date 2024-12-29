@@ -250,7 +250,9 @@ class _OrderSummeryState extends State<OrderSummery> {
           child: CustomButton(
               text: "Place Order",
               onPressed: () async {
-                _controller.PlaceOrder(context);
+                if (_controller.isPlacingOrder == false) {
+                  _controller.PlaceOrder(context);
+                }
               })),
     );
   }

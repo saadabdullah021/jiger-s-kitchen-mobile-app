@@ -27,6 +27,7 @@ class ViewCartController extends GetxController {
   double totalPrice = 0.0;
   double finalPrice = 0.0;
   double taxPrice = 0.0;
+  bool isPlacingOrder = false;
   String shippingPrice =
       Common.loginReponse.value.data!.deliveryCharges.toString();
   RxBool isloading = false.obs;
@@ -54,6 +55,7 @@ class ViewCartController extends GetxController {
   }
 
   PlaceOrder(BuildContext context) async {
+    isPlacingOrder = true;
     appWidgets.loadingDialog();
     String json =
         jsonEncode(allCartItemList.map((item) => item.toJson()).toList());
@@ -69,7 +71,8 @@ class ViewCartController extends GetxController {
       orderBillingAddress: shippingAddress.value,
       orderNotes: noteController.text,
     )
-        .then((value) {
+        .then((value) async {
+      isPlacingOrder = false;
       appWidgets.hideDialog();
       if (value == 200) {
         showDialogWithAutoDismiss(
@@ -83,7 +86,8 @@ class ViewCartController extends GetxController {
                 fontSize: 32,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textBlackColor));
-
+        await AppInterface()
+            .getUserByToken(Common.loginReponse.value.data!.token!);
         Future.delayed(const Duration(seconds: 2), () {
           Get.offAll(const JigarHome());
         });
