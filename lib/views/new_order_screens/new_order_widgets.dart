@@ -21,7 +21,27 @@ class ExpandedData extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                data.vendorInfo!.name ?? "",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textBlackColor),
+              ),
+            ),
+            // ItemRow(
+            //   leading: "",
+            //   desc: data.vendorInfo!.name!,
+            // ),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SvgPicture.asset(
                   AppImages.clock,
@@ -62,13 +82,6 @@ class ExpandedData extends StatelessWidget {
             ItemRow(
               leading: "Qty:",
               desc: data.ordersItems![0].itemQuantity,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            ItemRow(
-              leading: "Vendor: ",
-              desc: data.vendorInfo!.name!,
             ),
           ],
         ),

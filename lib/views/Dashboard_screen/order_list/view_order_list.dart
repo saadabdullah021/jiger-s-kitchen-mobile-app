@@ -1,5 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
@@ -8,6 +9,7 @@ import 'package:jigers_kitchen/views/Dashboard_screen/order_list/view_order_list
 
 import '../../../../utils/widget/custom_textfiled.dart';
 import '../../../common/common.dart';
+import '../../../utils/app_images.dart';
 import '../../../utils/widget/no_data.dart';
 import '../../new_order_screens/new_order_widgets.dart';
 import '../invoice/view_invoices.dart';
@@ -203,26 +205,41 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                               .name ??
                                                           "",
                                                       style: const TextStyle(
-                                                          fontWeight: FontWeight
-                                                              .normal),
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                   ),
                                                   const SizedBox(
                                                     height: 5,
                                                   ),
                                                   Center(
-                                                    child: Text(
-                                                      controller
-                                                              .orderList
-                                                              .value
-                                                              .data!
-                                                              .ordersList![
-                                                                  index]
-                                                              .orderCreatedAt! ??
-                                                          "",
-                                                      style: const TextStyle(
-                                                          fontWeight: FontWeight
-                                                              .normal),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                          AppImages.clock,
+                                                          height: 15,
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .orderCreatedAt! ??
+                                                              "",
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                   const Divider(),
@@ -242,8 +259,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                           const EdgeInsets.only(
                                                               bottom: 20),
                                                       child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
-                                                          itemRow(
+                                                          itemColumn(
                                                               "Product Name:",
                                                               controller
                                                                   .orderList
@@ -255,18 +275,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                       i]
                                                                   .menuItemInfo!
                                                                   .itemName!),
-                                                          itemRow(
-                                                              "Description:",
-                                                              controller
-                                                                  .orderList
-                                                                  .value
-                                                                  .data!
-                                                                  .ordersList![
-                                                                      index]
-                                                                  .ordersItems![
-                                                                      i]
-                                                                  .menuItemInfo!
-                                                                  .itemDescription!),
                                                           itemRow(
                                                               "Quantity:",
                                                               (double.parse(controller
@@ -293,6 +301,18 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                       .itemBasePrice!)
                                                                   .toStringAsFixed(
                                                                       2))),
+                                                          itemColumn(
+                                                              "Description:",
+                                                              controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .ordersItems![
+                                                                      i]
+                                                                  .menuItemInfo!
+                                                                  .itemDescription!),
                                                           Visibility(
                                                             visible: controller
                                                                         .orderList
@@ -314,7 +334,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                             i]
                                                                         .itemNote !=
                                                                     "",
-                                                            child: itemRow(
+                                                            child: itemColumn(
                                                                 "Item Notes:",
                                                                 controller
                                                                     .orderList
@@ -330,6 +350,51 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                         ],
                                                       ),
                                                     ),
+                                                  Visibility(
+                                                      visible: controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .orderNote !=
+                                                              null &&
+                                                          controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .orderNote !=
+                                                              "",
+                                                      child: const Divider()),
+                                                  Visibility(
+                                                    visible: controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .orderNote !=
+                                                            null &&
+                                                        controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .orderNote !=
+                                                            "",
+                                                    child: itemColumn(
+                                                        "Order Notes:",
+                                                        controller
+                                                            .orderList
+                                                            .value
+                                                            .data!
+                                                            .ordersList![index]
+                                                            .orderNote
+                                                            .toString()),
+                                                  ),
                                                   const Divider(),
                                                   itemRow(
                                                       "Sub Total:",
@@ -375,33 +440,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                               .totalAmount
                                                               .toString())
                                                           .toStringAsFixed(2))),
-                                                  Visibility(
-                                                    visible: controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .ordersList![
-                                                                    index]
-                                                                .orderNote !=
-                                                            null &&
-                                                        controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .ordersList![
-                                                                    index]
-                                                                .orderNote !=
-                                                            "",
-                                                    child: itemRow(
-                                                        "Order Notes:",
-                                                        controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .ordersList![index]
-                                                            .orderNote
-                                                            .toString()),
-                                                  ),
                                                   const Divider(),
                                                   Row(
                                                     mainAxisAlignment:
@@ -600,6 +638,26 @@ Widget itemRow(String t1, String t2) {
             t2,
             style: const TextStyle(fontWeight: FontWeight.normal),
           ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget itemColumn(String t1, String t2) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 3),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          t1,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        Text(
+          t2,
+          style: const TextStyle(fontWeight: FontWeight.normal),
         ),
       ],
     ),

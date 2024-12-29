@@ -47,7 +47,7 @@ class HomeController extends GetxController {
     },
     {
       "img": AppImages.home3Image,
-      "name": "Vendor Request\nItem",
+      "name": "Vendor Requested\nItems",
       "show": Common.currentRole == AppKeys.roleAdmin ? true : false,
       "show_drawer": false
     },

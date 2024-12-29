@@ -89,7 +89,7 @@ class _VenderRequestItemState extends State<VenderRequestItem> {
                         ? Column(
                             children: [
                               SizedBox(height: Get.height * 0.15),
-                          noData(null),
+                              noData(null),
                             ],
                           )
                         : Expanded(
@@ -226,7 +226,7 @@ Widget iconTextWidget({
           text,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-              fontSize: 11,
+              fontSize: 13,
               color: AppColors.newOrderGrey,
               fontWeight: FontWeight.w600),
         ),
