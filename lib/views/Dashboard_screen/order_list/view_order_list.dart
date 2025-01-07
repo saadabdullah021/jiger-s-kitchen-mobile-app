@@ -478,14 +478,15 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                   "delivery_user" ||
                                                               Common.currentRole ==
                                                                   "admin") &&
-                                                          (controller
-                                                                      .orderList
-                                                                      .value
-                                                                      .data!
-                                                                      .ordersList![
-                                                                          index]
-                                                                      .orderStatus !=
-                                                                  "delivered" &&
+                                                          (
+                                                              // controller
+                                                              //           .orderList
+                                                              //           .value
+                                                              //           .data!
+                                                              //           .ordersList![
+                                                              //               index]
+                                                              //           .orderStatus !=
+                                                              //       "delivered" &&
                                                               controller
                                                                       .orderList
                                                                       .value
@@ -501,14 +502,15 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                                   "delivery_user" ||
                                                               Common.currentRole ==
                                                                   "admin") &&
-                                                          (controller
-                                                                      .orderList
-                                                                      .value
-                                                                      .data!
-                                                                      .ordersList![
-                                                                          index]
-                                                                      .orderStatus !=
-                                                                  "delivered" &&
+                                                          (
+                                                              // controller
+                                                              //           .orderList
+                                                              //           .value
+                                                              //           .data!
+                                                              //           .ordersList![
+                                                              //               index]
+                                                              //           .orderStatus !=
+                                                              //       "delivered" &&
                                                               controller
                                                                       .orderList
                                                                       .value
