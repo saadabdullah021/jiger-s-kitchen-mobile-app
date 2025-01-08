@@ -445,6 +445,44 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.end,
                                                     children: [
+                                                      Visibility(
+                                                        visible: Common
+                                                                .currentRole ==
+                                                            "admin",
+                                                        child:
+                                                            NewOrderButtonWidget(
+                                                          ic: Icons.edit,
+                                                          text: "Update Notes",
+                                                          ontap: () {
+                                                            controller
+                                                                .chnageOrderNotes(
+                                                              context: context,
+                                                              orderId: controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                                      index]
+                                                                  .id!
+                                                                  .toString(),
+                                                              intitalNotes: controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .ordersList![
+                                                                          index]
+                                                                      .orderNote ??
+                                                                  "",
+                                                              onBtnTap: () {},
+                                                            );
+                                                          },
+                                                          clr: AppColors
+                                                              .orangeColor,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 10,
+                                                      ),
                                                       NewOrderButtonWidget(
                                                         ic: Icons.receipt,
                                                         text: "Invoice",
