@@ -1,3 +1,6 @@
+import 'package:http/http.dart' as http;
+import 'package:printing/printing.dart';
+
 class Helper {
   static bool isEmail(String em) {
     return RegExp(
@@ -92,6 +95,22 @@ class Helper {
 
   static String? noValidation(String? value) {
     return null;
+  }
+
+  static Future<void> downloadAndPrintPdf(String pdfUrl) async {
+    try {
+      final response = await http.get(Uri.parse(pdfUrl));
+
+      if (response.statusCode == 200) {
+        await Printing.layoutPdf(
+          onLayout: (format) => response.bodyBytes,
+        );
+      } else {
+        print('Failed to download PDF');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   static String? validateEmpty(String? value) {

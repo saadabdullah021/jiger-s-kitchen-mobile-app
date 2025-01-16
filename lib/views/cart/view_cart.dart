@@ -156,7 +156,6 @@ class _ViewCartState extends State<ViewCart> {
                                                           .cartData
                                                           .value
                                                           .data![index]
-                                                          .menuItem!
                                                           .totalCount
                                                           .toString(),
                                                       style: const TextStyle(
@@ -166,24 +165,31 @@ class _ViewCartState extends State<ViewCart> {
                                                     ),
                                                     InkWell(
                                                       onTap: () {
-                                                        _controller.addQuantityDialog(
-                                                            index: index,
-                                                            text: _controller
-                                                                .cartData
-                                                                .value
-                                                                .data![index]
-                                                                .menuItem!
-                                                                .totalCount!
-                                                                .toString(),
-                                                            heading:
-                                                                "Add Quantity",
-                                                            context: context,
-                                                            img: _controller
-                                                                .cartData
-                                                                .value
-                                                                .data![index]
-                                                                .menuItem!
-                                                                .profileImage!);
+                                                        _controller
+                                                            .addQuantityDialog(
+                                                                index: index,
+                                                                text: _controller
+                                                                    .cartData
+                                                                    .value
+                                                                    .data![
+                                                                        index]
+                                                                    .totalCount!
+                                                                    .toString(),
+                                                                // orderData:
+                                                                //     _controller
+                                                                //         .cartData
+                                                                //         .value,
+                                                                heading:
+                                                                    "Add Quantity",
+                                                                context:
+                                                                    context,
+                                                                img: _controller
+                                                                    .cartData
+                                                                    .value
+                                                                    .data![
+                                                                        index]
+                                                                    .menuItem!
+                                                                    .profileImage!);
                                                       },
                                                       child: Icon(
                                                         Icons.edit,

@@ -17,6 +17,7 @@ class ReportController extends GetxController {
   final List<String> items = [
     'CUSTOMER REPORT',
     'DATE RANGE SALES REPORT',
+    'CUSTOMER SUMMARY'
   ];
   void showDatePickerOnly(bool isStart) {
     showDatePicker(
@@ -47,8 +48,11 @@ class ReportController extends GetxController {
             chefId, SelectedOrderReportType.value)
         .then((value) {
       appWidgets.hideDialog();
-      if (value is String) {
-        Get.to(InvoiceWithScreen(url: value));
+      if (value != null) {
+        Get.to(InvoiceWithScreen(
+          url: value['invoice_url'],
+          Xlurl: value['excel_url'] ?? "",
+        ));
       }
     });
   }
@@ -61,9 +65,10 @@ class ReportController extends GetxController {
               startController.text, endController.text, chefID)
           .then((value) {
         appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
+        Get.to(InvoiceWithScreen(
+          url: value['invoice_url'],
+          Xlurl: value['excel_url'] ?? "",
+        ));
       });
     } else if (type == "delivery_user") {
       await AppInterface()
@@ -71,18 +76,20 @@ class ReportController extends GetxController {
               startController.text, endController.text, chefID)
           .then((value) {
         appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
+        Get.to(InvoiceWithScreen(
+          url: value['invoice_url'],
+          Xlurl: value['excel_url'] ?? "",
+        ));
       });
     } else {
       await AppInterface()
           .getChefInvoiceLink(startController.text, endController.text, chefID)
           .then((value) {
         appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
+        Get.to(InvoiceWithScreen(
+          url: value['invoice_url'],
+          Xlurl: value['excel_url'] ?? "",
+        ));
       });
     }
   }
@@ -107,9 +114,11 @@ class ReportController extends GetxController {
         .getInvoiceLink(startController.text, endController.text)
         .then((value) {
       appWidgets.hideDialog();
-      if (value is String) {
-        Get.to(InvoiceWithScreen(url: value));
-      }
+
+      Get.to(InvoiceWithScreen(
+        url: value['invoice_url'],
+        Xlurl: value['excel_url'] ?? "",
+      ));
     });
   }
 }

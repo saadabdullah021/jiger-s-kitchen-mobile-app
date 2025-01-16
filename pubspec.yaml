@@ -52,6 +52,7 @@ dependencies:
   flutter_masked_text2: ^0.9.1
   share_plus: ^10.0.2
   pin_code_fields: ^8.0.1
+  printing: ^5.13.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

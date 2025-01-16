@@ -102,13 +102,13 @@ class ViewCartController extends GetxController {
     for (int i = 0; i < cartData.value.data!.length; i++) {
       double itemPrice = 0.0;
       for (int j = 0; j < cartData.value.data![i].priceSlabs!.length; j++) {
-        if (cartData.value.data![i].menuItem!.totalCount ==
+        if (cartData.value.data![i].totalCount ==
             double.parse(cartData.value.data![i].priceSlabs![j].quantity!)) {
           itemPrice =
               double.parse(cartData.value.data![i].priceSlabs![j].price!);
         } else {
           itemPrice = cartData.value.data![i].menuItem!.basePrice! *
-              cartData.value.data![i].menuItem!.totalCount!;
+              cartData.value.data![i].totalCount!;
         }
       }
 
@@ -118,7 +118,7 @@ class ViewCartController extends GetxController {
           itemId: cartData.value.data![i].itemId!,
           itemBasePrice: cartData.value.data![i].menuItem!.basePrice!,
           itemNote: cartData.value.data![i].menuItem!.itemDescription ?? "",
-          itemQuantity: cartData.value.data![i].menuItem!.totalCount!));
+          itemQuantity: cartData.value.data![i].totalCount!));
     }
     taxPrice = (totalPrice / 100) * taxPercentage;
 
@@ -166,15 +166,15 @@ class ViewCartController extends GetxController {
   }
 
   increaseQuantity(int index) {
-    cartData.value.data![index].menuItem!.totalCount =
-        cartData.value.data![index].menuItem!.totalCount! + 1;
+    cartData.value.data![index].totalCount =
+        cartData.value.data![index].totalCount! + 1;
     setPrice(index);
   }
 
   decreasePrice(int index) {
-    if (cartData.value.data![index].menuItem!.totalCount != 1) {
-      cartData.value.data![index].menuItem!.totalCount =
-          cartData.value.data![index].menuItem!.totalCount! - 1;
+    if (cartData.value.data![index].totalCount != 1) {
+      cartData.value.data![index].totalCount =
+          cartData.value.data![index].totalCount! - 1;
       setPrice(index);
     }
   }
@@ -182,12 +182,12 @@ class ViewCartController extends GetxController {
   setPrice(int index) {
     for (int i = 0; i < cartData.value.data![index].priceSlabs!.length; i++) {
       print(
-          "${double.parse(cartData.value.data![index].menuItem!.totalCount.toString())}");
+          "${double.parse(cartData.value.data![index].totalCount!.toString())}");
       print(
           "${double.parse(cartData.value.data![index].priceSlabs![i].quantity.toString())}");
       if (double.parse(
               cartData.value.data![index].priceSlabs![i].quantity.toString()) ==
-          double.parse(cartData.value.data![index].menuItem!.totalCount
+          double.parse(cartData.value.data![index].totalCount!
               .toString()
               .split(".")[0])) {
         cartData.value.data![index].menuItem!.basePrice = double.parse(
@@ -347,17 +347,30 @@ class ViewCartController extends GetxController {
                   padding: const EdgeInsets.all(8.0),
                   child: CustomButton(
                     text: "Add Quantity",
-                    onPressed: () {
+                    onPressed: () async {
                       if (textController.text == "" ||
                           double.parse(textController.text) == 0) {
                         appWidgets()
                             .showToast("Sorry", "Please add valid quantity");
                       } else {
-                        Get.back();
-                        cartData.value.data![index!].menuItem!.totalCount =
-                            double.parse(textController.text);
-                        setPrice(index);
-                        cartData.refresh();
+                        appWidgets.loadingDialog();
+                        await AppInterface()
+                            .updateItemQuantity(
+                                itemID: cartData.value.data![index!].itemId!
+                                    .toString(),
+                                orderID: cartData.value.data![index].cartId!
+                                    .toString(),
+                                quantity: double.parse(textController.text))
+                            .then((value) {
+                          appWidgets.hideDialog();
+                          if (value == 200) {
+                            Get.back();
+                            cartData.value.data![index].totalCount =
+                                double.parse(textController.text);
+                            setPrice(index);
+                            cartData.refresh();
+                          }
+                        });
                       }
                     },
                     padding: 10,
