@@ -28,8 +28,8 @@ class ViewCartController extends GetxController {
   double finalPrice = 0.0;
   double taxPrice = 0.0;
   bool isPlacingOrder = false;
-  String shippingPrice =
-      Common.loginReponse.value.data!.deliveryCharges.toString();
+  RxString shippingPrice =
+      Common.loginReponse.value.data!.deliveryCharges.toString().obs;
   RxBool isloading = false.obs;
   List<CreateItemModel> allCartItemList = [];
   TextEditingController noteController = TextEditingController();

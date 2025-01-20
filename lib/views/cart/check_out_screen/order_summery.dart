@@ -105,6 +105,21 @@ class _OrderSummeryState extends State<OrderSummery> {
                           value: _controller.checkedValue.value,
                           onChanged: (newValue) {
                             _controller.checkedValue.value = newValue!;
+                            if (newValue) {
+                              _controller.shippingPrice.value = "0";
+                              _controller.finalPrice = _controller.finalPrice -
+                                  double.parse(Common
+                                      .loginReponse.value.data!.deliveryCharges
+                                      .toString());
+                            } else {
+                              _controller.shippingPrice.value = Common
+                                  .loginReponse.value.data!.deliveryCharges
+                                  .toString();
+                              _controller.finalPrice = _controller.finalPrice +
+                                  double.parse(Common
+                                      .loginReponse.value.data!.deliveryCharges
+                                      .toString());
+                            }
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -136,7 +151,7 @@ class _OrderSummeryState extends State<OrderSummery> {
                               ),
                               itemRow(
                                   "Standard Shipping Charges",
-                                  double.parse(_controller.shippingPrice)
+                                  double.parse(_controller.shippingPrice.value)
                                       .toStringAsFixed(2)),
                               const SizedBox(
                                 height: 10,
