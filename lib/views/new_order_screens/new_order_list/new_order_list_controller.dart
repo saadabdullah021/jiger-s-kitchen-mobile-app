@@ -124,7 +124,8 @@ class newORderListController extends GetxController {
                         padding: const EdgeInsets.all(8.0),
                         child: CustomTextField(
                           validator: Helper.validateFloat,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           controller: PriceController,
                           fillColor: AppColors.textWhiteColor,
                           hintText: "Add Price",

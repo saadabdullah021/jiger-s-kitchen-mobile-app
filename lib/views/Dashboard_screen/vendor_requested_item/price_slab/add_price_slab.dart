@@ -102,7 +102,8 @@ class AddPriceSlabScreen extends StatelessWidget {
                       CustomTextField(
                         controller: controller.priceController,
                         validator: Helper.validateFloat,
-                        keyboardType: TextInputType.number,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         hintText: "Write Price (USD)",
                       ),
                       const SizedBox(
