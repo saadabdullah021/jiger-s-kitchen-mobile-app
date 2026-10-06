@@ -1,3 +1,4 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -88,138 +89,159 @@ class _AssignOrderState extends State<AssignOrder> {
                     itemCount:
                         _controller.selectedOrder.value.ordersItems!.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        elevation: 1,
-                        child: Container(
-                          foregroundDecoration:
-                              RotatedCornerDecoration.withColor(
-                            color: _controller.selectedOrder.value
-                                        .ordersItems![index].chefId ==
-                                    null
-                                ? AppColors.redColor
-                                : AppColors.appColor,
-                            badgeSize: const Size(64, 64),
-                            textSpan: TextSpan(
-                              text: _controller.selectedOrder.value
-                                          .ordersItems![index].chefId ==
-                                      null
-                                  ? "Not Assigned"
-                                  : "Assigned",
-                              style: const TextStyle(
-                                  fontSize: 10, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 20),
-                          decoration: BoxDecoration(
-                              color: AppColors.textWhiteColor,
-                              // border: Border.all(
-                              //     width: 1, color: AppColors.newOrderGrey),
-                              borderRadius: BorderRadius.circular(2)),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(Constants.webUrl +
-                                    _controller
-                                        .selectedOrder
-                                        .value
-                                        .ordersItems![index]
-                                        .menuItemInfo!
-                                        .profileImage!),
+                      return FadeSlideIn(
+                          index: index,
+                          child: Card(
+                            elevation: 1,
+                            child: Container(
+                              foregroundDecoration:
+                                  RotatedCornerDecoration.withColor(
+                                color: _controller.selectedOrder.value
+                                            .ordersItems![index].chefId ==
+                                        null
+                                    ? AppColors.redColor
+                                    : AppColors.appColor,
+                                badgeSize: const Size(64, 64),
+                                textSpan: TextSpan(
+                                  text: _controller.selectedOrder.value
+                                              .ordersItems![index].chefId ==
+                                          null
+                                      ? "Not Assigned"
+                                      : "Assigned",
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _controller
-                                              .selectedOrder
-                                              .value
-                                              .ordersItems![index]
-                                              .menuItemInfo!
-                                              .itemName ??
-                                          "",
-                                      style: TextStyle(
-                                          color: AppColors.appColor,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 17),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    ItemRow(
-                                        leftText: "Quantity",
-                                        rightText: double.parse(_controller
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 20),
+                              decoration: BoxDecoration(
+                                  color: AppColors.textWhiteColor,
+                                  // border: Border.all(
+                                  //     width: 1, color: AppColors.newOrderGrey),
+                                  borderRadius: BorderRadius.circular(2)),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage: NetworkImage(
+                                        Constants.webUrl +
+                                            _controller
                                                 .selectedOrder
                                                 .value
                                                 .ordersItems![index]
-                                                .itemQuantity
-                                                .toString())
-                                            .toStringAsFixed(1)),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Visibility(
-                                      visible: _controller.selectedOrder.value
-                                              .ordersItems![index].chefId !=
-                                          null,
-                                      child: ItemRow(
-                                        leftText: "Chef Name",
-                                        rightText: Helper.capitalizeFirstLetter(
-                                            _controller
+                                                .menuItemInfo!
+                                                .profileImage!),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _controller
+                                                  .selectedOrder
+                                                  .value
+                                                  .ordersItems![index]
+                                                  .menuItemInfo!
+                                                  .itemName ??
+                                              "",
+                                          style: TextStyle(
+                                              color: AppColors.appColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 17),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        ItemRow(
+                                            leftText: "Quantity",
+                                            rightText: double.parse(_controller
                                                     .selectedOrder
                                                     .value
                                                     .ordersItems![index]
-                                                    .chefName ??
-                                                ""
-                                                    .replaceAll("_", " ")
-                                                    .toUpperCase()),
-                                      ),
+                                                    .itemQuantity
+                                                    .toString())
+                                                .toStringAsFixed(1)),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Visibility(
+                                          visible: _controller
+                                                  .selectedOrder
+                                                  .value
+                                                  .ordersItems![index]
+                                                  .chefId !=
+                                              null,
+                                          child: ItemRow(
+                                            leftText: "Chef Name",
+                                            rightText:
+                                                Helper.capitalizeFirstLetter(
+                                                    _controller
+                                                            .selectedOrder
+                                                            .value
+                                                            .ordersItems![index]
+                                                            .chefName ??
+                                                        ""
+                                                            .replaceAll(
+                                                                "_", " ")
+                                                            .toUpperCase()),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Visibility(
+                                          visible: _controller
+                                                  .selectedOrder
+                                                  .value
+                                                  .ordersItems![index]
+                                                  .chefId !=
+                                              null,
+                                          child: ItemRow(
+                                            leftText: "Chef Status",
+                                            rightText:
+                                                Helper.capitalizeFirstLetter(
+                                                    _controller
+                                                        .selectedOrder
+                                                        .value
+                                                        .ordersItems![index]
+                                                        .chefStatus!
+                                                        .replaceAll("_", " ")
+                                                        .toUpperCase()),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Visibility(
+                                          visible: _controller
+                                                  .selectedOrder
+                                                  .value
+                                                  .ordersItems![index]
+                                                  .chefId ==
+                                              null,
+                                          child: CustomButton(
+                                              padding: 8,
+                                              text: "Assign to chef",
+                                              onPressed: () {
+                                                _controller.selectedItemIndex =
+                                                    index;
+                                                _controller
+                                                    .showCustomBottomSheet(
+                                                        context, null);
+                                              }),
+                                        )
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Visibility(
-                                      visible: _controller.selectedOrder.value
-                                              .ordersItems![index].chefId !=
-                                          null,
-                                      child: ItemRow(
-                                        leftText: "Chef Status",
-                                        rightText: Helper.capitalizeFirstLetter(
-                                            _controller.selectedOrder.value
-                                                .ordersItems![index].chefStatus!
-                                                .replaceAll("_", " ")
-                                                .toUpperCase()),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Visibility(
-                                      visible: _controller.selectedOrder.value
-                                              .ordersItems![index].chefId ==
-                                          null,
-                                      child: CustomButton(
-                                          padding: 8,
-                                          text: "Assign to chef",
-                                          onPressed: () {
-                                            _controller.selectedItemIndex =
-                                                index;
-                                            _controller.showCustomBottomSheet(
-                                                context, null);
-                                          }),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
+                                  )
+                                ],
+                              ),
+                            ),
+                          ));
                     }),
               ),
             )

@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
@@ -112,12 +114,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
           () => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
             child: _controller.isLoading.isTrue
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  )
-                : Column(
+                ? const SkeletonList(padding: EdgeInsets.zero)
+                : FadeSlideIn(
+                    child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -201,13 +200,22 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                 addToCart: widget.addToCard,
                                 isBottomBar: widget.isBottomBar,
                                 id: _controller.selectedMenuId.toString(),
+                                showEmptyAction:
+                                    Common.currentRole == AppKeys.roleAdmin &&
+                                        widget.isBottomBar == null,
+                                onEmptyAction: () {
+                                  Get.to(AddMenuScreen())!.then((value) {
+                                    _controller.geteMenu(false, false, "1");
+                                    _controller.menuItems.refresh();
+                                  });
+                                },
                               ),
                             )
                           ],
                         ),
                       ),
                     ],
-                  ),
+                  )),
           ),
         ),
         // ${_controller.checkedIds.value.isEmpty ? "" : _controller.checkedIds.value.length}
@@ -321,7 +329,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
               _controller.geteMenu(false, true, "1");
             },
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 150),
               height: 30,
               width: 40,
               alignment: Alignment.center,

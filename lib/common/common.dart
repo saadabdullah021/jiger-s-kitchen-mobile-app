@@ -12,8 +12,19 @@ import '../utils/widget/delete_item_dialoug.dart';
 
 class Common {
   static Rx<loginModel> loginReponse = loginModel().obs;
+  static RxInt profileImageVersion = 0.obs;
   static String fcmToken = "";
   static String currentRole = "admin";
+
+  static Future<void> refreshCurrentUser() async {
+    final token = loginReponse.value.data?.token;
+    if (token == null || token.isEmpty) return;
+
+    final result = await AppInterface().getUserByToken(token);
+    if (result == 200) {
+      profileImageVersion.value++;
+    }
+  }
 
   static logout(BuildContext context) {
     showDeleteItemDialoug(

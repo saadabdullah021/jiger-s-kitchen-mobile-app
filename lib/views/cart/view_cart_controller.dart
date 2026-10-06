@@ -56,7 +56,7 @@ class ViewCartController extends GetxController {
 
   PlaceOrder(BuildContext context) async {
     isPlacingOrder = true;
-    appWidgets.loadingDialog();
+    appWidgets.orderPlacementLoadingDialog();
     String json =
         jsonEncode(allCartItemList.map((item) => item.toJson()).toList());
     await AppInterface()

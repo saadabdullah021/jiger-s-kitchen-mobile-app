@@ -378,14 +378,12 @@ class newORderListController extends GetxController {
     await AppInterface()
         .getSingleOrder(id: EditorderID.toString())
         .then((value) {
+      isEditOrderLoading.value = false;
       if (value is editItemModel) {
-        isEditOrderLoading.value = false;
         editOrderDetail.value = value;
         if (!showLoading) {
           editOrderDetail.refresh();
         }
-      } else {
-        Get.back();
       }
     });
   }
@@ -574,7 +572,7 @@ class newORderListController extends GetxController {
                             selectedOrder.value.ordersItems![selectedItemIndex!]
                                 .chefId = Selectedchef!.id;
                             selectedOrder.refresh();
-                            appWidgets.hideDialog;
+                            appWidgets.hideDialog();
                             showDialogWithAutoDismiss(
                                 context: Get.context,
                                 doubleBack: true,
@@ -621,8 +619,7 @@ class newORderListController extends GetxController {
             deliveryUserId: chef.id.toString())
         .then((value) {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        appWidgets.hideDialog();
         getOrder(false, "1", false, false, "");
         showDialogWithAutoDismiss(
             context: Get.context,

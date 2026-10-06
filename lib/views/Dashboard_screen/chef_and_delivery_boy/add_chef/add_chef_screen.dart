@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,10 +40,9 @@ class AddChefScreen extends StatelessWidget {
           () => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: controller.isloading.isTrue
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SingleChildScrollView(
+                ? const SkeletonForm(showAvatar: true)
+                : FadeSlideIn(
+                    child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -187,7 +188,7 @@ class AddChefScreen extends StatelessWidget {
                             })
                       ],
                     ),
-                  ),
+                  )),
           ),
         ),
       ),

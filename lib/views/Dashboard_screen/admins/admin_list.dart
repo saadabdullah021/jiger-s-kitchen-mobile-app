@@ -1,3 +1,6 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -6,7 +9,6 @@ import 'package:jigers_kitchen/core/apis/app_interface.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
-import 'package:jigers_kitchen/utils/widget/no_data.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/admins/add_admin/add_admin.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/admins/admin_controller.dart';
 
@@ -62,12 +64,9 @@ class _AdminListState extends State<AdminList> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : RefreshIndicator(
+              ? const SkeletonList(padding: EdgeInsets.zero)
+              : FadeSlideIn(
+                  child: RefreshIndicator(
                   onRefresh: controller.pullRefresh,
                   child: Column(
                     children: [
@@ -139,273 +138,304 @@ class _AdminListState extends State<AdminList> {
                       ),
                       Expanded(
                         child: controller.userList.value.data!.chefList!.isEmpty
-                            ? Column(
-                                children: [
-                                  SizedBox(height: Get.height * 0.15),
-                                  noData(null),
-                                ],
+                            ? AppEmptyState(
+                                title: 'No admins found',
+                                description:
+                                    'Try another search or check back later.',
+                                actionText: 'Add Admin',
+                                actionIcon: Icons.person_add_alt_1_rounded,
+                                onAction: () async {
+                                  await Get.to(() => AddAdminScreen())!
+                                      .then((value) {
+                                    controller.getUser(false, "1", false);
+                                  });
+                                },
                               )
                             : ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .userList.value.data!.chefList!.length,
                                 itemBuilder: (context, index) {
-                                  return Card(
-                                    color: AppColors.textGreyColor,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 17, vertical: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: Card(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 12),
+                                        elevation: 0,
+                                        color: AppColors.textWhiteColor,
+                                        shadowColor: Colors.black12,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                          side: BorderSide(
+                                              color: AppColors.borderColor),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                                CrossAxisAlignment.end,
                                             children: [
-                                              SizedBox(
-                                                width: Get.width * 0.57,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .name ??
-                                                          "",
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    iconTextWidget(
-                                                      icon:
-                                                          Icons.phone_callback,
-                                                      text: controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .phoneNumber ??
-                                                          "",
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    iconTextWidget(
-                                                      icon: Icons.email,
-                                                      text: controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .email ??
-                                                          "",
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              CircleAvatar(
-                                                radius: 30,
-                                                backgroundColor: Colors.white,
-                                                backgroundImage: controller
-                                                            .userList
-                                                            .value
-                                                            .data!
-                                                            .chefList![index]
-                                                            .profileImage !=
-                                                        null
-                                                    ? NetworkImage(Constants
-                                                            .webUrl +
-                                                        controller
-                                                            .userList
-                                                            .value
-                                                            .data!
-                                                            .chefList![index]
-                                                            .profileImage!)
-                                                    : null,
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  controller.selectedAdminId =
-                                                      controller
-                                                          .userList
-                                                          .value
-                                                          .data!
-                                                          .chefList![index]
-                                                          .id
-                                                          .toString();
-                                                  controller
-                                                      .showCustomBottomSheet(
-                                                          context, "subadmin");
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      color: Colors.white),
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 8,
-                                                            horizontal: 13),
-                                                    child: Text(
-                                                      "Print Orders",
-                                                      style: TextStyle(
-                                                          fontSize: 10,
-                                                          color: Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
                                               Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.end,
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
                                                 children: [
-                                                  NewOrderButtonWidget(
-                                                    clr: AppColors.primaryColor,
-                                                    ic: Icons.edit,
-                                                    text: "",
-                                                    ontap: () async {
-                                                      await Get.to(
-                                                              AddAdminScreen(
-                                                        id: controller
-                                                            .userList
-                                                            .value
-                                                            .data!
-                                                            .chefList![index]
-                                                            .id
-                                                            .toString(),
-                                                        isEdit: true,
-                                                      ))!
-                                                          .then((value) {
-                                                        controller.getUser(
-                                                            false,
-                                                            controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .currentPage!
-                                                                .toString(),
-                                                            false);
-                                                      });
-                                                    },
-                                                  ),
-                                                  NewOrderButtonWidget(
-                                                    clr: AppColors.redColor,
-                                                    ic: Icons.delete,
-                                                    text: "",
-                                                    ontap: () async {
-                                                      showDeleteItemDialoug(
-                                                          description:
-                                                              "Are you sure you want to DELETE the Admin User?",
-                                                          context: context,
-                                                          url: controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .profileImage,
-                                                          onYes: () async {
-                                                            Get.back();
-                                                            appWidgets
-                                                                .loadingDialog();
-                                                            await AppInterface()
-                                                                .deleteUser(
-                                                              role: controller
-                                                                  .role,
-                                                              id: controller
+                                                  SizedBox(
+                                                    width: Get.width * 0.57,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          controller
                                                                   .userList
                                                                   .value
                                                                   .data!
                                                                   .chefList![
                                                                       index]
-                                                                  .id
-                                                                  .toString(),
-                                                            )
-                                                                .then((value) {
-                                                              if (value !=
-                                                                      null &&
-                                                                  value ==
-                                                                      200) {
-                                                                appWidgets
-                                                                    .hideDialog();
-                                                                controller.getUser(
-                                                                    false,
-                                                                    controller
-                                                                        .userList
-                                                                        .value
-                                                                        .data!
-                                                                        .currentPage
-                                                                        .toString(),
-                                                                    false);
-                                                                showDialogWithAutoDismiss(
-                                                                    context: Get
-                                                                        .context,
-                                                                    doubleBack:
-                                                                        false,
-                                                                    img: AppImages
-                                                                        .successDialougIcon,
-                                                                    autoDismiss:
-                                                                        true,
-                                                                    heading:
-                                                                        "Hurray!",
-                                                                    text:
-                                                                        "Admin User Deleted Successfully",
-                                                                    headingStyle: TextStyle(
-                                                                        fontSize:
-                                                                            32,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w600,
-                                                                        color: AppColors
-                                                                            .textBlackColor));
-                                                              }
-                                                            });
-                                                          });
-                                                    },
+                                                                  .name ??
+                                                              "",
+                                                          style: const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        iconTextWidget(
+                                                          icon: Icons
+                                                              .phone_callback,
+                                                          text: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .phoneNumber ??
+                                                              "",
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        iconTextWidget(
+                                                          icon: Icons.email,
+                                                          text: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .email ??
+                                                              "",
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  CircleAvatar(
+                                                    radius: 30,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    backgroundImage: controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .chefList![
+                                                                    index]
+                                                                .profileImage !=
+                                                            null
+                                                        ? NetworkImage(Constants
+                                                                .webUrl +
+                                                            controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .chefList![
+                                                                    index]
+                                                                .profileImage!)
+                                                        : null,
                                                   ),
                                                 ],
                                               ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      controller
+                                                              .selectedAdminId =
+                                                          controller
+                                                              .userList
+                                                              .value
+                                                              .data!
+                                                              .chefList![index]
+                                                              .id
+                                                              .toString();
+                                                      controller
+                                                          .showCustomBottomSheet(
+                                                              context,
+                                                              "subadmin");
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          color: Colors.white),
+                                                      child: const Padding(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                vertical: 8,
+                                                                horizontal: 13),
+                                                        child: Text(
+                                                          "Print Orders",
+                                                          style: TextStyle(
+                                                              fontSize: 10,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      NewOrderButtonWidget(
+                                                        clr: AppColors
+                                                            .primaryColor,
+                                                        ic: Icons.edit,
+                                                        text: "",
+                                                        ontap: () async {
+                                                          await Get.to(
+                                                                  AddAdminScreen(
+                                                            id: controller
+                                                                .userList
+                                                                .value
+                                                                .data!
+                                                                .chefList![
+                                                                    index]
+                                                                .id
+                                                                .toString(),
+                                                            isEdit: true,
+                                                          ))!
+                                                              .then((value) {
+                                                            controller.getUser(
+                                                                false,
+                                                                controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .currentPage!
+                                                                    .toString(),
+                                                                false);
+                                                          });
+                                                        },
+                                                      ),
+                                                      NewOrderButtonWidget(
+                                                        clr: AppColors.redColor,
+                                                        ic: Icons.delete,
+                                                        text: "",
+                                                        ontap: () async {
+                                                          showDeleteItemDialoug(
+                                                              description:
+                                                                  "Are you sure you want to DELETE the Admin User?",
+                                                              context: context,
+                                                              url: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .profileImage,
+                                                              onYes: () async {
+                                                                Get.back();
+                                                                appWidgets
+                                                                    .loadingDialog();
+                                                                await AppInterface()
+                                                                    .deleteUser(
+                                                                  role:
+                                                                      controller
+                                                                          .role,
+                                                                  id: controller
+                                                                      .userList
+                                                                      .value
+                                                                      .data!
+                                                                      .chefList![
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                )
+                                                                    .then(
+                                                                        (value) {
+                                                                  if (value !=
+                                                                          null &&
+                                                                      value ==
+                                                                          200) {
+                                                                    appWidgets
+                                                                        .hideDialog();
+                                                                    controller.getUser(
+                                                                        false,
+                                                                        controller
+                                                                            .userList
+                                                                            .value
+                                                                            .data!
+                                                                            .currentPage
+                                                                            .toString(),
+                                                                        false);
+                                                                    showDialogWithAutoDismiss(
+                                                                        context: Get
+                                                                            .context,
+                                                                        doubleBack:
+                                                                            false,
+                                                                        img: AppImages
+                                                                            .successDialougIcon,
+                                                                        autoDismiss:
+                                                                            true,
+                                                                        heading:
+                                                                            "Hurray!",
+                                                                        text:
+                                                                            "Admin User Deleted Successfully",
+                                                                        headingStyle: TextStyle(
+                                                                            fontSize:
+                                                                                32,
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                            color: AppColors.textBlackColor));
+                                                                  }
+                                                                });
+                                                              });
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              )
                                             ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
+                                          ),
+                                        ),
+                                      ));
                                 }),
                       ),
                       controller.isMoreLoading.isTrue
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primaryColor,
-                              ),
-                            )
+                          ? const SkeletonLoadMore()
                           : const SizedBox()
                     ],
                   ),
-                ),
+                )),
         ),
       ),
     );

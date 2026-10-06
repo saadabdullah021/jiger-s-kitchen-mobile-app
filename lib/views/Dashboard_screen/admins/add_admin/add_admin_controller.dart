@@ -61,7 +61,6 @@ class AddAdminController extends GetxController {
         });
       } else {
         isloading.value = false;
-        Get.back();
       }
     });
   }
@@ -88,7 +87,6 @@ class AddAdminController extends GetxController {
         isloading.value = false;
       } else {
         isloading.value = false;
-        Get.back();
       }
     });
   }
@@ -119,8 +117,7 @@ class AddAdminController extends GetxController {
             profileImage: imagePath.value)
         .then((value) {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,
@@ -150,8 +147,7 @@ class AddAdminController extends GetxController {
             profileImage: imagePath.value)
         .then((value) {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,

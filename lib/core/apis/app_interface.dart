@@ -2005,7 +2005,6 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2034,7 +2033,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2061,7 +2060,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2092,7 +2091,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2127,7 +2126,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2162,7 +2161,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }

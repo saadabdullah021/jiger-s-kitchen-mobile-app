@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -31,12 +33,9 @@ class _OrderSummeryState extends State<OrderSummery> {
       appBar: appBar(text: "Order Summery"),
       body: Obx(
         () => _controller.isLoading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : Padding(
+            ? const SkeletonList(showAvatar: false, lines: 4)
+            : FadeSlideIn(
+                child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: SingleChildScrollView(
@@ -258,7 +257,7 @@ class _OrderSummeryState extends State<OrderSummery> {
                     ],
                   ),
                 ),
-              ),
+              )),
       ),
       bottomNavigationBar: BottomAppBar(
           color: Colors.transparent,

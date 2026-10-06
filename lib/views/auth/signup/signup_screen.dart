@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'dart:io';
 
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
@@ -57,12 +59,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   : "Jigar’s Kitchens"),
       body: Obx(
         () => controller.isloading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : SingleChildScrollView(
+            ? const SkeletonForm(showAvatar: true)
+            : FadeSlideIn(
+                child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Form(
@@ -450,7 +449,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-              ),
+              )),
       ),
     );
   }

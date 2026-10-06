@@ -11,45 +11,57 @@ import 'order_list/view_order_list.dart';
 
 class DashboardController extends GetxController {
   RxBool isLoading = false.obs;
-  @override
-  getCount(bool showLoading) async {
+  final hasError = false.obs;
+  bool _fetching = false;
+  Future<void> getCount(bool showLoading) async {
+    if (_fetching) return;
+    _fetching = true;
+    hasError.value = false;
     if (showLoading) {
       isLoading.value = true;
     }
 
-    await AppInterface().getDashBoardCounter().then((dashboardCounter) {
-      if (dashboardCounter is dashBoardCounterModel) {
-        if (dashboardCounter.data != null) {
-          // Update each item based on the API response
-          for (var item in DashBoardItems) {
-            switch (item['key']) {
-              case 'new_orders':
-                item['count'] = dashboardCounter.data!.newOrders ?? 0;
-                break;
-              case 'pickup_orders':
-                item['count'] = dashboardCounter.data!.pickupOrders ?? 0;
-                break;
-              case 'out_of_delivery':
-                item['count'] = dashboardCounter.data!.outOfDelivery ?? 0;
-                break;
-              case 'delivered_orders':
-                item['count'] = dashboardCounter.data!.deliveredOrders ?? 0;
-                break;
-              case 'cancelled_orders':
-                item['count'] = dashboardCounter.data!.cancelledOrders ?? 0;
-                break;
-              case 'paid_orders':
-                item['count'] = dashboardCounter.data!.paidOrders ?? 0;
-                break;
-              case 'in_progress_orders':
-                item['count'] = dashboardCounter.data!.inProgressOrders ?? 0;
-                break;
-            }
-          }
-          isLoading.value = false;
+    try {
+      final dashboardCounter = await AppInterface().getDashBoardCounter();
+      if (dashboardCounter is! dashBoardCounterModel ||
+          dashboardCounter.data == null) {
+        hasError.value = true;
+        return;
+      }
+      // Update each item based on the API response
+      for (var item in DashBoardItems) {
+        switch (item['key']) {
+          case 'new_orders':
+            item['count'] = dashboardCounter.data!.newOrders ?? 0;
+            break;
+          case 'pickup_orders':
+            item['count'] = dashboardCounter.data!.pickupOrders ?? 0;
+            break;
+          case 'out_of_delivery':
+            item['count'] = dashboardCounter.data!.outOfDelivery ?? 0;
+            break;
+          case 'delivered_orders':
+            item['count'] = dashboardCounter.data!.deliveredOrders ?? 0;
+            break;
+          case 'cancelled_orders':
+            item['count'] = dashboardCounter.data!.cancelledOrders ?? 0;
+            break;
+          case 'paid_orders':
+            item['count'] = dashboardCounter.data!.paidOrders ?? 0;
+            break;
+          case 'in_progress_orders':
+            item['count'] = dashboardCounter.data!.inProgressOrders ?? 0;
+            break;
         }
       }
-    });
+    } catch (_) {
+      hasError.value = true;
+    } finally {
+      _fetching = false;
+      // A failed refresh should return the page to an actionable state too.
+      isLoading.value = false;
+      isLoading.refresh();
+    }
   }
 
   onItemClick(int index) {

@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -35,12 +37,9 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
       appBar: appBar(text: "Menu"),
       body: Obx(
         () => _controller.isLoading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : SingleChildScrollView(
+            ? const SkeletonForm()
+            : FadeSlideIn(
+                child: SingleChildScrollView(
                 child: Form(
                   key: key,
                   child: Padding(
@@ -232,7 +231,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                     ),
                   ),
                 ),
-              ),
+              )),
       ),
     );
   }

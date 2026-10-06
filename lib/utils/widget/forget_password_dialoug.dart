@@ -3,9 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:jigers_kitchen/utils/widget/app_button.dart';
 
 import '../app_colors.dart';
-import '../app_images.dart';
+import '../app_dimens.dart';
+import '../app_text_styles.dart';
 import 'custom_textfiled.dart';
+import 'dialog_shell.dart';
 
+/// Password-reset dialog. Signature unchanged.
 void forgetPasswordDialog({
   BuildContext? context,
   String? img,
@@ -13,68 +16,58 @@ void forgetPasswordDialog({
   String? text,
   TextEditingController? textController,
   VoidCallback? onBtnTap,
-  TextStyle? headingStyle = const TextStyle(
-      fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
-  TextStyle? textStyle = const TextStyle(
-      fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+  TextStyle? headingStyle,
+  TextStyle? textStyle,
   String? btnText,
 }) {
   showDialog(
-    barrierColor: AppColors.primaryColor.withOpacity(0.6),
+    barrierColor: Colors.black.withOpacity(0.45),
     context: context!,
     builder: (BuildContext context) {
-      return Dialog(
-        insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20), // Adjust horizontal padding here
-        child: Container(
-          width: double.infinity, // Full width of the screen
-          decoration: BoxDecoration(
-            color: AppColors.dialougBG,
-            borderRadius: BorderRadius.circular(15),
+      return DialogShell(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.xl,
+            vertical: AppDimens.xxl,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
-              SvgPicture.asset(
-                img!,
-                height: 80.0,
+              if (img != null)
+                Container(
+                  padding: const EdgeInsets.all(AppDimens.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(img, height: 52),
+                ),
+              const SizedBox(height: AppDimens.lg),
+              Text(
+                heading ?? "",
+                textAlign: TextAlign.center,
+                style: headingStyle ?? AppTextStyles.sectionHeading,
               ),
-              const SizedBox(height: 5.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    heading!,
-                    textAlign: TextAlign.center,
-                    style: headingStyle,
-                  ),
-                  const SizedBox(height: 8.0),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomTextField(
-                      controller: textController!,
-                      fillColor: AppColors.textWhiteColor,
-                      hintText: "Registered Email",
-                      prefixIcon: Image.asset(AppImages.mailIcon),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 5.0),
-              InkWell(
-                onTap: onBtnTap,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomButton(
-                    text: "SUBMIT",
-                    onPressed: onBtnTap!,
-                    padding: 10,
-                  ),
+              const SizedBox(height: AppDimens.lg),
+              CustomTextField(
+                controller: textController!,
+                fillColor: AppColors.lightGreyColor,
+                hintText: "Registered Email",
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.done,
+                prefixIcon: Icon(
+                  Icons.mail_outline_rounded,
+                  size: AppDimens.iconMd,
+                  color: AppColors.greyColor,
                 ),
               ),
-              const SizedBox(height: 35.0),
+              const SizedBox(height: AppDimens.xl),
+              CustomButton(
+                text: btnText ?? "SUBMIT",
+                padding: AppDimens.md,
+                onPressed: onBtnTap!,
+              ),
             ],
           ),
         ),

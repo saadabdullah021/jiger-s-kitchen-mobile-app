@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -37,12 +39,9 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
         child: Obx(
           () => controller.isEditOrderLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.appColor,
-                  ),
-                )
-              : ListView(
+              ? const SkeletonList(showAvatar: false, lines: 4)
+              : FadeSlideIn(
+                  child: ListView(
                   children: [
                     Card(
                       color: Colors.white,
@@ -284,7 +283,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                       onPressed: () {},
                     ),
                   ],
-                ),
+                )),
         ),
       ),
       floatingActionButton: InkWell(

@@ -51,6 +51,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      defaultTransition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 220),
       home: const SplashScreen(),
     );
   }

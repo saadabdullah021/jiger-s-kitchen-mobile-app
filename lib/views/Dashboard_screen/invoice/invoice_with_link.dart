@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:jigers_kitchen/utils/widget/document_preview.dart';
 
 import '../../../utils/widget/app_bar.dart';
 
@@ -15,7 +15,6 @@ class InvoiceWithScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceWithScreen> {
-  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -79,10 +78,7 @@ class _InvoiceScreenState extends State<InvoiceWithScreen> {
             },
             child: const Icon(Icons.print)),
       ]),
-      body: SfPdfViewer.network(
-        widget.url,
-        key: _pdfViewerKey,
-      ),
+      body: DocumentPreview(url: widget.url),
     );
   }
 }

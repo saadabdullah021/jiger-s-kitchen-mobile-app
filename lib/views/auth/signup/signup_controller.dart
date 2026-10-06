@@ -72,7 +72,6 @@ class SignupController extends GetxController {
         isloading.value = false;
       } else {
         isloading.value = false;
-        Get.back();
       }
     });
   }

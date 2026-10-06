@@ -1,10 +1,11 @@
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/core/apis/app_interface.dart';
-import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:jigers_kitchen/utils/widget/document_preview.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
 
 import '../../../utils/helper.dart';
 
@@ -19,24 +20,30 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   String url = "";
-  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   RxBool isloading = false.obs;
+  final hasError = false.obs;
   @override
   void initState() {
     getInvoice();
     super.initState();
   }
 
-  getInvoice() async {
+  Future<void> getInvoice() async {
     isloading.value = true;
-    await AppInterface().getInvoice(widget.id).then((value) {
-      isloading.value = false;
-      if (value is String) {
+    hasError.value = false;
+    try {
+      final value = await AppInterface().getInvoice(widget.id);
+      if (!mounted) return;
+      if (value is String && value.isNotEmpty) {
         url = value;
       } else {
-        Get.back();
+        hasError.value = true;
       }
-    });
+    } catch (_) {
+      if (mounted) hasError.value = true;
+    } finally {
+      if (mounted) isloading.value = false;
+    }
   }
 
   void _showBottomSheet(BuildContext context) {
@@ -85,7 +92,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       appBar: appBar(text: "Order Invoice", actions: [
         Obx(
           () => Visibility(
-            visible: isloading.isFalse,
+            visible: isloading.isFalse && !hasError.value,
             child: InkWell(
                 onTap: () {
                   Share.share('Report ${widget.OrderIden}: $url');
@@ -97,7 +104,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           width: 15,
         ),
         Obx(() => Visibility(
-              visible: isloading.isFalse,
+              visible: isloading.isFalse && !hasError.value,
               child: InkWell(
                   onTap: () {
                     Helper.downloadAndPrintPdf(url);
@@ -107,15 +114,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       ]),
       body: Obx(
         () => isloading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.appColor,
-                ),
-              )
-            : SfPdfViewer.network(
-                url,
-                key: _pdfViewerKey,
-              ),
+            ? const SkeletonDocument()
+            : hasError.value
+                ? AppErrorState(onRetry: getInvoice)
+                : DocumentPreview(url: url),
       ),
     );
   }

@@ -231,6 +231,11 @@ class ORderListController extends GetxController {
           isLoading.value = false;
         }
       } else {
+        if (moreLoading) {
+          isMoreLoading.value = false;
+        } else {
+          isLoading.value = false;
+        }
         appWidgets().showToast("Sorry", "Please try again");
       }
     });

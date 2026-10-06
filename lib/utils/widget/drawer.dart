@@ -40,51 +40,60 @@ class _NavDrawerState extends State<NavDrawer> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 65,
-                    backgroundColor: Colors.grey,
-                    child: ClipOval(
-                      child: Container(
-                        width: 140,
-                        height: 140,
-                        color: AppColors.primaryColor,
-                        child:
-                            Common.loginReponse.value.data!.profileImage != null
+              child: Obx(
+                () {
+                  final profileImage =
+                      Common.loginReponse.value.data?.profileImage;
+                  final imageVersion = Common.profileImageVersion.value;
+                  final imageUrl = profileImage == null || profileImage.isEmpty
+                      ? null
+                      : '${Constants.webUrl}$profileImage?v=$imageVersion';
+
+                  return Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 65,
+                        backgroundColor: Colors.grey,
+                        child: ClipOval(
+                          child: Container(
+                            width: 140,
+                            height: 140,
+                            color: AppColors.primaryColor,
+                            child: imageUrl != null
                                 ? Image.network(
-                                    Constants.webUrl +
-                                        Common.loginReponse.value.data!
-                                            .profileImage!,
+                                    imageUrl,
+                                    key: ValueKey(imageUrl),
                                     fit: BoxFit.cover,
                                   )
                                 : const SizedBox(),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
             const SizedBox(
               height: 20,
             ),
-            Text(
-              maxLines: 1,
-              textAlign: TextAlign.center,
-              Common.loginReponse != null
-                  ? Common.loginReponse.value.data!.name!
-                  : "",
-              style: const TextStyle(color: Colors.black, fontSize: 17),
-              overflow: TextOverflow.ellipsis,
+            Obx(
+              () => Text(
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                Common.loginReponse.value.data?.name ?? "",
+                style: const TextStyle(color: Colors.black, fontSize: 17),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            Text(
-              maxLines: 1,
-              textAlign: TextAlign.center,
-              Common.loginReponse != null
-                  ? Common.loginReponse.value.data!.email!
-                  : "",
-              style: const TextStyle(color: Colors.black, fontSize: 12),
-              overflow: TextOverflow.ellipsis,
+            Obx(
+              () => Text(
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                Common.loginReponse.value.data?.email ?? "",
+                style: const TextStyle(color: Colors.black, fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(
               height: 20,
@@ -103,7 +112,10 @@ class _NavDrawerState extends State<NavDrawer> {
                   final item = visibleItems[index];
                   final originalIndex = visibleIndices[index];
                   return InkWell(
-                    onTap: () => controller.onItemTap(originalIndex),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      controller.onItemTap(originalIndex);
+                    },
                     child: DraweRow(item: item),
                   );
                 }),
@@ -112,11 +124,12 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             InkWell(
               onTap: () {
-                Get.to(AddChefScreen(
-                  id: Common.loginReponse.value.data!.id!.toString(),
-                  isEdit: true,
-                  type: Common.loginReponse.value.data!.role!.toString(),
-                ));
+                Navigator.of(context).pop();
+                Get.to(() => AddChefScreen(
+                      id: Common.loginReponse.value.data!.id!.toString(),
+                      isEdit: true,
+                      type: Common.loginReponse.value.data!.role!.toString(),
+                    ));
               },
               child: DraweRow(item: controller.drawerExtraItems[0]),
             ),
@@ -125,6 +138,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             InkWell(
               onTap: () {
+                Navigator.of(context).pop();
                 controller.deleteAccount(context);
               },
               child: DraweRow(item: controller.drawerExtraItems[1]),
@@ -134,6 +148,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             InkWell(
               onTap: () {
+                Navigator.of(context).pop();
                 Common.logout(context);
               },
               child: DraweRow(item: controller.drawerExtraItems[2]),
