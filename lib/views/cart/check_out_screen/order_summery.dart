@@ -30,7 +30,7 @@ class _OrderSummeryState extends State<OrderSummery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Order Summery"),
+      appBar: appBar(text: "Order Summary"),
       body: Obx(
         () => _controller.isLoading.isTrue
             ? const SkeletonList(showAvatar: false, lines: 4)
@@ -43,7 +43,7 @@ class _OrderSummeryState extends State<OrderSummery> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Order Summery",
+                        "Order Summary",
                         style: TextStyle(
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold),

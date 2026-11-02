@@ -6,6 +6,7 @@ import 'package:jigers_kitchen/utils/app_keys.dart';
 import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/app_button.dart';
+import 'package:jigers_kitchen/utils/widget/app_network_image.dart';
 import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 
 import '../../../core/contstants.dart';
@@ -35,7 +36,7 @@ class _AssignOrderState extends State<AssignOrder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Jigar's Kitchen"),
+      appBar: appBar(text: "Jigar’s Kitchen"),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -122,16 +123,15 @@ class _AssignOrderState extends State<AssignOrder> {
                                   borderRadius: BorderRadius.circular(2)),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
+                                  AppNetworkAvatar(
+                                    url: Constants.webUrl +
+                                        _controller
+                                            .selectedOrder
+                                            .value
+                                            .ordersItems![index]
+                                            .menuItemInfo!
+                                            .profileImage!,
                                     radius: 40,
-                                    backgroundImage: NetworkImage(
-                                        Constants.webUrl +
-                                            _controller
-                                                .selectedOrder
-                                                .value
-                                                .ordersItems![index]
-                                                .menuItemInfo!
-                                                .profileImage!),
                                   ),
                                   const SizedBox(
                                     width: 10,

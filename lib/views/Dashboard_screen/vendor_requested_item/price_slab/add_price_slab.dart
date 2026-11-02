@@ -32,7 +32,7 @@ class AddPriceSlabScreen extends StatelessWidget {
 
     final GlobalKey<FormState> key = GlobalKey();
     return Scaffold(
-      appBar: appBar(text: "Jigar’s Kitchens"),
+      appBar: appBar(text: "Jigar’s Kitchen"),
       body: Form(
         key: key,
         child: Obx(

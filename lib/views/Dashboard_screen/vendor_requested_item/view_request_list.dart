@@ -9,6 +9,8 @@ import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/pric
 import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/vendor_request_controller.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../core/contstants.dart';
 import '../../../model/requested_item_list_model.dart';
 import '../../../utils/helper.dart';
@@ -157,7 +159,7 @@ class vendorListDataWidget extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.textWhiteColor,
           border: Border.all(width: 1, color: AppColors.newOrderGrey),
-          borderRadius: BorderRadius.circular(22)),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCard)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -167,7 +169,12 @@ class vendorListDataWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15)),
             height: 100,
             width: 95,
-            child: Image.network(Constants.webUrl + data.profileImage!),
+            child: AppNetworkImage(
+              url: Constants.webUrl + data.profileImage!,
+              width: 95,
+              height: 100,
+              radius: 15,
+            ),
           ),
           const SizedBox(
             width: 15,

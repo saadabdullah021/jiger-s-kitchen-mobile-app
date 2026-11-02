@@ -10,6 +10,7 @@ import 'package:jigers_kitchen/views/Dashboard_screen/Menu/menu_list/show_list.d
 
 import '../../../../model/menu_tab_model.dart';
 import '../../../../utils/app_colors.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../../utils/widget/appwidgets.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
 import '../../../cart/view_cart.dart';
@@ -252,7 +253,17 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.circular(25.0),
+                          borderRadius:
+                              BorderRadius.circular(AppDimens.radiusButton),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryColor.withValues(
+                                alpha: 0.22,
+                              ),
+                              offset: const Offset(0, 5),
+                              blurRadius: 12,
+                            ),
+                          ],
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

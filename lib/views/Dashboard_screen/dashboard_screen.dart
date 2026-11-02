@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../common/common.dart';
 import '../../utils/widget/animations.dart';
 import '../../utils/widget/app_states.dart';
+import '../../utils/widget/app_bar.dart';
 import '../../utils/widget/drawer.dart';
 import '../../utils/widget/skeletons.dart';
 import '../../utils/widget/workspace_widgets.dart';
@@ -31,24 +32,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final hasDrawer =
         Common.currentRole == 'chef' || Common.currentRole == 'delivery_user';
+    // Dashboard can be opened as the root screen (after login/splash) or
+    // pushed from the home screen. Only show Back when this route can really
+    // return to a previous screen.
+    final canGoBack = Navigator.of(context).canPop();
     return Scaffold(
       backgroundColor: AppColors.textWhiteColor,
       drawer: hasDrawer ? const NavDrawer() : null,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        surfaceTintColor: AppColors.primaryColor,
-        iconTheme: IconThemeData(color: AppColors.textWhiteColor),
-        title: Text('Dashboard',
-            style: TextStyle(
-                color: AppColors.textWhiteColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600)),
+      appBar: appBar(
+        text: 'Dashboard',
+        showDrawer: hasDrawer && !canGoBack,
+        showback: canGoBack ? null : false,
         actions: [
-          IconButton(
-              tooltip: 'Refresh dashboard',
-              onPressed: () => controller.getCount(true),
-              icon: Icon(Icons.refresh_rounded)),
-          const SizedBox(width: 8),
+          AppBarAction(
+            tooltip: 'Refresh dashboard',
+            icon: Icons.refresh_rounded,
+            color: AppColors.primaryColor,
+            onTap: () => controller.getCount(true),
+          ),
         ],
       ),
       body: SafeArea(child: Obx(() {

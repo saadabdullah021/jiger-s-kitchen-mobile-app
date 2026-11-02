@@ -58,6 +58,13 @@ class CustomButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+            boxShadow: [
+              BoxShadow(
+                color: background.withValues(alpha: 0.22),
+                offset: const Offset(0, 5),
+                blurRadius: 12,
+              ),
+            ],
           ),
           child: Center(
             // Swap label <-> spinner without resizing the button.
@@ -132,6 +139,13 @@ class SecondaryButton extends StatelessWidget {
             color: AppColors.textWhiteColor,
             borderRadius: BorderRadius.circular(AppDimens.radiusButton),
             border: Border.all(color: AppColors.borderColor),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0D0F172A),
+                offset: Offset(0, 3),
+                blurRadius: 8,
+              ),
+            ],
           ),
           child: Center(
             child: Row(

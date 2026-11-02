@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,15 +37,15 @@ class appWidgets {
 
   /// Branded loader used while a customer order is being submitted.
   ///
-  /// This keeps the checkout feedback distinct from a generic background
-  /// request and reuses the cooking animation already shipped with the app.
+  /// This mirrors the checkout animation used on the web checkout.
   static void orderPlacementLoadingDialog() {
     if (_isLoading) return;
     _isLoading = true;
     Get.dialog(
       const _OrderPlacementLoader(),
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.35),
+      // The loader owns the exact dimmed/blurred backdrop.
+      barrierColor: Colors.transparent,
     ).then((_) {
       _isLoading = false;
     });
@@ -403,8 +404,280 @@ class _BlockingLoader extends StatelessWidget {
   }
 }
 
-class _OrderPlacementLoader extends StatelessWidget {
+class _OrderPlacementLoader extends StatefulWidget {
   const _OrderPlacementLoader();
+
+  @override
+  State<_OrderPlacementLoader> createState() => _OrderPlacementLoaderState();
+}
+
+class _OrderPlacementLoaderState extends State<_OrderPlacementLoader>
+    with TickerProviderStateMixin {
+  late final AnimationController _riderController;
+  late final AnimationController _dashController;
+
+  @override
+  void initState() {
+    super.initState();
+    _riderController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1350),
+    )..repeat();
+    _dashController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _riderController.dispose();
+    _dashController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope<void>(
+      // The order request owns this route. Back, system back, and Android
+      // back gestures must not dismiss it while the request is pending.
+      canPop: false,
+      child: Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            BackdropFilter(
+              filter: ui.ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+              child: Container(color: const Color(0x730F172A)),
+            ),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 352),
+                child: Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFE9ECEF)),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x2E0F172A),
+                        blurRadius: 40,
+                        offset: Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _MotorcycleTrack(
+                        riderAnimation: _riderController,
+                        dashAnimation: _dashController,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Placing your order...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF2A3042),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          height: 1.25,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Please wait — do not refresh this page.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF74788D),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MotorcycleTrack extends StatelessWidget {
+  const _MotorcycleTrack({
+    required this.riderAnimation,
+    required this.dashAnimation,
+  });
+
+  final Animation<double> riderAnimation;
+  final Animation<double> dashAnimation;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 224,
+      height: 48,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFF8F9FC), Color(0xFFEEF1F5)],
+            ),
+          ),
+          child: AnimatedBuilder(
+            animation: Listenable.merge([riderAnimation, dashAnimation]),
+            builder: (context, child) => Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                _RoadDash(left: 27, progress: dashAnimation.value, delay: 0),
+                _RoadDash(
+                  left: 94,
+                  progress: dashAnimation.value,
+                  delay: 0.35,
+                ),
+                _RoadDash(
+                  left: 161,
+                  progress: dashAnimation.value,
+                  delay: 0.7,
+                ),
+                Positioned(
+                  left: 0,
+                  top: 24,
+                  child: Transform.translate(
+                    offset: _riderOffset(riderAnimation.value),
+                    child: const SizedBox(
+                      width: 56,
+                      height: 35,
+                      child: CustomPaint(painter: _MotorcyclePainter()),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Offset _riderOffset(double progress) {
+    final double horizontalFactor = progress < 0.5
+        ? _lerp(-0.30, 0.58, progress * 2)
+        : _lerp(0.58, 1.18, (progress - 0.5) * 2);
+    final double verticalFactor = _lerp(-0.55, -0.58, progress);
+    return Offset(horizontalFactor * 56, verticalFactor * 35);
+  }
+
+  double _lerp(double begin, double end, double amount) =>
+      begin + (end - begin) * amount;
+}
+
+class _RoadDash extends StatelessWidget {
+  const _RoadDash({
+    required this.left,
+    required this.progress,
+    required this.delay,
+  });
+
+  final double left;
+  final double progress;
+  final double delay;
+
+  @override
+  Widget build(BuildContext context) {
+    final double localProgress = (progress - delay) % 1;
+    final double opacity = localProgress < 0.5
+        ? _lerp(0.35, 0.9, localProgress * 2)
+        : _lerp(0.9, 0.2, (localProgress - 0.5) * 2);
+    return Positioned(
+      left: left,
+      bottom: 10,
+      child: Opacity(
+        opacity: opacity,
+        child: Transform.translate(
+          offset: Offset(-28 * localProgress, 0),
+          child: Container(
+            width: 20,
+            height: 2,
+            decoration: BoxDecoration(
+              color: const Color(0xFFC5CAD3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  double _lerp(double begin, double end, double amount) =>
+      begin + (end - begin) * amount;
+}
+
+class _MotorcyclePainter extends CustomPainter {
+  const _MotorcyclePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(size.width / 64, size.height / 40);
+    final stroke = Paint()
+      ..color = const Color(0xFF556EE6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawCircle(const Offset(14, 30), 7, stroke);
+    canvas.drawCircle(const Offset(50, 30), 7, stroke);
+    canvas.drawPath(
+      Path()
+        ..moveTo(21, 29)
+        ..lineTo(33, 29)
+        ..lineTo(39, 19)
+        ..lineTo(47, 19),
+      stroke,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(33, 19)
+        ..lineTo(27, 29),
+      stroke,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(39, 19)
+        ..lineTo(46, 19)
+        ..lineTo(50, 25),
+      stroke,
+    );
+    final rider = Paint()
+      ..color = const Color(0xFF556EE6)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(const Offset(42, 12), 3.5, rider);
+    canvas.drawPath(
+      Path()
+        ..moveTo(42, 15)
+        ..lineTo(42, 19),
+      stroke,
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _LegacyOrderPlacementLoader extends StatelessWidget {
+  const _LegacyOrderPlacementLoader();
 
   @override
   Widget build(BuildContext context) {

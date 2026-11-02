@@ -110,17 +110,17 @@ class HomeController extends GetxController {
       "show": Common.currentRole == "vendor" ? true : false,
       "show_drawer": true
     },
-    {
-      "img": AppImages.clock,
-      "name": "Live Station",
-      "show": Common.currentRole == AppKeys.roleAdmin
-          ? false
-          : Common.loginReponse.value.data!.vendorCategory ==
-                  AppKeys.vendorTypeCatring
-              ? true
-              : false,
-      "show_drawer": true
-    },
+    // {
+    //   "img": AppImages.clock,
+    //   "name": "Live Station",
+    //   "show": Common.currentRole == AppKeys.roleAdmin
+    //       ? false
+    //       : Common.loginReponse.value.data!.vendorCategory ==
+    //               AppKeys.vendorTypeCatring
+    //           ? true
+    //           : false,
+    //   "show_drawer": true
+    // },
     {
       "img": AppImages.home2Image,
       "name": "Order List",

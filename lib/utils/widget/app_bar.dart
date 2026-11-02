@@ -94,7 +94,7 @@ class AppBarAction extends StatelessWidget {
         width: 34,
         decoration: BoxDecoration(
           color: AppColors.textWhiteColor,
-          borderRadius: BorderRadius.circular(AppDimens.md),
+          shape: BoxShape.circle,
         ),
         child: Icon(
           icon,

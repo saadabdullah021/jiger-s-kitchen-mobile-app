@@ -14,6 +14,7 @@ import '../../../../core/contstants.dart';
 import '../../../../model/user_list_model.dart';
 import '../../../../utils/app_images.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../../utils/widget/delete_item_dialoug.dart';
 import '../../../../utils/widget/app_states.dart';
 import '../../../../utils/widget/success_dialoug.dart';
@@ -315,28 +316,25 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                                                         ],
                                                       ),
                                                     ),
-                                                    CircleAvatar(
-                                                      radius: 30,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      backgroundImage: controller
+                                                    AppNetworkAvatar(
+                                                      url: controller
                                                                   .userList
                                                                   .value
                                                                   .data!
                                                                   .chefList![
                                                                       index]
-                                                                  .profileImage !=
+                                                                  .profileImage ==
                                                               null
-                                                          ? NetworkImage(Constants
-                                                                  .webUrl +
+                                                          ? null
+                                                          : Constants.webUrl +
                                                               controller
                                                                   .userList
                                                                   .value
                                                                   .data!
                                                                   .chefList![
                                                                       index]
-                                                                  .profileImage!)
-                                                          : null,
+                                                                  .profileImage!,
+                                                      radius: 30,
                                                     ),
                                                   ],
                                                 ),

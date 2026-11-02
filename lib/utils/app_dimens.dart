@@ -14,8 +14,10 @@ class AppDimens {
 
   // Corner radii.
   static const double radiusInput = 12;
-  static const double radiusButton = 14;
-  static const double radiusCard = 16;
+  // Buttons use a full pill radius so labels and icons share one consistent
+  // rounded language throughout the app.
+  static const double radiusButton = 999;
+  static const double radiusCard = 18;
   static const double radiusSheet = 20;
   static const double radiusPill = 999;
 

@@ -15,6 +15,7 @@ import '../../../core/contstants.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
+import '../../../utils/widget/app_network_image.dart';
 import '../../../utils/widget/custom_drop_down_widget.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import 'signup_controller.dart';
@@ -56,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ? "Edit Vendor"
               : widget.addVendor == true
                   ? "Add Vendor"
-                  : "Jigar’s Kitchens"),
+                  : "Jigar’s Kitchen"),
       body: Obx(
         () => controller.isloading.isTrue
             ? const SkeletonForm(showAvatar: true)
@@ -109,19 +110,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       controller.imagePath.value != ""
                                           ? FileImage(
                                               File(controller.imagePath.value))
-                                          : widget.isEdit == true &&
-                                                  controller.urlImg != ""
-                                              ? NetworkImage(Constants.webUrl +
-                                                  controller.urlImg)
-                                              : null,
-                                  child: Center(
-                                      child: controller.imagePath.value == "" &&
+                                          : null,
+                                  child: controller.imagePath.value == "" &&
+                                          widget.isEdit == true &&
+                                          controller.urlImg != ""
+                                      ? AppNetworkAvatar(
+                                          url: Constants.webUrl +
+                                              controller.urlImg,
+                                          radius: 50,
+                                        )
+                                      : controller.imagePath.value == "" &&
                                               controller.urlImg == ""
                                           ? Image.asset(
                                               AppImages.images,
                                               height: 20,
                                             )
-                                          : null),
+                                          : null,
                                 ),
                               ),
                             ),

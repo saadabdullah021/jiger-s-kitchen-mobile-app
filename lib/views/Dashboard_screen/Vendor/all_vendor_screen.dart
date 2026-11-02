@@ -11,6 +11,7 @@ import 'package:jigers_kitchen/views/Dashboard_screen/Vendor/all_vendor_controll
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../core/apis/app_interface.dart';
 import '../../../core/contstants.dart';
 import '../../../model/user_list_model.dart';
@@ -432,12 +433,11 @@ class vendorListDataWidget extends StatelessWidget {
             ],
           ),
         ),
-        CircleAvatar(
+        AppNetworkAvatar(
+          url: data.profileImage == null
+              ? null
+              : Constants.webUrl + data.profileImage!,
           radius: 30,
-          backgroundColor: Colors.white,
-          backgroundImage: data.profileImage != null
-              ? NetworkImage(Constants.webUrl + data.profileImage!)
-              : null,
         )
       ],
     );

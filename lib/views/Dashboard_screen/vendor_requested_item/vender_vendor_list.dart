@@ -9,6 +9,8 @@ import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/vend
 import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/view_request_list.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../core/contstants.dart';
 import '../../../model/user_list_model.dart';
 import '../../../utils/helper.dart';
@@ -160,12 +162,11 @@ class vendorListDataWidget extends StatelessWidget {
                 ],
               ),
             ),
-            CircleAvatar(
+            AppNetworkAvatar(
+              url: data.profileImage == null
+                  ? null
+                  : Constants.webUrl + data.profileImage!,
               radius: 30,
-              backgroundColor: Colors.white,
-              backgroundImage: data.profileImage != null
-                  ? NetworkImage(Constants.webUrl + data.profileImage!)
-                  : null,
             )
           ],
         ),
@@ -181,8 +182,9 @@ class vendorListDataWidget extends StatelessWidget {
               ));
             },
             child: Container(
+                constraints: const BoxConstraints(minHeight: 40),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(AppDimens.radiusButton),
                     color: AppColors.appColor),
                 child: Padding(
                   padding:

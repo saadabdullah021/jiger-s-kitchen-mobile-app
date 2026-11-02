@@ -7,10 +7,12 @@ import 'package:get/get.dart';
 import '../../../../core/contstants.dart';
 import '../../../../model/requested_item_list_model.dart';
 import '../../../../utils/app_colors.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../../utils/helper.dart';
 import '../../../../utils/widget/app_bar.dart';
 import '../../../../utils/widget/app_button.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../new_order_screens/edit_order/edit_order_screen.dart';
 import '../../vendor_requested_item/price_slab/add_price_slab.dart';
 import 'vendor_approved_item_controller.dart';
@@ -198,7 +200,7 @@ class vendorListDataWidget extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.textWhiteColor,
           border: Border.all(width: 1, color: AppColors.newOrderGrey),
-          borderRadius: BorderRadius.circular(22)),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCard)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -208,7 +210,12 @@ class vendorListDataWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15)),
             height: 100,
             width: 95,
-            child: Image.network(Constants.webUrl + data.profileImage!),
+            child: AppNetworkImage(
+              url: Constants.webUrl + data.profileImage!,
+              width: 95,
+              height: 100,
+              radius: 15,
+            ),
           ),
           const SizedBox(
             width: 15,

@@ -7,6 +7,7 @@ import '../../common/common.dart';
 import '../../views/Dashboard_screen/chef_and_delivery_boy/add_chef/add_chef_screen.dart';
 import '../../views/jigar_home_screen/jigar_home_controller.dart';
 import '../app_colors.dart';
+import 'app_network_image.dart';
 
 class NavDrawer extends StatefulWidget {
   const NavDrawer({super.key});
@@ -51,23 +52,11 @@ class _NavDrawerState extends State<NavDrawer> {
 
                   return Column(
                     children: [
-                      CircleAvatar(
+                      AppNetworkAvatar(
+                        key: ValueKey(imageUrl),
+                        url: imageUrl,
                         radius: 65,
-                        backgroundColor: Colors.grey,
-                        child: ClipOval(
-                          child: Container(
-                            width: 140,
-                            height: 140,
-                            color: AppColors.primaryColor,
-                            child: imageUrl != null
-                                ? Image.network(
-                                    imageUrl,
-                                    key: ValueKey(imageUrl),
-                                    fit: BoxFit.cover,
-                                  )
-                                : const SizedBox(),
-                          ),
-                        ),
+                        fallbackIcon: Icons.person_outline_rounded,
                       ),
                     ],
                   );

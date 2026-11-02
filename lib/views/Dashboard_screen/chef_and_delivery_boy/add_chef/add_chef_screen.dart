@@ -14,6 +14,7 @@ import '../../../../utils/app_colors.dart';
 import '../../../../utils/app_images.dart';
 import '../../../../utils/app_keys.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 
 class AddChefScreen extends StatelessWidget {
   bool? isEdit;
@@ -33,7 +34,7 @@ class AddChefScreen extends StatelessWidget {
     }
     final GlobalKey<FormState> key = GlobalKey();
     return Scaffold(
-      appBar: appBar(text: "Jigar’s Kitchens"),
+      appBar: appBar(text: "Jigar’s Kitchen"),
       body: Form(
         key: key,
         child: Obx(
@@ -59,18 +60,21 @@ class AddChefScreen extends StatelessWidget {
                               backgroundColor: Colors.grey.withOpacity(0.4),
                               backgroundImage: controller.imagePath.value != ""
                                   ? FileImage(File(controller.imagePath.value))
-                                  : isEdit == true && controller.urlImg != ""
-                                      ? NetworkImage(
-                                          Constants.webUrl + controller.urlImg)
-                                      : null,
-                              child: Center(
-                                  child: controller.imagePath.value == "" &&
+                                  : null,
+                              child: controller.imagePath.value == "" &&
+                                      isEdit == true &&
+                                      controller.urlImg != ""
+                                  ? AppNetworkAvatar(
+                                      url: Constants.webUrl + controller.urlImg,
+                                      radius: 50,
+                                    )
+                                  : controller.imagePath.value == "" &&
                                           controller.urlImg == ""
                                       ? Image.asset(
                                           AppImages.images,
                                           height: 20,
                                         )
-                                      : null),
+                                      : null,
                             ),
                           ),
                         ),

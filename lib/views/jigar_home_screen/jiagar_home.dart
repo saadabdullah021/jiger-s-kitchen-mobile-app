@@ -25,7 +25,7 @@ class JigarHome extends StatelessWidget {
       appBar: appBar(
         showDrawer: true,
         showback: false,
-        text: 'Jigar’s Kitchens',
+        text: 'Jigar’s Kitchen',
         actions: [
           IconButton(
             tooltip: 'Log out',

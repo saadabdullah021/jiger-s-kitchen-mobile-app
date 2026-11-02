@@ -11,7 +11,9 @@ import 'package:jigers_kitchen/utils/app_keys.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
 import '../../../../utils/app_images.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../../utils/widget/app_action_icon.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../../utils/widget/delete_item_dialoug.dart';
 import '../../../../utils/widget/success_dialoug.dart';
 import '../add_menu/add_menu_screen.dart';
@@ -124,8 +126,8 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                                     width: 1,
                                                     color:
                                                         AppColors.newOrderGrey),
-                                            borderRadius:
-                                                BorderRadius.circular(22)),
+                                            borderRadius: BorderRadius.circular(
+                                                AppDimens.radiusCard)),
                                         child: Row(
                                           crossAxisAlignment:
                                               Common.currentRole ==
@@ -144,15 +146,19 @@ class _ShowListScreenState extends State<ShowListScreen> {
                                                                 .circular(15)),
                                                     height: 100,
                                                     width: 95,
-                                                    child: Image.network(
-                                                        Constants.webUrl +
-                                                            _controller
-                                                                .menuItems
-                                                                .value
-                                                                .data!
-                                                                .menuItemsList![
-                                                                    index]
-                                                                .profileImage!),
+                                                    child: AppNetworkImage(
+                                                      url: Constants.webUrl +
+                                                          _controller
+                                                              .menuItems
+                                                              .value
+                                                              .data!
+                                                              .menuItemsList![
+                                                                  index]
+                                                              .profileImage!,
+                                                      width: 95,
+                                                      height: 100,
+                                                      radius: 15,
+                                                    ),
                                                   ),
                                             const SizedBox(
                                               width: 15,
@@ -560,15 +566,28 @@ Widget smallBtn(
   return InkWell(
     onTap: onTap,
     child: Container(
-      height: 25,
-      width: 92,
-      padding: const EdgeInsets.all(2),
+      constraints: const BoxConstraints(minHeight: 40, minWidth: 104),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30), color: btnColor),
+        borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        color: btnColor,
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x120F172A),
+            offset: Offset(0, 3),
+            blurRadius: 8,
+          ),
+        ],
+      ),
       child: Center(
         child: Text(
           text,
-          style: TextStyle(fontSize: 10, color: textColor),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
         ),
       ),
     ),

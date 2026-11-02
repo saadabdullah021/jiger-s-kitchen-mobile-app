@@ -12,6 +12,7 @@ import '../../model/get_cart_item_model.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_images.dart';
 import '../../utils/widget/app_button.dart';
+import '../../utils/widget/app_network_image.dart';
 import '../../utils/widget/appwidgets.dart';
 import '../../utils/widget/custom_textfiled.dart';
 import '../../utils/widget/delete_item_dialoug.dart';
@@ -55,26 +56,26 @@ class ViewCartController extends GetxController {
   }
 
   PlaceOrder(BuildContext context) async {
+    if (isPlacingOrder) return;
     isPlacingOrder = true;
     appWidgets.orderPlacementLoadingDialog();
     String json =
         jsonEncode(allCartItemList.map((item) => item.toJson()).toList());
-    await AppInterface()
-        .placeOrder(
-      tax: taxPrice.toString(),
-      shippingCharges: shippingPrice.toString(),
-      totalAmount: totalPrice.toString(),
-      subTotal: finalPrice.toString(),
-      isSelf: checkedValue.isTrue ? "1" : "0",
-      paymentType: "cod",
-      orderItems: json,
-      orderBillingAddress: shippingAddress.value,
-      orderNotes: noteController.text,
-    )
-        .then((value) async {
-      isPlacingOrder = false;
-      appWidgets.hideDialog();
+    try {
+      final value = await AppInterface().placeOrder(
+        tax: taxPrice.toString(),
+        shippingCharges: shippingPrice.toString(),
+        totalAmount: totalPrice.toString(),
+        subTotal: finalPrice.toString(),
+        isSelf: checkedValue.isTrue ? "1" : "0",
+        paymentType: "cod",
+        orderItems: json,
+        orderBillingAddress: shippingAddress.value,
+        orderNotes: noteController.text,
+      );
+
       if (value == 200) {
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: context,
             doubleBack: false,
@@ -92,7 +93,17 @@ class ViewCartController extends GetxController {
           Get.offAll(const JigarHome());
         });
       }
-    });
+    } catch (_) {
+      // Network/JSON exceptions are also failures: never leave the blocking
+      // placement loader mounted if the request throws before returning.
+      appWidgets.hideDialog();
+      appWidgets().showErrorToast('Unable to place order', 'Please try again.');
+    } finally {
+      isPlacingOrder = false;
+      // Safe no-op after a normal API response; guarantees cleanup for every
+      // failure path, including exceptions from the request layer.
+      appWidgets.hideDialog();
+    }
   }
 
   calculteTotalValue() {
@@ -235,9 +246,11 @@ class ViewCartController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Image.network(
-                  Constants.webUrl + img!,
-                  height: 80.0,
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
                 ),
                 const SizedBox(height: 5.0),
                 Column(
@@ -316,9 +329,11 @@ class ViewCartController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Image.network(
-                  Constants.webUrl + img!,
-                  height: 80.0,
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
                 ),
                 const SizedBox(height: 5.0),
                 Column(
@@ -417,9 +432,11 @@ class ViewCartController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Image.network(
-                  Constants.webUrl + img!,
-                  height: 80.0,
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
                 ),
                 const SizedBox(height: 5.0),
                 Column(

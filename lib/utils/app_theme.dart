@@ -21,6 +21,51 @@ class AppTheme {
       error: AppColors.redColor,
     ),
     buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size.fromHeight(52),
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: AppColors.textWhiteColor,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimens.xl,
+          vertical: AppDimens.md,
+        ),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        ),
+        textStyle: AppTextStyles.button,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(52),
+        foregroundColor: AppColors.primaryColor,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimens.xl,
+          vertical: AppDimens.md,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        ),
+        textStyle: AppTextStyles.button.copyWith(
+          color: AppColors.primaryColor,
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        minimumSize: const Size(48, 44),
+        foregroundColor: AppColors.primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: AppDimens.lg),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        ),
+        textStyle: AppTextStyles.button.copyWith(
+          color: AppColors.primaryColor,
+        ),
+      ),
+    ),
     hoverColor: Colors.transparent,
     textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'Poppins',
@@ -74,7 +119,7 @@ class AppTheme {
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: AppColors.textWhiteColor,
       elevation: 0,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppDimens.radiusSheet),
         ),
