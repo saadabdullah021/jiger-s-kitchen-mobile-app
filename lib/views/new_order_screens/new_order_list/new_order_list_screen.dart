@@ -1,3 +1,4 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +11,8 @@ import 'package:jigers_kitchen/views/new_order_screens/new_order_list/new_order_
 import '../../../../utils/widget/custom_textfiled.dart';
 import '../../../common/common.dart';
 import '../../../utils/helper.dart';
-import '../../../utils/widget/no_data.dart';
+import '../../../utils/widget/app_states.dart';
+import '../../../utils/widget/skeletons.dart';
 import '../edit_order/edit_order_screen.dart';
 import '../new_order_widgets.dart';
 
@@ -54,12 +56,9 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
+              ? const SkeletonList(showAvatar: false, lines: 4)
+              : FadeSlideIn(
+                  child: Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -93,386 +92,481 @@ class _newOrderListScreenState extends State<newOrderListScreen> {
                       height: 15,
                     ),
                     controller.orderList.value.data!.ordersList!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                              noData(null),
-                            ],
-                          )
+                        ? Expanded(
+                            child: const AppEmptyState(
+                            title: 'No new orders',
+                            description:
+                                'New orders will appear here when they are ready.',
+                            icon: Icons.receipt_long_outlined,
+                          ))
                         : Expanded(
                             child: ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .orderList.value.data!.ordersList!.length,
                                 itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () async {
-                                      Common.currentRole == "subadmin"
-                                          ? null
-                                          : await Get.to(AssignOrder(
-                                              orderData: controller
-                                                  .orderList
-                                                  .value
-                                                  .data!
-                                                  .ordersList![index],
-                                            ))!
-                                              .then((value) {
-                                              controller.getOrder(
-                                                  false, "1", false, false, "");
-                                            });
-                                    },
-                                    child: Card(
-                                        color: Colors.white,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(13),
-                                          child: ExpandablePanel(
-                                              theme: ExpandableThemeData(
-                                                  iconColor:
-                                                      AppColors.primaryColor),
-                                              header: Text.rich(
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 15),
-                                                  TextSpan(
-                                                      text: 'Order No. ',
-                                                      children: <InlineSpan>[
-                                                        TextSpan(
-                                                          text: controller
-                                                              .orderList
-                                                              .value
-                                                              .data!
-                                                              .ordersList![
-                                                                  index]
-                                                              .orderIdentifier,
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: AppColors
-                                                                  .primaryColor),
-                                                        )
-                                                      ])),
-                                              collapsed: ExpandedData(
-                                                  data: controller
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          Common.currentRole == "subadmin"
+                                              ? null
+                                              : await Get.to(AssignOrder(
+                                                  orderData: controller
                                                       .orderList
                                                       .value
                                                       .data!
-                                                      .ordersList![index]),
-                                              expanded: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  ExpandedData(
+                                                      .ordersList![index],
+                                                ))!
+                                                  .then((value) {
+                                                  controller.getOrder(false,
+                                                      "1", false, false, "");
+                                                });
+                                        },
+                                        child: Card(
+                                            margin: const EdgeInsets.only(
+                                                bottom: 12),
+                                            elevation: 0,
+                                            color: AppColors.textWhiteColor,
+                                            shadowColor: Colors.black12,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(18),
+                                              side: BorderSide(
+                                                  color: AppColors.borderColor),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: ExpandablePanel(
+                                                  theme: ExpandableThemeData(
+                                                      iconColor: AppColors
+                                                          .primaryColor),
+                                                  header: Row(
+                                                    children: [
+                                                      Container(
+                                                        height: 40,
+                                                        width: 40,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: AppColors
+                                                              .primaryColor
+                                                              .withOpacity(
+                                                                  0.12),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                        ),
+                                                        child: Icon(
+                                                          Icons
+                                                              .receipt_long_rounded,
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                          size: 21,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child: Text.rich(
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                          TextSpan(
+                                                            text: 'Order No.\n',
+                                                            children: <InlineSpan>[
+                                                              TextSpan(
+                                                                text: controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .ordersList![
+                                                                        index]
+                                                                    .orderIdentifier,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: AppColors
+                                                                      .primaryColor,
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 6),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: AppColors
+                                                              .primaryColor
+                                                              .withOpacity(
+                                                                  0.12),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      999),
+                                                        ),
+                                                        child: Text(
+                                                          'NEW',
+                                                          style: TextStyle(
+                                                            color: AppColors
+                                                                .primaryColor,
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  collapsed: ExpandedData(
                                                       data: controller
                                                           .orderList
                                                           .value
                                                           .data!
                                                           .ordersList![index]),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  for (int i = 1;
-                                                      i <
-                                                          controller
-                                                              .orderList
-                                                              .value
-                                                              .data!
-                                                              .ordersList![
-                                                                  index]
-                                                              .ordersItems!
-                                                              .length;
-                                                      i++)
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              bottom: 4),
-                                                      child:
-                                                          ExpandedItemColmnRow(
-                                                        leadingText: "Item:",
-                                                        leadingDesc: controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .ordersList![index]
-                                                            .ordersItems![i]
-                                                            .menuItemInfo!
-                                                            .itemName!,
-                                                        leadingText1: "Qty.",
-                                                        leadingDesc1: controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .ordersList![index]
-                                                            .ordersItems![i]
-                                                            .itemQuantity,
-                                                      ),
-                                                    ),
-                                                  Divider(
-                                                    height: 2,
-                                                    thickness: 1,
-                                                    color: AppColors
-                                                        .dividerGreyColor,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
+                                                  expanded: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
-                                                      Text(
-                                                        "Tax (${controller.orderList.value.data!.ordersList![index].vendorInfo!.tax!}%)",
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
+                                                      ExpandedData(
+                                                          data: controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .ordersList![
+                                                              index]),
+                                                      const SizedBox(
+                                                        height: 10,
                                                       ),
-                                                      Text(
-                                                        controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .ordersList![index]
-                                                            .tax!,
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      const Text(
-                                                        "Total Amount",
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                      Text(
-                                                        controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .ordersList![index]
-                                                            .totalAmount!,
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Divider(
-                                                    height: 2,
-                                                    thickness: 1,
-                                                    color: AppColors
-                                                        .dividerGreyColor,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment: Common
-                                                                .currentRole ==
-                                                            "subadmin"
-                                                        ? MainAxisAlignment.end
-                                                        : MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      Visibility(
-                                                        visible: Common
-                                                                .currentRole !=
-                                                            "subadmin",
-                                                        child:
-                                                            NewOrderButtonWidget(
-                                                          ic: Icons.edit,
-                                                          text: "Edit",
-                                                          clr: AppColors
-                                                              .primaryColor,
-                                                          ontap: () {
-                                                            Get.to(() =>
-                                                                EditOrderScreen(
-                                                                  orderID: controller
-                                                                      .orderList
-                                                                      .value
-                                                                      .data!
-                                                                      .ordersList![
-                                                                          index]
-                                                                      .id
-                                                                      .toString(),
-                                                                ));
-                                                          },
-                                                        ),
-                                                      ),
-                                                      Visibility(
-                                                        visible: Common
-                                                                .currentRole !=
-                                                            "subadmin",
-                                                        child:
-                                                            NewOrderButtonWidget(
-                                                          ic: Icons.delete,
-                                                          text: "Delete",
-                                                          ontap: () {
-                                                            controller.deleteOrder(
-                                                                controller
-                                                                        .orderList
-                                                                        .value
-                                                                        .data!
-                                                                        .ordersList![
-                                                                    index],
-                                                                context);
-                                                          },
-                                                          clr: AppColors
-                                                              .redColor,
-                                                        ),
-                                                      ),
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.receipt,
-                                                        text: "Invoice",
-                                                        ontap: () {
-                                                          Get.to(InvoiceScreen(
-                                                            id: controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .ordersList![
-                                                                    index]
-                                                                .id
-                                                                .toString(),
-                                                            OrderIden: controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .ordersList![
-                                                                    index]
-                                                                .orderIdentifier
-                                                                .toString(),
-                                                          ));
-                                                        },
-                                                        clr: AppColors
-                                                            .orangeColor,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                        Common.currentRole !=
-                                                            "subadmin",
-                                                    child: Divider(
-                                                      height: 2,
-                                                      thickness: 1,
-                                                      color: AppColors
-                                                          .dividerGreyColor,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Common.currentRole ==
-                                                          "subadmin"
-                                                      ? const SizedBox()
-                                                      : Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      16.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                          ),
-                                                          child: DropdownButton<
-                                                              String>(
-                                                            hint: const Text(
-                                                              'Select an option',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                            value: Helper
-                                                                .capitalizeFirstLetter(
+                                                      for (int i = 1;
+                                                          i <
                                                               controller
                                                                   .orderList
                                                                   .value
                                                                   .data!
                                                                   .ordersList![
                                                                       index]
-                                                                  .orderStatus
-                                                                  .toString()
-                                                                  .replaceAll(
-                                                                      "_", " "),
-                                                            ).toUpperCase(),
-                                                            isExpanded: true,
-                                                            underline:
-                                                                const SizedBox(), // Removes the underline
-                                                            onChanged: (String?
-                                                                newValue) {
-                                                              controller.updateStatus(
+                                                                  .ordersItems!
+                                                                  .length;
+                                                          i++)
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  bottom: 4),
+                                                          child:
+                                                              ExpandedItemColmnRow(
+                                                            leadingText:
+                                                                "Item:",
+                                                            leadingDesc: controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .ordersItems![i]
+                                                                .menuItemInfo!
+                                                                .itemName!,
+                                                            leadingText1:
+                                                                "Qty.",
+                                                            leadingDesc1: controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .ordersItems![i]
+                                                                .itemQuantity,
+                                                          ),
+                                                        ),
+                                                      Divider(
+                                                        height: 2,
+                                                        thickness: 1,
+                                                        color: AppColors
+                                                            .dividerGreyColor,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            "Tax (${controller.orderList.value.data!.ordersList![index].vendorInfo!.tax!}%)",
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                          Text(
+                                                            controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .tax!,
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          const Text(
+                                                            "Total Amount",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                          Text(
+                                                            controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .ordersList![
+                                                                    index]
+                                                                .totalAmount!,
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Divider(
+                                                        height: 2,
+                                                        thickness: 1,
+                                                        color: AppColors
+                                                            .dividerGreyColor,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: Common
+                                                                    .currentRole ==
+                                                                "subadmin"
+                                                            ? MainAxisAlignment
+                                                                .end
+                                                            : MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          Visibility(
+                                                            visible: Common
+                                                                    .currentRole !=
+                                                                "subadmin",
+                                                            child:
+                                                                NewOrderButtonWidget(
+                                                              ic: Icons.edit,
+                                                              text: "Edit",
+                                                              clr: AppColors
+                                                                  .primaryColor,
+                                                              ontap: () {
+                                                                Get.to(() =>
+                                                                    EditOrderScreen(
+                                                                      orderID: controller
+                                                                          .orderList
+                                                                          .value
+                                                                          .data!
+                                                                          .ordersList![
+                                                                              index]
+                                                                          .id
+                                                                          .toString(),
+                                                                    ));
+                                                              },
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible: Common
+                                                                    .currentRole !=
+                                                                "subadmin",
+                                                            child:
+                                                                NewOrderButtonWidget(
+                                                              ic: Icons.delete,
+                                                              text: "Delete",
+                                                              ontap: () {
+                                                                controller.deleteOrder(
+                                                                    controller
+                                                                        .orderList
+                                                                        .value
+                                                                        .data!
+                                                                        .ordersList![index],
+                                                                    context);
+                                                              },
+                                                              clr: AppColors
+                                                                  .redColor,
+                                                            ),
+                                                          ),
+                                                          NewOrderButtonWidget(
+                                                            ic: Icons.receipt,
+                                                            text: "Invoice",
+                                                            ontap: () {
+                                                              Get.to(
+                                                                  InvoiceScreen(
+                                                                id: controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .ordersList![
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                                OrderIden: controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .ordersList![
+                                                                        index]
+                                                                    .orderIdentifier
+                                                                    .toString(),
+                                                              ));
+                                                            },
+                                                            clr: AppColors
+                                                                .orangeColor,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Visibility(
+                                                        visible: Common
+                                                                .currentRole !=
+                                                            "subadmin",
+                                                        child: Divider(
+                                                          height: 2,
+                                                          thickness: 1,
+                                                          color: AppColors
+                                                              .dividerGreyColor,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Common.currentRole ==
+                                                              "subadmin"
+                                                          ? const SizedBox()
+                                                          : Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
+                                                              ),
+                                                              child:
+                                                                  DropdownButton<
+                                                                      String>(
+                                                                hint:
+                                                                    const Text(
+                                                                  'Select an option',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                value: Helper
+                                                                    .capitalizeFirstLetter(
                                                                   controller
                                                                       .orderList
                                                                       .value
                                                                       .data!
                                                                       .ordersList![
                                                                           index]
-                                                                      .id
-                                                                      .toString(),
-                                                                  newValue!);
-                                                            },
-                                                            items: controller.items.map<
-                                                                DropdownMenuItem<
-                                                                    String>>((String
-                                                                value) {
-                                                              return DropdownMenuItem<
-                                                                  String>(
-                                                                value: value,
-                                                                child: Text(
-                                                                  value,
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .black),
-                                                                ),
-                                                              );
-                                                            }).toList(),
-                                                          ),
-                                                        )
-                                                ],
-                                              )),
-                                        )),
-                                  );
+                                                                      .orderStatus
+                                                                      .toString()
+                                                                      .replaceAll(
+                                                                          "_",
+                                                                          " "),
+                                                                ).toUpperCase(),
+                                                                isExpanded:
+                                                                    true,
+                                                                underline:
+                                                                    const SizedBox(), // Removes the underline
+                                                                onChanged: (String?
+                                                                    newValue) {
+                                                                  controller.updateStatus(
+                                                                      controller
+                                                                          .orderList
+                                                                          .value
+                                                                          .data!
+                                                                          .ordersList![
+                                                                              index]
+                                                                          .id
+                                                                          .toString(),
+                                                                      newValue!);
+                                                                },
+                                                                items: controller
+                                                                    .items
+                                                                    .map<
+                                                                        DropdownMenuItem<
+                                                                            String>>((String
+                                                                        value) {
+                                                                  return DropdownMenuItem<
+                                                                      String>(
+                                                                    value:
+                                                                        value,
+                                                                    child: Text(
+                                                                      value,
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                  );
+                                                                }).toList(),
+                                                              ),
+                                                            )
+                                                    ],
+                                                  )),
+                                            )),
+                                      ));
                                 }),
                           ),
                     controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
-                            ),
-                          )
+                        ? const SkeletonLoadMore()
                         : const SizedBox()
                   ],
-                ),
+                )),
         ),
       ),
     );

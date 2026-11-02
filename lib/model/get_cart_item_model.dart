@@ -31,15 +31,24 @@ class Data {
   int? id;
   int? cartId;
   int? itemId;
+  double? totalCount;
   List<PriceSlabs>? priceSlabs;
   MenuItem? menuItem;
 
-  Data({this.id, this.cartId, this.itemId, this.priceSlabs, this.menuItem});
+  Data({
+    this.id,
+    this.cartId,
+    this.itemId,
+    this.priceSlabs,
+    this.menuItem,
+    this.totalCount,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     cartId = json['cart_id'];
     itemId = json['item_id'];
+    totalCount = double.parse(json['quantity'] ?? "0.0");
     if (json['price_slabs'] != null) {
       priceSlabs = <PriceSlabs>[];
       json['price_slabs'].forEach((v) {
@@ -98,7 +107,7 @@ class MenuItem {
   int? id;
   String? itemName;
   String? itemQuantity;
-  double? totalCount;
+
   double? basePrice;
   String? itemDescription;
   String? notes;
@@ -107,7 +116,6 @@ class MenuItem {
   MenuItem(
       {this.id,
       this.itemName,
-      this.totalCount,
       this.notes,
       this.basePrice,
       this.itemQuantity,
@@ -118,8 +126,8 @@ class MenuItem {
     id = json['id'];
     itemName = json['item_name'];
     itemQuantity = json['item_quantity'];
-    totalCount = 1;
     notes = "";
+
     basePrice = 0;
     itemDescription = json['item_description'];
     profileImage = json['profile_image'];

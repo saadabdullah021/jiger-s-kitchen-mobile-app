@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/common/common.dart';
 import 'package:jigers_kitchen/core/contstants.dart';
+import 'package:jigers_kitchen/utils/helper.dart';
 
 import '../../core/apis/app_interface.dart';
 import '../../model/crate_item_data_model.dart';
@@ -11,6 +12,7 @@ import '../../model/get_cart_item_model.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_images.dart';
 import '../../utils/widget/app_button.dart';
+import '../../utils/widget/app_network_image.dart';
 import '../../utils/widget/appwidgets.dart';
 import '../../utils/widget/custom_textfiled.dart';
 import '../../utils/widget/delete_item_dialoug.dart';
@@ -26,8 +28,9 @@ class ViewCartController extends GetxController {
   double totalPrice = 0.0;
   double finalPrice = 0.0;
   double taxPrice = 0.0;
-  String shippingPrice =
-      Common.loginReponse.value.data!.deliveryCharges.toString();
+  bool isPlacingOrder = false;
+  RxString shippingPrice =
+      Common.loginReponse.value.data!.deliveryCharges.toString().obs;
   RxBool isloading = false.obs;
   List<CreateItemModel> allCartItemList = [];
   TextEditingController noteController = TextEditingController();
@@ -53,24 +56,26 @@ class ViewCartController extends GetxController {
   }
 
   PlaceOrder(BuildContext context) async {
-    appWidgets.loadingDialog();
+    if (isPlacingOrder) return;
+    isPlacingOrder = true;
+    appWidgets.orderPlacementLoadingDialog();
     String json =
         jsonEncode(allCartItemList.map((item) => item.toJson()).toList());
-    await AppInterface()
-        .placeOrder(
-      tax: taxPrice.toString(),
-      shippingCharges: shippingPrice.toString(),
-      totalAmount: totalPrice.toString(),
-      subTotal: finalPrice.toString(),
-      isSelf: checkedValue.isTrue ? "1" : "0",
-      paymentType: "cod",
-      orderItems: json,
-      orderBillingAddress: shippingAddress.value,
-      orderNotes: noteController.text,
-    )
-        .then((value) {
-      appWidgets.hideDialog();
+    try {
+      final value = await AppInterface().placeOrder(
+        tax: taxPrice.toString(),
+        shippingCharges: shippingPrice.toString(),
+        totalAmount: totalPrice.toString(),
+        subTotal: finalPrice.toString(),
+        isSelf: checkedValue.isTrue ? "1" : "0",
+        paymentType: "cod",
+        orderItems: json,
+        orderBillingAddress: shippingAddress.value,
+        orderNotes: noteController.text,
+      );
+
       if (value == 200) {
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: context,
             doubleBack: false,
@@ -82,12 +87,23 @@ class ViewCartController extends GetxController {
                 fontSize: 32,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textBlackColor));
-
+        await AppInterface()
+            .getUserByToken(Common.loginReponse.value.data!.token!);
         Future.delayed(const Duration(seconds: 2), () {
           Get.offAll(const JigarHome());
         });
       }
-    });
+    } catch (_) {
+      // Network/JSON exceptions are also failures: never leave the blocking
+      // placement loader mounted if the request throws before returning.
+      appWidgets.hideDialog();
+      appWidgets().showErrorToast('Unable to place order', 'Please try again.');
+    } finally {
+      isPlacingOrder = false;
+      // Safe no-op after a normal API response; guarantees cleanup for every
+      // failure path, including exceptions from the request layer.
+      appWidgets.hideDialog();
+    }
   }
 
   calculteTotalValue() {
@@ -97,13 +113,13 @@ class ViewCartController extends GetxController {
     for (int i = 0; i < cartData.value.data!.length; i++) {
       double itemPrice = 0.0;
       for (int j = 0; j < cartData.value.data![i].priceSlabs!.length; j++) {
-        if (cartData.value.data![i].menuItem!.totalCount ==
+        if (cartData.value.data![i].totalCount ==
             double.parse(cartData.value.data![i].priceSlabs![j].quantity!)) {
           itemPrice =
               double.parse(cartData.value.data![i].priceSlabs![j].price!);
         } else {
           itemPrice = cartData.value.data![i].menuItem!.basePrice! *
-              cartData.value.data![i].menuItem!.totalCount!;
+              cartData.value.data![i].totalCount!;
         }
       }
 
@@ -113,7 +129,7 @@ class ViewCartController extends GetxController {
           itemId: cartData.value.data![i].itemId!,
           itemBasePrice: cartData.value.data![i].menuItem!.basePrice!,
           itemNote: cartData.value.data![i].menuItem!.itemDescription ?? "",
-          itemQuantity: cartData.value.data![i].menuItem!.totalCount!));
+          itemQuantity: cartData.value.data![i].totalCount!));
     }
     taxPrice = (totalPrice / 100) * taxPercentage;
 
@@ -161,15 +177,15 @@ class ViewCartController extends GetxController {
   }
 
   increaseQuantity(int index) {
-    cartData.value.data![index].menuItem!.totalCount =
-        cartData.value.data![index].menuItem!.totalCount! + 1;
+    cartData.value.data![index].totalCount =
+        cartData.value.data![index].totalCount! + 1;
     setPrice(index);
   }
 
   decreasePrice(int index) {
-    if (cartData.value.data![index].menuItem!.totalCount != 1) {
-      cartData.value.data![index].menuItem!.totalCount =
-          cartData.value.data![index].menuItem!.totalCount! - 1;
+    if (cartData.value.data![index].totalCount != 1) {
+      cartData.value.data![index].totalCount =
+          cartData.value.data![index].totalCount! - 1;
       setPrice(index);
     }
   }
@@ -177,12 +193,12 @@ class ViewCartController extends GetxController {
   setPrice(int index) {
     for (int i = 0; i < cartData.value.data![index].priceSlabs!.length; i++) {
       print(
-          "${double.parse(cartData.value.data![index].menuItem!.totalCount.toString())}");
+          "${double.parse(cartData.value.data![index].totalCount!.toString())}");
       print(
           "${double.parse(cartData.value.data![index].priceSlabs![i].quantity.toString())}");
       if (double.parse(
               cartData.value.data![index].priceSlabs![i].quantity.toString()) ==
-          double.parse(cartData.value.data![index].menuItem!.totalCount
+          double.parse(cartData.value.data![index].totalCount!
               .toString()
               .split(".")[0])) {
         cartData.value.data![index].menuItem!.basePrice = double.parse(
@@ -230,9 +246,11 @@ class ViewCartController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Image.network(
-                  Constants.webUrl + img!,
-                  height: 80.0,
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
                 ),
                 const SizedBox(height: 5.0),
                 Column(
@@ -278,6 +296,110 @@ class ViewCartController extends GetxController {
     );
   }
 
+  void addQuantityDialog({
+    BuildContext? context,
+    String? img,
+    int? index,
+    String? heading,
+    String? text,
+    VoidCallback? onBtnTap,
+    TextStyle? headingStyle = const TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+    TextStyle? textStyle = const TextStyle(
+        fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+    String? btnText,
+  }) {
+    TextEditingController textController = TextEditingController();
+    textController.text = text ?? "";
+    showDialog(
+      barrierColor: AppColors.primaryColor.withOpacity(0.6),
+      context: context!,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20), // Adjust horizontal padding here
+          child: Container(
+            width: double.infinity, // Full width of the screen
+            decoration: BoxDecoration(
+              color: AppColors.dialougBG,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
+                ),
+                const SizedBox(height: 5.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      heading!,
+                      textAlign: TextAlign.center,
+                      style: headingStyle,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomTextField(
+                        validator: Helper.validateNumber,
+                        maxLines: 5,
+                        controller: textController,
+                        fillColor: AppColors.textWhiteColor,
+                        hintText: "Add Quantity",
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButton(
+                    text: "Add Quantity",
+                    onPressed: () async {
+                      if (textController.text == "" ||
+                          double.parse(textController.text) == 0) {
+                        appWidgets()
+                            .showToast("Sorry", "Please add valid quantity");
+                      } else {
+                        appWidgets.loadingDialog();
+                        await AppInterface()
+                            .updateItemQuantity(
+                                itemID: cartData.value.data![index!].itemId!
+                                    .toString(),
+                                orderID: cartData.value.data![index].cartId!
+                                    .toString(),
+                                quantity: double.parse(textController.text))
+                            .then((value) {
+                          appWidgets.hideDialog();
+                          if (value == 200) {
+                            Get.back();
+                            cartData.value.data![index].totalCount =
+                                double.parse(textController.text);
+                            setPrice(index);
+                            cartData.refresh();
+                          }
+                        });
+                      }
+                    },
+                    padding: 10,
+                  ),
+                ),
+                const SizedBox(height: 35.0),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void ChnageAddress({
     BuildContext? context,
     String? img,
@@ -310,9 +432,11 @@ class ViewCartController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Image.network(
-                  Constants.webUrl + img!,
-                  height: 80.0,
+                AppNetworkImage(
+                  url: Constants.webUrl + img!,
+                  width: 80,
+                  height: 80,
+                  radius: 12,
                 ),
                 const SizedBox(height: 5.0),
                 Column(

@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -28,15 +30,12 @@ class _OrderSummeryState extends State<OrderSummery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(text: "Order Summery"),
+      appBar: appBar(text: "Order Summary"),
       body: Obx(
         () => _controller.isLoading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : Padding(
+            ? const SkeletonList(showAvatar: false, lines: 4)
+            : FadeSlideIn(
+                child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: SingleChildScrollView(
@@ -44,7 +43,7 @@ class _OrderSummeryState extends State<OrderSummery> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Order Summery",
+                        "Order Summary",
                         style: TextStyle(
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold),
@@ -105,6 +104,21 @@ class _OrderSummeryState extends State<OrderSummery> {
                           value: _controller.checkedValue.value,
                           onChanged: (newValue) {
                             _controller.checkedValue.value = newValue!;
+                            if (newValue) {
+                              _controller.shippingPrice.value = "0";
+                              _controller.finalPrice = _controller.finalPrice -
+                                  double.parse(Common
+                                      .loginReponse.value.data!.deliveryCharges
+                                      .toString());
+                            } else {
+                              _controller.shippingPrice.value = Common
+                                  .loginReponse.value.data!.deliveryCharges
+                                  .toString();
+                              _controller.finalPrice = _controller.finalPrice +
+                                  double.parse(Common
+                                      .loginReponse.value.data!.deliveryCharges
+                                      .toString());
+                            }
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -136,7 +150,7 @@ class _OrderSummeryState extends State<OrderSummery> {
                               ),
                               itemRow(
                                   "Standard Shipping Charges",
-                                  double.parse(_controller.shippingPrice)
+                                  double.parse(_controller.shippingPrice.value)
                                       .toStringAsFixed(2)),
                               const SizedBox(
                                 height: 10,
@@ -243,14 +257,16 @@ class _OrderSummeryState extends State<OrderSummery> {
                     ],
                   ),
                 ),
-              ),
+              )),
       ),
       bottomNavigationBar: BottomAppBar(
           color: Colors.transparent,
           child: CustomButton(
               text: "Place Order",
               onPressed: () async {
-                _controller.PlaceOrder(context);
+                if (_controller.isPlacingOrder == false) {
+                  _controller.PlaceOrder(context);
+                }
               })),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,15 +8,17 @@ import 'package:jigers_kitchen/utils/app_colors.dart';
 import 'package:jigers_kitchen/utils/app_keys.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
-import 'package:jigers_kitchen/utils/widget/no_data.dart';
 import 'package:jigers_kitchen/views/Dashboard_screen/chef_and_delivery_boy/chef_list/chef_list_controller.dart';
 
 import '../../../../core/contstants.dart';
 import '../../../../model/user_list_model.dart';
 import '../../../../utils/app_images.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../../utils/widget/delete_item_dialoug.dart';
+import '../../../../utils/widget/app_states.dart';
 import '../../../../utils/widget/success_dialoug.dart';
+import '../../../../utils/widget/skeletons.dart';
 import '../../../new_order_screens/new_order_widgets.dart';
 import '../add_chef/add_chef_screen.dart';
 
@@ -70,12 +73,9 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : RefreshIndicator(
+              ? const SkeletonList(showAvatar: true, lines: 2)
+              : FadeSlideIn(
+                  child: RefreshIndicator(
                   onRefresh: controller.pullRefresh,
                   child: Column(
                     children: [
@@ -159,340 +159,392 @@ class _AllChefListScreenState extends State<AllChefListScreen> {
                       ),
                       Expanded(
                         child: controller.userList.value.data!.chefList!.isEmpty
-                            ? Column(
-                                children: [
-                                  SizedBox(height: Get.height * 0.15),
-                                  noData(null),
-                                ],
+                            ? AppEmptyState(
+                                title: widget.type == AppKeys.userTypeDelivery
+                                    ? 'No delivery users found'
+                                    : 'No chefs found',
+                                description:
+                                    'Try another search or add a new team member.',
+                                icon: Icons.people_outline_rounded,
+                                actionText:
+                                    widget.type == AppKeys.userTypeDelivery
+                                        ? 'Add Delivery User'
+                                        : 'Add Chef',
+                                actionIcon: Icons.person_add_alt_1_rounded,
+                                onAction: () async {
+                                  await Get.to(() =>
+                                          AddChefScreen(type: widget.type))!
+                                      .then((value) {
+                                    controller.getUser(false, "1", false);
+                                  });
+                                },
                               )
                             : ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .userList.value.data!.chefList!.length,
                                 itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      widget.onChefSelected != null
-                                          ? widget.onChefSelected!(controller
-                                              .userList
-                                              .value
-                                              .data!
-                                              .chefList![index])
-                                          : null;
-                                    },
-                                    child: Card(
-                                      color: AppColors.textGreyColor,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 17, vertical: 15),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: Get.width * 0.57,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .chefList![
-                                                                    index]
-                                                                .name ??
-                                                            "",
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      iconTextWidget(
-                                                        icon: Icons
-                                                            .phone_callback,
-                                                        text: controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .chefList![
-                                                                    index]
-                                                                .phoneNumber ??
-                                                            "",
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      iconTextWidget(
-                                                        icon: Icons.email,
-                                                        text: controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .chefList![
-                                                                    index]
-                                                                .email ??
-                                                            "",
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                CircleAvatar(
-                                                  radius: 30,
-                                                  backgroundColor: Colors.white,
-                                                  backgroundImage: controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .profileImage !=
-                                                          null
-                                                      ? NetworkImage(Constants
-                                                              .webUrl +
-                                                          controller
-                                                              .userList
-                                                              .value
-                                                              .data!
-                                                              .chefList![index]
-                                                              .profileImage!)
-                                                      : null,
-                                                ),
-                                              ],
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: InkWell(
+                                        onTap: () {
+                                          widget.onChefSelected != null
+                                              ? widget.onChefSelected!(
+                                                  controller.userList.value
+                                                      .data!.chefList![index])
+                                              : null;
+                                        },
+                                        child: Card(
+                                          margin:
+                                              const EdgeInsets.only(bottom: 12),
+                                          elevation: 0,
+                                          color: AppColors.textWhiteColor,
+                                          shadowColor: Colors.black12,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(18),
+                                            side: BorderSide(
+                                              color: AppColors.borderColor,
                                             ),
-                                            widget.isBottombar == true
-                                                ? const SizedBox()
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      InkWell(
-                                                        onTap: () {
-                                                          controller
-                                                                  .selectedChefID =
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: Get.width * 0.57,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .name ??
+                                                                "",
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                color: AppColors
+                                                                    .textBlackColor),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 6),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        9,
+                                                                    vertical:
+                                                                        4),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: AppColors
+                                                                  .primaryColor
+                                                                  .withOpacity(
+                                                                      0.10),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          999),
+                                                            ),
+                                                            child: Text(
+                                                              widget.type ==
+                                                                      AppKeys
+                                                                          .userTypeDelivery
+                                                                  ? 'Delivery team'
+                                                                  : 'Kitchen team',
+                                                              style: TextStyle(
+                                                                fontSize: 10,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                color: AppColors
+                                                                    .primaryColor,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 12,
+                                                          ),
+                                                          iconTextWidget(
+                                                            icon: Icons
+                                                                .phone_callback,
+                                                            text: controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .phoneNumber ??
+                                                                "",
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          iconTextWidget(
+                                                            icon: Icons.email,
+                                                            text: controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .email ??
+                                                                "",
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    AppNetworkAvatar(
+                                                      url: controller
+                                                                  .userList
+                                                                  .value
+                                                                  .data!
+                                                                  .chefList![
+                                                                      index]
+                                                                  .profileImage ==
+                                                              null
+                                                          ? null
+                                                          : Constants.webUrl +
                                                               controller
                                                                   .userList
                                                                   .value
                                                                   .data!
                                                                   .chefList![
                                                                       index]
-                                                                  .id
-                                                                  .toString();
-                                                          controller
-                                                              .showCustomBottomSheet(
-                                                                  context,
-                                                                  widget.type ??
-                                                                      "");
-                                                        },
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          15),
-                                                              color:
-                                                                  Colors.white),
-                                                          child: const Padding(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical: 8,
-                                                                    horizontal:
-                                                                        13),
-                                                            child: Text(
-                                                              "Print Orders",
-                                                              style: TextStyle(
-                                                                  fontSize: 10,
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Row(
+                                                                  .profileImage!,
+                                                      radius: 30,
+                                                    ),
+                                                  ],
+                                                ),
+                                                const Divider(height: 1),
+                                                const SizedBox(height: 12),
+                                                widget.isBottombar == true
+                                                    ? const SizedBox()
+                                                    : Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
-                                                                .end,
+                                                                .spaceBetween,
                                                         children: [
-                                                          NewOrderButtonWidget(
-                                                            clr: AppColors
-                                                                .primaryColor,
-                                                            ic: Icons.edit,
-                                                            text: "",
-                                                            ontap: () async {
-                                                              await Get.to(
-                                                                      AddChefScreen(
-                                                                id: controller
-                                                                    .userList
-                                                                    .value
-                                                                    .data!
-                                                                    .chefList![
-                                                                        index]
-                                                                    .id
-                                                                    .toString(),
-                                                                isEdit: true,
-                                                                type:
-                                                                    widget.type,
-                                                              ))!
-                                                                  .then(
-                                                                      (value) {
-                                                                controller.getUser(
-                                                                    false,
-                                                                    controller
-                                                                        .userList
-                                                                        .value
-                                                                        .data!
-                                                                        .currentPage!
-                                                                        .toString(),
-                                                                    false);
-                                                              });
-                                                            },
-                                                          ),
-                                                          // InkWell(
-                                                          //   onTap: () async {
-                                                          //     await Get.to(
-                                                          //             AddChefScreen(
-                                                          //       id: controller
-                                                          //           .userList
-                                                          //           .value
-                                                          //           .data!
-                                                          //           .chefList![index]
-                                                          //           .id
-                                                          //           .toString(),
-                                                          //       isEdit: true,
-                                                          //       type: widget.type,
-                                                          //     ))!
-                                                          //         .then((value) {
-                                                          //       controller.getUser(
-                                                          //           false,
-                                                          //           controller
-                                                          //               .userList
-                                                          //               .value
-                                                          //               .data!
-                                                          //               .currentPage!
-                                                          //               .toString(),
-                                                          //           false);
-                                                          //     });
-                                                          //   },
-                                                          //   child: const Icon(
-                                                          //     Icons.edit,
-                                                          //     size: 17,
-                                                          //   ),
-                                                          // ),
-
-                                                          NewOrderButtonWidget(
-                                                            clr: AppColors
-                                                                .redColor,
-                                                            ic: Icons.delete,
-                                                            text: "",
-                                                            ontap: () async {
-                                                              showDeleteItemDialoug(
-                                                                  description: widget
-                                                                              .type !=
-                                                                          null
-                                                                      ? "Are you sure you want to DELETE the Delivery User?"
-                                                                      : "Are you sure you want to DELETE the Chef?",
-                                                                  context:
-                                                                      context,
-                                                                  url: controller
+                                                          InkWell(
+                                                            onTap: () {
+                                                              controller
+                                                                      .selectedChefID =
+                                                                  controller
                                                                       .userList
                                                                       .value
                                                                       .data!
                                                                       .chefList![
                                                                           index]
-                                                                      .profileImage,
-                                                                  onYes:
-                                                                      () async {
-                                                                    Get.back();
-                                                                    appWidgets
-                                                                        .loadingDialog();
-                                                                    await AppInterface()
-                                                                        .deleteUser(
-                                                                      role: controller
-                                                                          .role,
-                                                                      id: controller
+                                                                      .id
+                                                                      .toString();
+                                                              controller
+                                                                  .showCustomBottomSheet(
+                                                                      context,
+                                                                      widget.type ??
+                                                                          "");
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15),
+                                                                  color: Colors
+                                                                      .white),
+                                                              child:
+                                                                  const Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        vertical:
+                                                                            8,
+                                                                        horizontal:
+                                                                            13),
+                                                                child: Text(
+                                                                  "Print Orders",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              NewOrderButtonWidget(
+                                                                clr: AppColors
+                                                                    .primaryColor,
+                                                                ic: Icons.edit,
+                                                                text: "",
+                                                                ontap:
+                                                                    () async {
+                                                                  await Get.to(
+                                                                          AddChefScreen(
+                                                                    id: controller
+                                                                        .userList
+                                                                        .value
+                                                                        .data!
+                                                                        .chefList![
+                                                                            index]
+                                                                        .id
+                                                                        .toString(),
+                                                                    isEdit:
+                                                                        true,
+                                                                    type: widget
+                                                                        .type,
+                                                                  ))!
+                                                                      .then(
+                                                                          (value) {
+                                                                    controller.getUser(
+                                                                        false,
+                                                                        controller
+                                                                            .userList
+                                                                            .value
+                                                                            .data!
+                                                                            .currentPage!
+                                                                            .toString(),
+                                                                        false);
+                                                                  });
+                                                                },
+                                                              ),
+                                                              // InkWell(
+                                                              //   onTap: () async {
+                                                              //     await Get.to(
+                                                              //             AddChefScreen(
+                                                              //       id: controller
+                                                              //           .userList
+                                                              //           .value
+                                                              //           .data!
+                                                              //           .chefList![index]
+                                                              //           .id
+                                                              //           .toString(),
+                                                              //       isEdit: true,
+                                                              //       type: widget.type,
+                                                              //     ))!
+                                                              //         .then((value) {
+                                                              //       controller.getUser(
+                                                              //           false,
+                                                              //           controller
+                                                              //               .userList
+                                                              //               .value
+                                                              //               .data!
+                                                              //               .currentPage!
+                                                              //               .toString(),
+                                                              //           false);
+                                                              //     });
+                                                              //   },
+                                                              //   child: const Icon(
+                                                              //     Icons.edit,
+                                                              //     size: 17,
+                                                              //   ),
+                                                              // ),
+
+                                                              NewOrderButtonWidget(
+                                                                clr: AppColors
+                                                                    .redColor,
+                                                                ic: Icons
+                                                                    .delete,
+                                                                text: "",
+                                                                ontap:
+                                                                    () async {
+                                                                  showDeleteItemDialoug(
+                                                                      description: widget.type !=
+                                                                              null
+                                                                          ? "Are you sure you want to DELETE the Delivery User?"
+                                                                          : "Are you sure you want to DELETE the Chef?",
+                                                                      context:
+                                                                          context,
+                                                                      url: controller
                                                                           .userList
                                                                           .value
                                                                           .data!
                                                                           .chefList![
                                                                               index]
-                                                                          .id
-                                                                          .toString(),
-                                                                    )
-                                                                        .then(
-                                                                            (value) {
-                                                                      if (value !=
-                                                                              null &&
-                                                                          value ==
-                                                                              200) {
+                                                                          .profileImage,
+                                                                      onYes:
+                                                                          () async {
+                                                                        Get.back();
                                                                         appWidgets
-                                                                            .hideDialog();
-                                                                        controller.getUser(
-                                                                            false,
-                                                                            controller.userList.value.data!.currentPage.toString(),
-                                                                            false);
-                                                                        showDialogWithAutoDismiss(
-                                                                            context: Get
-                                                                                .context,
-                                                                            doubleBack:
+                                                                            .loadingDialog();
+                                                                        await AppInterface()
+                                                                            .deleteUser(
+                                                                          role:
+                                                                              controller.role,
+                                                                          id: controller
+                                                                              .userList
+                                                                              .value
+                                                                              .data!
+                                                                              .chefList![index]
+                                                                              .id
+                                                                              .toString(),
+                                                                        )
+                                                                            .then((value) {
+                                                                          if (value != null &&
+                                                                              value == 200) {
+                                                                            appWidgets.hideDialog();
+                                                                            controller.getUser(
                                                                                 false,
-                                                                            img: AppImages
-                                                                                .successDialougIcon,
-                                                                            autoDismiss:
-                                                                                true,
-                                                                            heading:
-                                                                                "Hurray!",
-                                                                            text: widget.type != null
-                                                                                ? "Delivery User Deleted Successfully"
-                                                                                : "Chef Deleted Successfully",
-                                                                            headingStyle: TextStyle(
-                                                                                fontSize: 32,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: AppColors.textBlackColor));
-                                                                      }
-                                                                    });
-                                                                  });
-                                                            },
+                                                                                controller.userList.value.data!.currentPage.toString(),
+                                                                                false);
+                                                                            showDialogWithAutoDismiss(
+                                                                                context: Get.context,
+                                                                                doubleBack: false,
+                                                                                img: AppImages.successDialougIcon,
+                                                                                autoDismiss: true,
+                                                                                heading: "Hurray!",
+                                                                                text: widget.type != null ? "Delivery User Deleted Successfully" : "Chef Deleted Successfully",
+                                                                                headingStyle: TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: AppColors.textBlackColor));
+                                                                          }
+                                                                        });
+                                                                      });
+                                                                },
+                                                              ),
+                                                            ],
                                                           ),
                                                         ],
-                                                      ),
-                                                    ],
-                                                  )
-                                          ],
+                                                      )
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  );
+                                      ));
                                 }),
                       ),
                       controller.isMoreLoading.isTrue
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primaryColor,
-                              ),
-                            )
+                          ? const SkeletonLoadMore()
                           : const SizedBox()
                     ],
                   ),
-                ),
+                )),
         ),
       ),
     );

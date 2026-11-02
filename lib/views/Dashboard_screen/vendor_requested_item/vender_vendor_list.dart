@@ -1,3 +1,6 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -6,10 +9,11 @@ import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/vend
 import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/view_request_list.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../core/contstants.dart';
 import '../../../model/user_list_model.dart';
 import '../../../utils/helper.dart';
-import '../../../utils/widget/no_data.dart';
 
 class VenderRequestItem extends StatefulWidget {
   const VenderRequestItem({super.key});
@@ -51,12 +55,9 @@ class _VenderRequestItemState extends State<VenderRequestItem> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
+              ? const SkeletonList(padding: EdgeInsets.zero)
+              : FadeSlideIn(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
@@ -86,39 +87,36 @@ class _VenderRequestItemState extends State<VenderRequestItem> {
                       height: 15,
                     ),
                     controller.userList.value.data!.chefList!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                          noData(null),
-                            ],
-                          )
+                        ? Expanded(
+                            child: const AppEmptyState(
+                                title: 'No vendors found',
+                                description:
+                                    'Try another search or check back later.'))
                         : Expanded(
                             child: ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .userList.value.data!.chefList!.length,
                                 itemBuilder: (context, index) {
-                                  return Card(
-                                    color: AppColors.textGreyColor,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(13),
-                                      child: vendorListDataWidget(
-                                        data: controller.userList.value.data!
-                                            .chefList![index],
-                                      ),
-                                    ),
-                                  );
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: Card(
+                                        color: AppColors.textGreyColor,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(13),
+                                          child: vendorListDataWidget(
+                                            data: controller.userList.value
+                                                .data!.chefList![index],
+                                          ),
+                                        ),
+                                      ));
                                 }),
                           ),
                     controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
-                            ),
-                          )
+                        ? const SkeletonLoadMore()
                         : const SizedBox()
                   ],
-                ),
+                )),
         ),
       ),
     );
@@ -164,12 +162,11 @@ class vendorListDataWidget extends StatelessWidget {
                 ],
               ),
             ),
-            CircleAvatar(
+            AppNetworkAvatar(
+              url: data.profileImage == null
+                  ? null
+                  : Constants.webUrl + data.profileImage!,
               radius: 30,
-              backgroundColor: Colors.white,
-              backgroundImage: data.profileImage != null
-                  ? NetworkImage(Constants.webUrl + data.profileImage!)
-                  : null,
             )
           ],
         ),
@@ -185,8 +182,9 @@ class vendorListDataWidget extends StatelessWidget {
               ));
             },
             child: Container(
+                constraints: const BoxConstraints(minHeight: 40),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(AppDimens.radiusButton),
                     color: AppColors.appColor),
                 child: Padding(
                   padding:
@@ -226,7 +224,7 @@ Widget iconTextWidget({
           text,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-              fontSize: 11,
+              fontSize: 13,
               color: AppColors.newOrderGrey,
               fontWeight: FontWeight.w600),
         ),

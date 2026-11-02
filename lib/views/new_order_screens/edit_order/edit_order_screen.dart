@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -37,12 +39,9 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
         child: Obx(
           () => controller.isEditOrderLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.appColor,
-                  ),
-                )
-              : ListView(
+              ? const SkeletonList(showAvatar: false, lines: 4)
+              : FadeSlideIn(
+                  child: ListView(
                   children: [
                     Card(
                       color: Colors.white,
@@ -77,37 +76,20 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppImages.clock,
-                                          height: 15,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          controller.editOrderDetail.value.data!
-                                                  .orderCreatedAt!
-                                                  .split(" ")[0] ??
-                                              "",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.newOrderGrey),
-                                          softWrap: true,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Text(
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppImages.clock,
+                                        height: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
                                         controller.editOrderDetail.value.data!
-                                                .orderCreatedAt!
-                                                .split(" ")[1] ??
+                                                .orderCreatedAt ??
                                             "",
                                         style: TextStyle(
                                             fontSize: 12,
@@ -116,18 +98,11 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            ItemRow(
-                                leftText: "Total Amount:",
-                                rightText: controller
-                                    .editOrderDetail.value.data!.totalAmount!),
                             const SizedBox(
                               height: 10,
                             ),
@@ -149,7 +124,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                 height: 10,
                               ),
                               ItemRow(
-                                  leftText: "item:",
+                                  leftText: "Item:",
                                   rightText: controller
                                           .editOrderDetail
                                           .value
@@ -183,6 +158,19 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                           .itemBasePrice! ??
                                       ""),
                               const SizedBox(
+                                height: 10,
+                              ),
+                              if (controller.editOrderDetail.value.data!
+                                      .ordersItems![i].itemNote !=
+                                  "")
+                                ItemRow(
+                                    leftText: "Item Notes",
+                                    rightText:
+                                        // "hdjsfghads fajsdhf asdhj jaghsdjka sgdkajs dagjksd ajksdgajksdga "
+                                        controller.editOrderDetail.value.data!
+                                                .ordersItems![i].itemNote! ??
+                                            ""),
+                              const SizedBox(
                                 height: 20,
                               ),
                               Row(
@@ -206,6 +194,10 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                           controller.editOrderDetail.value.data!
                                               .ordersItems![i].itemQuantity!
                                               .toString();
+                                      controller.notesController.text =
+                                          controller.editOrderDetail.value.data!
+                                              .ordersItems![i].itemNote!
+                                              .toString();
                                       controller.chnagePriceAndQty(
                                         context: context,
                                         onBtnTap: () {},
@@ -220,7 +212,64 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                                 dotSize: 2.0,
                                 dotSpacing: 3.0,
                               ),
-                            }
+                            },
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ItemRow(
+                                leftText: "Total Amount:",
+                                rightText: controller
+                                    .editOrderDetail.value.data!.totalAmount!),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Visibility(
+                              visible: controller
+                                      .editOrderDetail.value.data!.orderNote !=
+                                  null,
+                              child: ItemRow(
+                                  leftText: "Order Notes:", rightText: ""),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              controller
+                                      .editOrderDetail.value.data!.orderNote ??
+                                  "",
+                              softWrap: true,
+                              textAlign: TextAlign.start,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: AppColors.textBlackColor),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(),
+                                NewOrderButtonWidget(
+                                  text: "Edit Order Notes",
+                                  clr: AppColors.primaryColor,
+                                  ic: Icons.edit,
+                                  ontap: () {
+                                    controller.orderNotesController.text =
+                                        controller.editOrderDetail.value.data!
+                                            .orderNote
+                                            .toString();
+                                    controller.chnageOrderNotes(
+                                      context: context,
+                                      onBtnTap: () {},
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -234,7 +283,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                       onPressed: () {},
                     ),
                   ],
-                ),
+                )),
         ),
       ),
       floatingActionButton: InkWell(
@@ -269,15 +318,18 @@ Widget ItemRow({
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      Text(
-        rightText,
-        softWrap: true,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
-            color: AppColors.textBlackColor),
+      Flexible(
+        child: Text(
+          rightText,
+          softWrap: true,
+          textAlign: TextAlign.right,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              color: AppColors.textBlackColor),
+        ),
       ),
     ],
   );

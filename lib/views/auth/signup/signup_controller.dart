@@ -13,6 +13,7 @@ import '../../../model/chef_drop_down_data_model.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
+import '../../../utils/widget/app_network_image.dart';
 import '../../../utils/widget/appwidgets.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import '../../../utils/widget/success_dialoug.dart';
@@ -72,7 +73,6 @@ class SignupController extends GetxController {
         isloading.value = false;
       } else {
         isloading.value = false;
-        Get.back();
       }
     });
   }
@@ -267,9 +267,8 @@ class SignupController extends GetxController {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: AppColors.textGreyColor,
-                      backgroundImage: NetworkImage(Constants.webUrl + url!),
+                    AppNetworkAvatar(
+                      url: Constants.webUrl + url!,
                       radius: 40,
                     ),
                     const SizedBox(height: 14.0),

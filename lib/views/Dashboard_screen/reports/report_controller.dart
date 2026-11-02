@@ -17,6 +17,7 @@ class ReportController extends GetxController {
   final List<String> items = [
     'CUSTOMER REPORT',
     'DATE RANGE SALES REPORT',
+    'CUSTOMER SUMMARY'
   ];
   void showDatePickerOnly(bool isStart) {
     showDatePicker(
@@ -37,53 +38,65 @@ class ReportController extends GetxController {
 
   Future<void> _onChefSelected(ChefList chef) async {
     Get.back();
+    await Future.delayed(const Duration(milliseconds: 150));
     getGeneraicReport(chef.id.toString());
   }
 
   getGeneraicReport(String? chefId) async {
     appWidgets.loadingDialog();
-    await AppInterface()
-        .getGeneraicInvoiceLink(startController.text, endController.text,
-            chefId, SelectedOrderReportType.value)
-        .then((value) {
+    try {
+      final value = await AppInterface().getGeneraicInvoiceLink(
+        startController.text,
+        endController.text,
+        chefId,
+        SelectedOrderReportType.value,
+      );
       appWidgets.hideDialog();
-      if (value is String) {
-        Get.to(InvoiceWithScreen(url: value));
+      if (value != null && value['invoice_url'] != null) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        Get.to(() => InvoiceWithScreen(
+              url: value['invoice_url'],
+              Xlurl: value['excel_url'] ?? "",
+            ));
       }
-    });
+    } catch (_) {
+      appWidgets.hideDialog();
+    }
   }
 
   getChefReport(String type) async {
     appWidgets.loadingDialog();
-    if (type == "subadmin") {
-      await AppInterface()
-          .getSubAdminInvoiceLink(
-              startController.text, endController.text, chefID)
-          .then((value) {
-        appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
-      });
-    } else if (type == "delivery_user") {
-      await AppInterface()
-          .getDeliveryInvoiceLink(
-              startController.text, endController.text, chefID)
-          .then((value) {
-        appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
-      });
-    } else {
-      await AppInterface()
-          .getChefInvoiceLink(startController.text, endController.text, chefID)
-          .then((value) {
-        appWidgets.hideDialog();
-        if (value is String) {
-          Get.to(InvoiceWithScreen(url: value));
-        }
-      });
+    try {
+      dynamic value;
+      if (type == "subadmin") {
+        value = await AppInterface().getSubAdminInvoiceLink(
+          startController.text,
+          endController.text,
+          chefID,
+        );
+      } else if (type == "delivery_user") {
+        value = await AppInterface().getDeliveryInvoiceLink(
+          startController.text,
+          endController.text,
+          chefID,
+        );
+      } else {
+        value = await AppInterface().getChefInvoiceLink(
+          startController.text,
+          endController.text,
+          chefID,
+        );
+      }
+      appWidgets.hideDialog();
+      if (value != null && value['invoice_url'] != null) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        Get.to(() => InvoiceWithScreen(
+              url: value['invoice_url'],
+              Xlurl: value['excel_url'] ?? "",
+            ));
+      }
+    } catch (_) {
+      appWidgets.hideDialog();
     }
   }
 
@@ -103,14 +116,22 @@ class ReportController extends GetxController {
 
   getReport() async {
     appWidgets.loadingDialog();
-    await AppInterface()
-        .getInvoiceLink(startController.text, endController.text)
-        .then((value) {
+    try {
+      final value = await AppInterface().getInvoiceLink(
+        startController.text,
+        endController.text,
+      );
       appWidgets.hideDialog();
-      if (value is String) {
-        Get.to(InvoiceWithScreen(url: value));
+      if (value != null && value['invoice_url'] != null) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        Get.to(() => InvoiceWithScreen(
+              url: value['invoice_url'],
+              Xlurl: value['excel_url'] ?? "",
+            ));
       }
-    });
+    } catch (_) {
+      appWidgets.hideDialog();
+    }
   }
 }
 

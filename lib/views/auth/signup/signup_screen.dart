@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'dart:io';
 
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
@@ -13,6 +15,7 @@ import '../../../core/contstants.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/app_button.dart';
+import '../../../utils/widget/app_network_image.dart';
 import '../../../utils/widget/custom_drop_down_widget.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import 'signup_controller.dart';
@@ -57,12 +60,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   : "Jigar’s Kitchen"),
       body: Obx(
         () => controller.isloading.isTrue
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : SingleChildScrollView(
+            ? const SkeletonForm(showAvatar: true)
+            : FadeSlideIn(
+                child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Form(
@@ -110,19 +110,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       controller.imagePath.value != ""
                                           ? FileImage(
                                               File(controller.imagePath.value))
-                                          : widget.isEdit == true &&
-                                                  controller.urlImg != ""
-                                              ? NetworkImage(Constants.webUrl +
-                                                  controller.urlImg)
-                                              : null,
-                                  child: Center(
-                                      child: controller.imagePath.value == "" &&
+                                          : null,
+                                  child: controller.imagePath.value == "" &&
+                                          widget.isEdit == true &&
+                                          controller.urlImg != ""
+                                      ? AppNetworkAvatar(
+                                          url: Constants.webUrl +
+                                              controller.urlImg,
+                                          radius: 50,
+                                        )
+                                      : controller.imagePath.value == "" &&
                                               controller.urlImg == ""
                                           ? Image.asset(
                                               AppImages.images,
                                               height: 20,
                                             )
-                                          : null),
+                                          : null,
                                 ),
                               ),
                             ),
@@ -450,7 +453,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-              ),
+              )),
       ),
     );
   }

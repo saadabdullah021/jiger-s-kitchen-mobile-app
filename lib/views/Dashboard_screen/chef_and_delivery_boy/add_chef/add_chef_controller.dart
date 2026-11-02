@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jigers_kitchen/model/single_user_data.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
+import '../../../../common/common.dart';
 import '../../../../core/apis/app_interface.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/app_images.dart';
@@ -66,8 +67,7 @@ class AddChefController extends GetxController {
             profileImage: imagePath.value)
         .then((value) {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,
@@ -96,8 +96,7 @@ class AddChefController extends GetxController {
             profileImage: imagePath.value)
         .then((value) {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,
@@ -125,10 +124,10 @@ class AddChefController extends GetxController {
             email: emailController.text,
             id: chefId.toString(),
             profileImage: imagePath.value)
-        .then((value) {
+        .then((value) async {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        await Common.refreshCurrentUser();
+        appWidgets.hideDialog();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,
@@ -156,10 +155,10 @@ class AddChefController extends GetxController {
             email: emailController.text,
             id: chefId.toString(),
             profileImage: imagePath.value)
-        .then((value) {
+        .then((value) async {
       if (value == 200) {
-        appWidgets.hideDialog;
-        Get.back();
+        await Common.refreshCurrentUser();
+        appWidgets.hideDialog();
 
         showDialogWithAutoDismiss(
             context: Get.context,

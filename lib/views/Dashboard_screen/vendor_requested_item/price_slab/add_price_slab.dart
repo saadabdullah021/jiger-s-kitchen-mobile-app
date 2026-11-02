@@ -1,3 +1,5 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -7,6 +9,7 @@ import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/pric
 import '../../../../model/requested_item_list_model.dart';
 import '../../../../utils/helper.dart';
 import '../../../../utils/widget/app_bar.dart';
+import '../../../../utils/widget/app_action_icon.dart';
 import '../../../../utils/widget/app_button.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
 
@@ -36,10 +39,9 @@ class AddPriceSlabScreen extends StatelessWidget {
           () => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: controller.isloading.isTrue
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Column(
+                ? const SkeletonForm()
+                : FadeSlideIn(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(
@@ -102,7 +104,8 @@ class AddPriceSlabScreen extends StatelessWidget {
                       CustomTextField(
                         controller: controller.priceController,
                         validator: Helper.validateFloat,
-                        keyboardType: TextInputType.number,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         hintText: "Write Price (USD)",
                       ),
                       const SizedBox(
@@ -243,11 +246,7 @@ class AddPriceSlabScreen extends StatelessWidget {
                                                             .vendorId,
                                                   );
                                                 },
-                                                child: Icon(
-                                                  Icons.edit,
-                                                  size: 20,
-                                                  color: AppColors.newOrderGrey,
-                                                ),
+                                                child: AppActionIcon.edit(),
                                               ),
                                               const SizedBox(
                                                 width: 5,
@@ -271,11 +270,7 @@ class AddPriceSlabScreen extends StatelessWidget {
                                                     context,
                                                   );
                                                 },
-                                                child: Icon(
-                                                  Icons.delete,
-                                                  size: 20,
-                                                  color: AppColors.newOrderGrey,
-                                                ),
+                                                child: AppActionIcon.delete(),
                                               )
                                             ],
                                           ),
@@ -291,7 +286,7 @@ class AddPriceSlabScreen extends StatelessWidget {
                         ),
                       )
                     ],
-                  ),
+                  )),
           ),
         ),
       ),

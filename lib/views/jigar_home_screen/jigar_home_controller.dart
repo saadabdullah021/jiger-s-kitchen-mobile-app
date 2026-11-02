@@ -47,7 +47,7 @@ class HomeController extends GetxController {
     },
     {
       "img": AppImages.home3Image,
-      "name": "Vendor Request\nItem",
+      "name": "Vendor Requested\nItems",
       "show": Common.currentRole == AppKeys.roleAdmin ? true : false,
       "show_drawer": false
     },
@@ -110,17 +110,17 @@ class HomeController extends GetxController {
       "show": Common.currentRole == "vendor" ? true : false,
       "show_drawer": true
     },
-    {
-      "img": AppImages.clock,
-      "name": "Live Station",
-      "show": Common.currentRole == AppKeys.roleAdmin
-          ? false
-          : Common.loginReponse.value.data!.vendorCategory ==
-                  AppKeys.vendorTypeCatring
-              ? true
-              : false,
-      "show_drawer": true
-    },
+    // {
+    //   "img": AppImages.clock,
+    //   "name": "Live Station",
+    //   "show": Common.currentRole == AppKeys.roleAdmin
+    //       ? false
+    //       : Common.loginReponse.value.data!.vendorCategory ==
+    //               AppKeys.vendorTypeCatring
+    //           ? true
+    //           : false,
+    //   "show_drawer": true
+    // },
     {
       "img": AppImages.home2Image,
       "name": "Order List",
@@ -135,14 +135,11 @@ class HomeController extends GetxController {
     {
       "img": AppImages.home2Image,
       "name": "Request Item",
-      "show": Common.currentRole == AppKeys.roleAdmin
-          ? false
-          : Common.currentRole == AppKeys.roleAdmin
-              ? false
-              : Common.loginReponse.value.data!.vendorCategory ==
-                      AppKeys.vendorTypeWholeSeller
-                  ? true
-                  : false,
+      "show": Common.currentRole != AppKeys.roleAdmin &&
+          (Common.loginReponse.value.data!.vendorCategory ==
+                  AppKeys.vendorTypeWholeSeller ||
+              Common.loginReponse.value.data!.vendorCategory ==
+                  AppKeys.vendorTypeCatring),
       "show_drawer": true
     },
   ];
@@ -178,6 +175,7 @@ class HomeController extends GetxController {
         break;
       case 8:
         Get.to(() => const SelectGenraicReportDate());
+        break;
       case 9:
         Get.to(() => SelectReportDate());
         break;
@@ -186,6 +184,7 @@ class HomeController extends GetxController {
               addToCard: true,
               screenType: "new_order",
             ));
+        break;
       case 12:
         Get.to(() => OrderListScreen(
               status: "",

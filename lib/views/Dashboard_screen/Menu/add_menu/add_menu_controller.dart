@@ -97,7 +97,7 @@ class AddMenuController extends GetxController {
     await AppInterface().getAllChefDropDown().then((value) async {
       if (value is ChefDropDownData) {
         if (value.data!.isEmpty) {
-          Get.back();
+          isLoading.value = false;
           appWidgets().showToast("No chef found", "Please Add chef first");
         } else {
           chefList = value.data!;
@@ -126,7 +126,7 @@ class AddMenuController extends GetxController {
         }
       }
       if (value == null) {
-        Get.back();
+        isLoading.value = false;
         Constants.soryyTryAgainToast();
       }
     });

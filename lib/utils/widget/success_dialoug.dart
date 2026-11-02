@@ -1,7 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
+import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 
+import '../app_dimens.dart';
+import '../app_text_styles.dart';
+import 'app_button.dart';
+import 'dialog_shell.dart';
+
+/// Success feedback dialog. Signature and auto-dismiss behaviour unchanged.
 void showDialogWithAutoDismiss(
     {BuildContext? context,
     String? img,
@@ -11,60 +20,94 @@ void showDialogWithAutoDismiss(
     bool? autoDismiss,
     bool? showBtn,
     VoidCallback? onBtnTap,
-    TextStyle? headingStyle = const TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
-    TextStyle? textStyle = const TextStyle(
-        fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+    TextStyle? headingStyle,
+    TextStyle? textStyle,
     String? btnText}) {
-  showDialog(
-    barrierColor: AppColors.primaryColor.withOpacity(0.6),
-    context: context!,
-    builder: (BuildContext context) {
+  // Ensure any active loader is immediately dismissed
+  appWidgets.hideDialog();
+
+  void openDialog(BuildContext targetContext) {
+    if (!targetContext.mounted) return;
+    Timer? dismissTimer;
+    showDialog<void>(
+      barrierColor: Colors.black.withOpacity(0.45),
+      context: targetContext,
+      builder: (BuildContext dialogContext) {
       if (autoDismiss == true) {
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pop();
+        dismissTimer ??= Timer(const Duration(seconds: 2), () {
+          // The dialog may already be gone if the user navigated away.
+          if (!dialogContext.mounted) return;
+          if (ModalRoute.of(dialogContext)?.isCurrent != true) return;
+          final navigator = Navigator.of(dialogContext);
+          navigator.pop();
           if (doubleBack == true) {
-            Navigator.of(context).pop();
+            if (navigator.canPop()) navigator.pop();
           }
         });
       }
-      return Dialog(
-          insetPadding: const EdgeInsets.symmetric(
-              horizontal: 20), // Adjust horizontal padding here
-          child: Container(
-            width: double.infinity, // Full width of the screen
-            decoration: BoxDecoration(
-              color: AppColors.dialougBG,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                SvgPicture.asset(
-                  img!,
-                  height: 80.0,
+      return DialogShell(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.xl,
+            vertical: AppDimens.xxl,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (img != null)
+                Container(
+                  padding: const EdgeInsets.all(AppDimens.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(img, height: 56),
+                )
+              else
+                Icon(
+                  Icons.check_circle_outline_rounded,
+                  size: 64,
+                  color: AppColors.primaryColor,
                 ),
-                const SizedBox(height: 16.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      heading!,
-                      style: headingStyle,
-                    ),
-                    const SizedBox(
-                        height: 8.0), // Space between title and subtitle
-                    Text(text!, style: textStyle),
-                    const SizedBox(
-                      height: 35,
-                    )
-                  ],
+              const SizedBox(height: AppDimens.lg),
+              Text(
+                heading ?? "",
+                textAlign: TextAlign.center,
+                style: headingStyle ?? AppTextStyles.pageTitle,
+              ),
+              if (text != null && text.isNotEmpty) ...[
+                const SizedBox(height: AppDimens.sm),
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: textStyle ?? AppTextStyles.secondary,
                 ),
               ],
-            ),
-          ));
+              if (showBtn == true && onBtnTap != null) ...[
+                const SizedBox(height: AppDimens.xl),
+                CustomButton(
+                  text: btnText ?? "OK",
+                  padding: AppDimens.md,
+                  onPressed: onBtnTap,
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
     },
-  );
+  ).whenComplete(() => dismissTimer?.cancel());
+  }
+
+  // Schedule presentation on post-frame so the loader pop animation completes
+  // cleanly before presenting the success dialog.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final ctx = (context != null && context.mounted)
+        ? context
+        : (Get.overlayContext ?? Get.key.currentContext ?? context);
+    if (ctx != null) {
+      openDialog(ctx);
+    }
+  });
 }

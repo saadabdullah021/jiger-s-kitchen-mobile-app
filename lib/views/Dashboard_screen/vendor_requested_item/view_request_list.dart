@@ -1,3 +1,6 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
@@ -6,10 +9,11 @@ import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/pric
 import 'package:jigers_kitchen/views/Dashboard_screen/vendor_requested_item/vendor_request_controller.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../core/contstants.dart';
 import '../../../model/requested_item_list_model.dart';
 import '../../../utils/helper.dart';
-import '../../../utils/widget/no_data.dart';
 
 class VenderRequestItemList extends StatefulWidget {
   String id;
@@ -60,12 +64,9 @@ class _VenderRequestItemListState extends State<VenderRequestItemList> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
+              ? const SkeletonList(padding: EdgeInsets.zero)
+              : FadeSlideIn(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
@@ -95,12 +96,11 @@ class _VenderRequestItemListState extends State<VenderRequestItemList> {
                       height: 15,
                     ),
                     controller.requestedItemList.value.data!.itemsList!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                          noData(null),
-                            ],
-                          )
+                        ? Expanded(
+                            child: const AppEmptyState(
+                                title: 'No requested items',
+                                description:
+                                    'Try another search or check back later.'))
                         : Expanded(
                             child: ListView.separated(
                                 separatorBuilder: (context, index) {
@@ -112,37 +112,35 @@ class _VenderRequestItemListState extends State<VenderRequestItemList> {
                                 itemCount: controller.requestedItemList.value
                                     .data!.itemsList!.length,
                                 itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () async {
-                                      await Get.to(() => AddPriceSlabScreen(
-                                                requestedData: controller
-                                                    .requestedItemList
-                                                    .value
-                                                    .data!
-                                                    .itemsList![index],
-                                                fromApproved: false,
-                                              ))!
-                                          .then((value) {
-                                        controller.getItemList(false, "1",
-                                            false, controller.vendorID!);
-                                      });
-                                    },
-                                    child: vendorListDataWidget(
-                                      data: controller.requestedItemList.value
-                                          .data!.itemsList![index],
-                                    ),
-                                  );
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          await Get.to(() => AddPriceSlabScreen(
+                                                    requestedData: controller
+                                                        .requestedItemList
+                                                        .value
+                                                        .data!
+                                                        .itemsList![index],
+                                                    fromApproved: false,
+                                                  ))!
+                                              .then((value) {
+                                            controller.getItemList(false, "1",
+                                                false, controller.vendorID!);
+                                          });
+                                        },
+                                        child: vendorListDataWidget(
+                                          data: controller.requestedItemList
+                                              .value.data!.itemsList![index],
+                                        ),
+                                      ));
                                 }),
                           ),
                     controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
-                            ),
-                          )
+                        ? const SkeletonLoadMore()
                         : const SizedBox()
                   ],
-                ),
+                )),
         ),
       ),
     );
@@ -161,7 +159,7 @@ class vendorListDataWidget extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.textWhiteColor,
           border: Border.all(width: 1, color: AppColors.newOrderGrey),
-          borderRadius: BorderRadius.circular(22)),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCard)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -171,7 +169,12 @@ class vendorListDataWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15)),
             height: 100,
             width: 95,
-            child: Image.network(Constants.webUrl + data.profileImage!),
+            child: AppNetworkImage(
+              url: Constants.webUrl + data.profileImage!,
+              width: 95,
+              height: 100,
+              radius: 15,
+            ),
           ),
           const SizedBox(
             width: 15,

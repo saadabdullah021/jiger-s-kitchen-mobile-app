@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigers_kitchen/utils/app_colors.dart';
+import 'package:jigers_kitchen/utils/app_dimens.dart';
 import 'package:jigers_kitchen/utils/app_images.dart';
+import 'package:jigers_kitchen/utils/app_text_styles.dart';
 import 'package:jigers_kitchen/utils/widget/appwidgets.dart';
 import 'package:jigers_kitchen/views/auth/login/login_controller.dart';
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
 import '../../../utils/widget/app_button.dart';
+import '../../../utils/widget/animations.dart';
 import '../../../utils/widget/custom_textfiled.dart';
 import '../../../utils/widget/forget_password_dialoug.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    LoginController controller = Get.put(LoginController());
-    final GlobalKey<FormState> key = GlobalKey();
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  final LoginController controller = Get.put(LoginController());
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: AppColors.lightGreyColor,
+      body: SafeArea(
+          child: Stack(
         children: [
           // Background image
           Positioned(
@@ -28,7 +38,7 @@ class LoginScreen extends StatelessWidget {
             right: 0,
             child: Image.asset(
               AppImages.loginImg,
-              height: Get.height * 0.4,
+              height: MediaQuery.sizeOf(context).height * 0.4,
               fit: BoxFit.cover,
             ),
           ),
@@ -39,158 +49,156 @@ class LoginScreen extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: AppColors.textWhiteColor,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppDimens.radiusSheet),
+                ),
               ),
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                padding: const EdgeInsets.fromLTRB(
+                  AppDimens.xl,
+                  AppDimens.xxl,
+                  AppDimens.xl,
+                  AppDimens.xxl,
+                ),
                 child: Form(
-                  key: key,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Image.asset(
-                          AppImages.loginIcon,
-                          height: 80,
+                  key: _formKey,
+                  child: FadeSlideIn(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            AppImages.loginIcon,
+                            height: 80,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Sign In",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 21,
+                        const SizedBox(height: AppDimens.xl),
+                        Text(
+                          "Sign In",
+                          style: AppTextStyles.pageTitle,
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "Hello there, sign in to continue",
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 12,
-                          color: AppColors.textFiledGrey,
+                        const SizedBox(height: AppDimens.xs),
+                        Text(
+                          "Hello there, sign in to continue",
+                          style: AppTextStyles.secondary,
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      CustomTextField(
-                        controller: controller.nameController,
-                        hintText: "Username/Business Name",
-                        prefixIcon: Image.asset(AppImages.user),
-                      ),
-                      const SizedBox(height: 15),
-                      Obx(
-                        () => CustomTextField(
-                          controller: controller.passwordController,
-                          hintText: "Password",
-                          obscureText: controller.showPassword.value,
-                          suffixIcon: controller.showPassword.isTrue
-                              ? Icon(Icons.visibility,
-                                  color: AppColors.textFiledGrey)
-                              : Icon(Icons.visibility_off,
-                                  color: AppColors.textFiledGrey),
-                          onSuffixIconTap: () {
-                            controller.showPassword.value =
-                                !controller.showPassword.value;
-                          },
-                          prefixIcon: Image.asset(AppImages.lock),
+                        const SizedBox(height: AppDimens.xl),
+                        CustomTextField(
+                          controller: controller.nameController,
+                          hintText: "Username/Business Name",
+                          prefixIcon: const Icon(Icons.person_outline_rounded),
+                          textInputAction: TextInputAction.next,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Obx(
-                        () => Row(
-                          children: <Widget>[
-                            Checkbox(
-                              checkColor: AppColors.textWhiteColor,
-                              activeColor: AppColors.primaryColor,
-                              value: controller.checkedValue.value,
-                              onChanged: (bool? value) {
-                                controller.checkedValue.value = value!;
-                              },
-                            ),
-                            Text(
-                              'Remember me',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textFiledGrey,
-                              ),
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () {
-                                forgetPasswordDialog(
-                                  context: context,
-                                  textController: controller.nameController,
-                                  img: AppImages.forgetPassword,
-                                  onBtnTap: () {
-                                    if (controller.nameController.text == "") {
-                                      appWidgets().showToast(
-                                          "Sorry", "Please add email");
-                                    } else {
-                                      controller.forgetPassword();
-                                    }
+                        const SizedBox(height: AppDimens.md),
+                        Obx(
+                          () => CustomTextField(
+                            controller: controller.passwordController,
+                            hintText: "Password",
+                            obscureText: controller.showPassword.value,
+                            suffixIcon: controller.showPassword.isTrue
+                                ? const Icon(Icons.visibility_rounded)
+                                : const Icon(Icons.visibility_off_rounded),
+                            onSuffixIconTap: () {
+                              controller.showPassword.value =
+                                  !controller.showPassword.value;
+                            },
+                            prefixIcon: const Icon(Icons.lock_outline_rounded),
+                            textInputAction: TextInputAction.done,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimens.sm),
+                        Obx(
+                          () => Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 12,
+                            children: <Widget>[
+                              Row(mainAxisSize: MainAxisSize.min, children: [
+                                Checkbox(
+                                  checkColor: AppColors.textWhiteColor,
+                                  activeColor: AppColors.primaryColor,
+                                  value: controller.checkedValue.value,
+                                  onChanged: (bool? value) {
+                                    controller.checkedValue.value = value!;
                                   },
-                                  headingStyle: TextStyle(
-                                    color: AppColors.jetBlackColor,
-                                    fontSize: 21,
-                                    fontWeight: FontWeight.w600,
+                                ),
+                                Text(
+                                  'Remember me',
+                                  style: AppTextStyles.secondary,
+                                ),
+                              ]),
+                              InkWell(
+                                onTap: () {
+                                  forgetPasswordDialog(
+                                    context: context,
+                                    textController: controller.nameController,
+                                    img: AppImages.forgetPassword,
+                                    onBtnTap: () {
+                                      if (controller.nameController.text ==
+                                          "") {
+                                        appWidgets().showToast(
+                                            "Sorry", "Please add email");
+                                      } else {
+                                        controller.forgetPassword();
+                                      }
+                                    },
+                                    headingStyle: TextStyle(
+                                      color: AppColors.jetBlackColor,
+                                      fontSize: 21,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    heading: "It’s okay!\nReset your password.",
+                                  );
+                                },
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: AppColors.primaryColor,
                                   ),
-                                  heading: "It’s okay!\nReset your password.",
-                                );
-                              },
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.primaryColor,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      CustomButton(
-                          text: "LOGIN",
-                          onPressed: () {
-                            if (key.currentState?.validate() ?? false) {
-                              controller.login();
-                            }
-                          }),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: Text(
-                          'Don’t have an account?',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textFiledGrey,
+                            ],
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            Get.to(() => SignUpScreen());
-                          },
+                        const SizedBox(height: AppDimens.lg),
+                        Obx(() => CustomButton(
+                            isLoading: controller.isSubmitting.value,
+                            text: "LOGIN",
+                            onPressed: () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                controller.login();
+                              }
+                            })),
+                        const SizedBox(height: AppDimens.xl),
+                        Center(
                           child: Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.primaryColor,
+                            'Don’t have an account?',
+                            style: AppTextStyles.secondary,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimens.xs),
+                        Center(
+                          child: InkWell(
+                            onTap: () {
+                              Get.to(() => SignUpScreen());
+                            },
+                            child: Text(
+                              'Create Account',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.primaryColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 }

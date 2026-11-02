@@ -1879,6 +1879,7 @@ class AppInterface extends BaseApi {
       required String orderId,
       String? vendorID,
       String? itemQty,
+      String? itemNotes,
       String? itmPrice}) async {
     Map<String, Object?> data = {
       "item_id": id,
@@ -1886,6 +1887,7 @@ class AppInterface extends BaseApi {
       "order_id": orderId,
       "item_qty": itemQty,
       "item_price": itmPrice,
+      "item_notes": itemNotes,
     };
 
     var headers = {
@@ -1893,6 +1895,36 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}edit-order-item",
+      headers: headers,
+      data,
+    );
+    if (response == null) return null;
+    if (response.body['status'] == 200) {
+      return 200;
+    } else if (response.body['status'] == 400) {
+      appWidgets.hideDialog();
+      appWidgets().showToast("Sorry", response.body['message']);
+    } else {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+    }
+    return null;
+  }
+
+  Future<dynamic> editOrderNotes({
+    required String orderId,
+    String? itemNotes,
+  }) async {
+    Map<String, Object?> data = {
+      "order_id": orderId,
+      "order_notes": itemNotes,
+    };
+
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-order-notes",
       headers: headers,
       data,
     );
@@ -1973,7 +2005,6 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2002,7 +2033,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2029,12 +2060,15 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
     if (response.body['status'] == 200) {
-      return response.body['data']['invoice_url'];
+      return {
+        "invoice_url": response.body['data']['invoice_url'],
+        "excel_url": response.body['data']['excel_url']
+      };
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);
@@ -2057,12 +2091,15 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
     if (response.body['status'] == 200) {
-      return response.body['data']['invoice_url'];
+      return {
+        "invoice_url": response.body['data']['invoice_url'],
+        "excel_url": response.body['data']['excel_url']
+      };
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);
@@ -2089,12 +2126,15 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
     if (response.body['status'] == 200) {
-      return response.body['data']['invoice_url'];
+      return {
+        "invoice_url": response.body['data']['invoice_url'],
+        "excel_url": response.body['data']['excel_url']
+      };
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);
@@ -2121,12 +2161,15 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
-      Get.back();
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
     if (response.body['status'] == 200) {
-      return response.body['data']['invoice_url'];
+      return {
+        "invoice_url": response.body['data']['invoice_url'],
+        "excel_url": response.body['data']['excel_url']
+      };
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);
@@ -2168,7 +2211,10 @@ class AppInterface extends BaseApi {
     }
     if (response.body['status'] == 200) {
       appWidgets.hideDialog();
-      return response.body['data']['invoice_url'];
+      return {
+        "invoice_url": response.body['data']['invoice_url'],
+        "excel_url": response.body['data']['excel_url']
+      };
     } else if (response.body['status'] == 400) {
       appWidgets.hideDialog();
       appWidgets().showToast("Sorry", response.body['message']);
@@ -2210,6 +2256,7 @@ class AppInterface extends BaseApi {
       headers: headers,
     );
     if (response == null) {
+      appWidgets.hideDialog();
       Constants.internalServerErrorToast();
       return null;
     }
@@ -2282,6 +2329,48 @@ class AppInterface extends BaseApi {
     };
     var response = await sendPost(
       "${Constants.API_BASE_URL}assign-order-to-delivery-user",
+      headers: headers,
+      data,
+    );
+    if (response == null) {
+      appWidgets.hideDialog();
+      Constants.internalServerErrorToast();
+      return null;
+    } else {
+      try {
+        if (response.body['status'] == 200) {
+          return 200;
+        } else if (response.body['status'] == 400) {
+          appWidgets.hideDialog();
+          appWidgets().showToast("Sorry", response.body['message']);
+          return 400;
+        } else {
+          appWidgets.hideDialog();
+          Constants.internalServerErrorToast();
+        }
+        return null;
+      } catch (e) {
+        appWidgets.hideDialog();
+        Constants.soryyTryAgainToast();
+      }
+    }
+  }
+
+  Future<dynamic> updateItemQuantity({
+    double? quantity,
+    String? orderID,
+    String? itemID,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer ${Common.loginReponse.value.data!.token!}'
+    };
+    var data = {
+      "cart_id": orderID,
+      "item_id": itemID,
+      "item_quantity": quantity.toString()
+    };
+    var response = await sendPost(
+      "${Constants.API_BASE_URL}update-item-qty",
       headers: headers,
       data,
     );

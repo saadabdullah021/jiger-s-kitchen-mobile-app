@@ -1,14 +1,18 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/contstants.dart';
 import '../../../../model/requested_item_list_model.dart';
 import '../../../../utils/app_colors.dart';
+import '../../../../utils/app_dimens.dart';
 import '../../../../utils/helper.dart';
 import '../../../../utils/widget/app_bar.dart';
 import '../../../../utils/widget/app_button.dart';
 import '../../../../utils/widget/custom_textfiled.dart';
-import '../../../../utils/widget/no_data.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../new_order_screens/edit_order/edit_order_screen.dart';
 import '../../vendor_requested_item/price_slab/add_price_slab.dart';
 import 'vendor_approved_item_controller.dart';
@@ -65,12 +69,9 @@ class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
           child: Obx(
             () => controller.isLoading.isTrue
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  )
-                : Column(
+                ? const SkeletonList(padding: EdgeInsets.zero)
+                : FadeSlideIn(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -101,12 +102,25 @@ class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
                       ),
                       controller
                               .requestedItemList.value.data!.itemsList!.isEmpty
-                          ? Column(
-                              children: [
-                                SizedBox(height: Get.height * 0.15),
-                                noData(null),
-                              ],
-                            )
+                          ? Expanded(
+                              child: AppEmptyState(
+                              title: 'No approved items',
+                              description:
+                                  'Try another search or check back later.',
+                              actionText: 'Add Item',
+                              actionIcon: Icons.add_box_rounded,
+                              onAction: () async {
+                                await showCustomBottomSheet(
+                                        context, controller.vendorID, true)
+                                    .then((value) {
+                                  controller.getItemList(
+                                    false,
+                                    "1",
+                                    false,
+                                  );
+                                });
+                              },
+                            ))
                           : Expanded(
                               child: ListView.separated(
                                   separatorBuilder: (context, index) {
@@ -118,40 +132,39 @@ class _VenderApprovedItemListState extends State<VenderApprovedItemList> {
                                   itemCount: controller.requestedItemList.value
                                       .data!.itemsList!.length,
                                   itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        await Get.to(() => AddPriceSlabScreen(
-                                                  requestedData: controller
-                                                      .requestedItemList
-                                                      .value
-                                                      .data!
-                                                      .itemsList![index],
-                                                  fromApproved: true,
-                                                ))!
-                                            .then((value) {
-                                          controller.getItemList(
-                                            false,
-                                            "1",
-                                            false,
-                                          );
-                                        });
-                                      },
-                                      child: vendorListDataWidget(
-                                        data: controller.requestedItemList.value
-                                            .data!.itemsList![index],
-                                      ),
-                                    );
+                                    return FadeSlideIn(
+                                        index: index,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            await Get.to(
+                                                    () => AddPriceSlabScreen(
+                                                          requestedData: controller
+                                                              .requestedItemList
+                                                              .value
+                                                              .data!
+                                                              .itemsList![index],
+                                                          fromApproved: true,
+                                                        ))!
+                                                .then((value) {
+                                              controller.getItemList(
+                                                false,
+                                                "1",
+                                                false,
+                                              );
+                                            });
+                                          },
+                                          child: vendorListDataWidget(
+                                            data: controller.requestedItemList
+                                                .value.data!.itemsList![index],
+                                          ),
+                                        ));
                                   }),
                             ),
                       controller.isMoreLoading.isTrue
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primaryColor,
-                              ),
-                            )
+                          ? const SkeletonLoadMore()
                           : const SizedBox()
                     ],
-                  ),
+                  )),
           ),
         ),
         bottomNavigationBar: Padding(
@@ -187,7 +200,7 @@ class vendorListDataWidget extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.textWhiteColor,
           border: Border.all(width: 1, color: AppColors.newOrderGrey),
-          borderRadius: BorderRadius.circular(22)),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCard)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -197,7 +210,12 @@ class vendorListDataWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15)),
             height: 100,
             width: 95,
-            child: Image.network(Constants.webUrl + data.profileImage!),
+            child: AppNetworkImage(
+              url: Constants.webUrl + data.profileImage!,
+              width: 95,
+              height: 100,
+              radius: 15,
+            ),
           ),
           const SizedBox(
             width: 15,

@@ -183,7 +183,7 @@ class AddPriceSlabController extends GetxController {
             quantity: quantityController.text,
             price: priceController.text)
         .then((value) {
-      appWidgets.hideDialog;
+      appWidgets.hideDialog();
       if (value == 200) {
         isEditing.value = false;
         quantityController.text = "";
@@ -217,10 +217,9 @@ class AddPriceSlabController extends GetxController {
             quantity: quantityController.text,
             price: priceController.text)
         .then((value) {
-      appWidgets.hideDialog;
+      appWidgets.hideDialog();
       if (value == 200) {
         getAllPriceSlabs(false);
-        Get.back();
         showDialogWithAutoDismiss(
             context: Get.context,
             doubleBack: true,

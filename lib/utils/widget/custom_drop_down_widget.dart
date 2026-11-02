@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/contstants.dart';
 import '../../model/chef_drop_down_data_model.dart';
 import '../app_colors.dart';
+import 'app_network_image.dart';
 
 class CustomDropdownSearch extends StatelessWidget {
   final List<ChefData> items;
@@ -117,11 +118,9 @@ class DropdownItem extends StatelessWidget {
     return Row(
       children: [
         imageUrl != null
-            ? CircleAvatar(
+            ? AppNetworkAvatar(
+                url: Constants.webUrl + imageUrl!,
                 radius: 13,
-                backgroundImage: NetworkImage(
-                  Constants.webUrl + imageUrl!,
-                ),
               )
             : const SizedBox(),
         const SizedBox(width: 10),

@@ -1,3 +1,6 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +9,6 @@ import 'package:jigers_kitchen/utils/helper.dart';
 import 'package:jigers_kitchen/utils/widget/app_bar.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
-import '../../../utils/widget/no_data.dart';
 import 'view_order_list_controller.dart';
 
 class ChefOrderListScreen extends StatefulWidget {
@@ -58,12 +60,9 @@ class _OrderListScreenState extends State<ChefOrderListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
+              ? const SkeletonList(padding: EdgeInsets.zero)
+              : FadeSlideIn(
+                  child: Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -97,276 +96,289 @@ class _OrderListScreenState extends State<ChefOrderListScreen> {
                       height: 15,
                     ),
                     controller.orderList.value.data!.items!.data!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                              noData(null),
-                            ],
-                          )
+                        ? Expanded(
+                            child: const AppEmptyState(
+                                title: 'No orders found',
+                                description:
+                                    'Try another search or check back later.'))
                         : Expanded(
                             child: ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .orderList.value.data!.items!.data!.length,
                                 itemBuilder: (context, index) {
-                                  return Card(
-                                      color: Colors.white,
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(13),
-                                          child: ExpandablePanel(
-                                              theme: ExpandableThemeData(
-                                                  iconColor:
-                                                      AppColors.primaryColor),
-                                              header: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    controller
-                                                        .orderList
-                                                        .value
-                                                        .data!
-                                                        .items!
-                                                        .data![index]
-                                                        .orderInfo!
-                                                        .orderIdentifier!
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: AppColors
-                                                            .primaryColor),
-                                                  ),
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    ),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 6,
-                                                          vertical: 4),
-                                                      child: Center(
-                                                        child: Text(
-                                                          Helper
-                                                              .capitalizeFirstLetter(
-                                                            controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .items!
-                                                                .data![index]
-                                                                .chefStatus
-                                                                .toString()
-                                                                .replaceAll(
-                                                                    "_", " "),
-                                                          ).toUpperCase(),
-                                                          style: TextStyle(
-                                                              fontSize: 10,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: AppColors
-                                                                  .textWhiteColor),
-                                                        ),
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: Card(
+                                          color: Colors.white,
+                                          child: Padding(
+                                              padding: const EdgeInsets.all(13),
+                                              child: ExpandablePanel(
+                                                  theme: ExpandableThemeData(
+                                                      iconColor: AppColors
+                                                          .primaryColor),
+                                                  header: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        controller
+                                                            .orderList
+                                                            .value
+                                                            .data!
+                                                            .items!
+                                                            .data![index]
+                                                            .orderInfo!
+                                                            .orderIdentifier!
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: AppColors
+                                                                .primaryColor),
                                                       ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              collapsed: const SizedBox(),
-                                              expanded: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  itemRow(
-                                                      "Order Date",
-                                                      controller
-                                                          .orderList
-                                                          .value
-                                                          .data!
-                                                          .items!
-                                                          .data![index]
-                                                          .orderInfo!
-                                                          .orderCreatedAt!),
-                                                  const Divider(),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 20),
-                                                    child: Column(
-                                                      children: [
-                                                        itemRow(
-                                                            "Product Name:",
-                                                            controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .items!
-                                                                .data![index]
-                                                                .menuItemInfo!
-                                                                .itemName!),
-                                                        itemRow(
-                                                            "Description:",
-                                                            controller
-                                                                .orderList
-                                                                .value
-                                                                .data!
-                                                                .items!
-                                                                .data![index]
-                                                                .menuItemInfo!
-                                                                .itemDescription!),
-                                                        itemRow(
-                                                            "Quantity:",
-                                                            (double.parse(controller
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal: 6,
+                                                                  vertical: 4),
+                                                          child: Center(
+                                                            child: Text(
+                                                              Helper
+                                                                  .capitalizeFirstLetter(
+                                                                controller
                                                                     .orderList
                                                                     .value
                                                                     .data!
                                                                     .items!
                                                                     .data![
                                                                         index]
-                                                                    .itemQuantity!)
-                                                                .toStringAsFixed(
-                                                                    2))),
-                                                        Visibility(
-                                                          visible: controller
-                                                                      .orderList
-                                                                      .value
-                                                                      .data!
-                                                                      .items!
-                                                                      .data![
-                                                                          index]
-                                                                      .itemNote !=
-                                                                  null &&
-                                                              controller
-                                                                      .orderList
-                                                                      .value
-                                                                      .data!
-                                                                      .items!
-                                                                      .data![
-                                                                          index]
-                                                                      .itemNote !=
-                                                                  "",
-                                                          child: itemRow(
-                                                              "Item Notes:",
-                                                              controller
-                                                                  .orderList
-                                                                  .value
-                                                                  .data!
-                                                                  .items!
-                                                                  .data![index]
-                                                                  .itemNote
-                                                                  .toString()),
+                                                                    .chefStatus
+                                                                    .toString()
+                                                                    .replaceAll(
+                                                                        "_",
+                                                                        " "),
+                                                              ).toUpperCase(),
+                                                              style: TextStyle(
+                                                                  fontSize: 10,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: AppColors
+                                                                      .textWhiteColor),
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                      )
+                                                    ],
                                                   ),
-                                                  Visibility(
-                                                      visible: controller
-                                                              .orderList
-                                                              .value
-                                                              .data!
-                                                              .items!
-                                                              .data![index]
-                                                              .chefStatus !=
-                                                          "completed",
-                                                      child: const Divider()),
-                                                  Visibility(
-                                                    visible: controller
-                                                            .orderList
-                                                            .value
-                                                            .data!
-                                                            .items!
-                                                            .data![index]
-                                                            .chefStatus !=
-                                                        "completed",
-                                                    child: Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 16.0),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                      ),
-                                                      child: DropdownButton<
-                                                          String>(
-                                                        hint: const Text(
-                                                          'Select an option',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.grey),
-                                                        ),
-                                                        value: Helper
-                                                            .capitalizeFirstLetter(
+                                                  collapsed: const SizedBox(),
+                                                  expanded: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      itemRow(
+                                                          "Order Date",
                                                           controller
                                                               .orderList
                                                               .value
                                                               .data!
                                                               .items!
                                                               .data![index]
-                                                              .chefStatus
-                                                              .toString()
-                                                              .replaceAll(
-                                                                  "_", " "),
-                                                        ).toUpperCase(),
-                                                        isExpanded: true,
-                                                        underline:
-                                                            const SizedBox(), // Removes the underline
-                                                        onChanged:
-                                                            (String? newValue) {
-                                                          controller.updateStatus(
+                                                              .orderInfo!
+                                                              .orderCreatedAt!),
+                                                      const Divider(),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 20),
+                                                        child: Column(
+                                                          children: [
+                                                            itemRow(
+                                                                "Product Name:",
+                                                                controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .items!
+                                                                    .data![
+                                                                        index]
+                                                                    .menuItemInfo!
+                                                                    .itemName!),
+                                                            itemRow(
+                                                                "Description:",
+                                                                controller
+                                                                    .orderList
+                                                                    .value
+                                                                    .data!
+                                                                    .items!
+                                                                    .data![
+                                                                        index]
+                                                                    .menuItemInfo!
+                                                                    .itemDescription!),
+                                                            itemRow(
+                                                                "Quantity:",
+                                                                (double.parse(controller
+                                                                        .orderList
+                                                                        .value
+                                                                        .data!
+                                                                        .items!
+                                                                        .data![
+                                                                            index]
+                                                                        .itemQuantity!)
+                                                                    .toStringAsFixed(
+                                                                        2))),
+                                                            Visibility(
+                                                              visible: controller
+                                                                          .orderList
+                                                                          .value
+                                                                          .data!
+                                                                          .items!
+                                                                          .data![
+                                                                              index]
+                                                                          .itemNote !=
+                                                                      null &&
+                                                                  controller
+                                                                          .orderList
+                                                                          .value
+                                                                          .data!
+                                                                          .items!
+                                                                          .data![
+                                                                              index]
+                                                                          .itemNote !=
+                                                                      "",
+                                                              child: itemRow(
+                                                                  "Item Notes:",
+                                                                  controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .items!
+                                                                      .data![
+                                                                          index]
+                                                                      .itemNote
+                                                                      .toString()),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                          visible: controller
+                                                                  .orderList
+                                                                  .value
+                                                                  .data!
+                                                                  .items!
+                                                                  .data![index]
+                                                                  .chefStatus !=
+                                                              "completed",
+                                                          child:
+                                                              const Divider()),
+                                                      Visibility(
+                                                        visible: controller
+                                                                .orderList
+                                                                .value
+                                                                .data!
+                                                                .items!
+                                                                .data![index]
+                                                                .chefStatus !=
+                                                            "completed",
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      16.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                          ),
+                                                          child: DropdownButton<
+                                                              String>(
+                                                            hint: const Text(
+                                                              'Select an option',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .grey),
+                                                            ),
+                                                            value: Helper
+                                                                .capitalizeFirstLetter(
                                                               controller
                                                                   .orderList
                                                                   .value
                                                                   .data!
                                                                   .items!
                                                                   .data![index]
-                                                                  .id
-                                                                  .toString(),
-                                                              newValue!);
-                                                        },
-                                                        items: controller.items.map<
-                                                            DropdownMenuItem<
-                                                                String>>((String
-                                                            value) {
-                                                          return DropdownMenuItem<
-                                                              String>(
-                                                            value: value,
-                                                            child: Text(
-                                                              value,
-                                                              style: const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors
-                                                                      .black),
-                                                            ),
-                                                          );
-                                                        }).toList(),
+                                                                  .chefStatus
+                                                                  .toString()
+                                                                  .replaceAll(
+                                                                      "_", " "),
+                                                            ).toUpperCase(),
+                                                            isExpanded: true,
+                                                            underline:
+                                                                const SizedBox(), // Removes the underline
+                                                            onChanged: (String?
+                                                                newValue) {
+                                                              controller.updateStatus(
+                                                                  controller
+                                                                      .orderList
+                                                                      .value
+                                                                      .data!
+                                                                      .items!
+                                                                      .data![
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                  newValue!);
+                                                            },
+                                                            items: controller.items.map<
+                                                                DropdownMenuItem<
+                                                                    String>>((String
+                                                                value) {
+                                                              return DropdownMenuItem<
+                                                                  String>(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .black),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
 
-                                                  ///
-                                                ],
-                                              ))));
+                                                      ///
+                                                    ],
+                                                  )))));
                                 }),
                           ),
                     controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
-                            ),
-                          )
+                        ? const SkeletonLoadMore()
                         : const SizedBox()
                   ],
-                ),
+                )),
         ),
       ),
     );

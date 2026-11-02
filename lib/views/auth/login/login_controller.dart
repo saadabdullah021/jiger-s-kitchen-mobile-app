@@ -14,26 +14,33 @@ class LoginController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   RxBool showPassword = true.obs;
   RxBool checkedValue = false.obs;
+  final isSubmitting = false.obs;
   login() async {
-    appWidgets.loadingDialog();
-    await AppInterface()
-        .login(
-            userName: nameController.text,
-            password: passwordController.text,
-            remeber: checkedValue.value)
-        .then((value) {
-      if (value == 200) {
-        appWidgets.hideDialog();
-        if (Common.currentRole == "chef" ||
-            Common.currentRole == "delivery_user") {
-          Get.put(HomeController());
-          Get.off(const DashboardScreen());
-        } else {
-          Get.delete<HomeController>();
-          Get.off(const JigarHome());
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
+    try {
+      await AppInterface()
+          .login(
+              userName: nameController.text,
+              password: passwordController.text,
+              remeber: checkedValue.value)
+          .then((value) {
+        if (value == 200) {
+          if (Common.currentRole == "chef" ||
+              Common.currentRole == "delivery_user") {
+            Get.put(HomeController());
+            Get.off(const DashboardScreen());
+          } else {
+            Get.delete<HomeController>();
+            Get.off(const JigarHome());
+          }
         }
-      }
-    });
+      });
+    } catch (_) {
+      appWidgets().showErrorToast('Unable to sign in', 'Please try again.');
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   forgetPassword() async {

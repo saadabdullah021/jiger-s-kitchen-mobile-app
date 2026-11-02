@@ -1,3 +1,6 @@
+import 'package:jigers_kitchen/utils/widget/animations.dart';
+import 'package:jigers_kitchen/utils/widget/app_states.dart';
+import 'package:jigers_kitchen/utils/widget/skeletons.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,13 +11,13 @@ import 'package:jigers_kitchen/views/Dashboard_screen/Vendor/all_vendor_controll
 import 'package:jigers_kitchen/views/auth/signup/signup_screen.dart';
 
 import '../../../../utils/widget/custom_textfiled.dart';
+import '../../../../utils/widget/app_network_image.dart';
 import '../../../core/apis/app_interface.dart';
 import '../../../core/contstants.dart';
 import '../../../model/user_list_model.dart';
 import '../../../utils/app_images.dart';
 import '../../../utils/widget/appwidgets.dart';
 import '../../../utils/widget/delete_item_dialoug.dart';
-import '../../../utils/widget/no_data.dart';
 import '../../../utils/widget/success_dialoug.dart';
 import '../../new_order_screens/new_order_widgets.dart';
 import '../order_list/view_order_list.dart';
@@ -62,12 +65,9 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Obx(
           () => controller.isLoading.isTrue
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : Column(
+              ? const SkeletonList(padding: EdgeInsets.zero)
+              : FadeSlideIn(
+                  child: Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -141,217 +141,247 @@ class _AllVendorListScreenState extends State<AllVendorListScreen> {
                       height: 15,
                     ),
                     controller.userList.value.data!.chefList!.isEmpty
-                        ? Column(
-                            children: [
-                              SizedBox(height: Get.height * 0.15),
-                              noData(null),
-                            ],
-                          )
+                        ? Expanded(
+                            child: AppEmptyState(
+                            title: 'No vendors found',
+                            description:
+                                'Try another search or check back later.',
+                            actionText: widget.isBottomSheet == true
+                                ? null
+                                : 'Add Vendor',
+                            actionIcon: Icons.storefront_rounded,
+                            onAction: widget.isBottomSheet == true
+                                ? null
+                                : () async {
+                                    await Get.to(() => SignUpScreen(
+                                              addVendor: true,
+                                            ))!
+                                        .then((value) {
+                                      controller.getChef(false, "1", false);
+                                    });
+                                  },
+                          ))
                         : Expanded(
                             child: ListView.builder(
                                 controller: _scrollController,
                                 itemCount: controller
                                     .userList.value.data!.chefList!.length,
                                 itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      widget.onChefSelected != null
-                                          ? widget.onChefSelected!(controller
-                                              .userList
-                                              .value
-                                              .data!
-                                              .chefList![index])
-                                          : Get.to(() => VenderApprovedItemList(
-                                                id: controller.userList.value
-                                                    .data!.chefList![index].id
-                                                    .toString(),
-                                              ));
-                                    },
-                                    child: Card(
-                                      color: AppColors.textGreyColor,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(13),
-                                        child: ExpandablePanel(
-                                            theme: ExpandableThemeData(
-                                                iconColor:
-                                                    AppColors.primaryColor),
-                                            header: Text(
-                                              controller.userList.value.data!
-                                                      .chefList![index].name ??
-                                                  "",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            collapsed: vendorListDataWidget(
-                                              data: controller.userList.value
-                                                  .data!.chefList![index],
-                                            ),
-                                            expanded: Column(
-                                              children: [
-                                                vendorListDataWidget(
+                                  return FadeSlideIn(
+                                      index: index,
+                                      child: InkWell(
+                                        onTap: () {
+                                          widget.onChefSelected != null
+                                              ? widget.onChefSelected!(
+                                                  controller.userList.value
+                                                      .data!.chefList![index])
+                                              : Get.to(
+                                                  () => VenderApprovedItemList(
+                                                        id: controller
+                                                            .userList
+                                                            .value
+                                                            .data!
+                                                            .chefList![index]
+                                                            .id
+                                                            .toString(),
+                                                      ));
+                                        },
+                                        child: Card(
+                                          margin:
+                                              const EdgeInsets.only(bottom: 12),
+                                          elevation: 0,
+                                          color: AppColors.textWhiteColor,
+                                          shadowColor: Colors.black12,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(18),
+                                            side: BorderSide(
+                                                color: AppColors.borderColor),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: ExpandablePanel(
+                                                theme: ExpandableThemeData(
+                                                    iconColor:
+                                                        AppColors.primaryColor),
+                                                header: Text(
+                                                  controller
+                                                          .userList
+                                                          .value
+                                                          .data!
+                                                          .chefList![index]
+                                                          .name ??
+                                                      "",
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                collapsed: vendorListDataWidget(
                                                   data: controller
                                                       .userList
                                                       .value
                                                       .data!
                                                       .chefList![index],
                                                 ),
-                                                const SizedBox(
-                                                  height: 20,
-                                                ),
-                                                Visibility(
-                                                  visible:
-                                                      widget.isBottomSheet !=
+                                                expanded: Column(
+                                                  children: [
+                                                    vendorListDataWidget(
+                                                      data: controller
+                                                          .userList
+                                                          .value
+                                                          .data!
+                                                          .chefList![index],
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    Visibility(
+                                                      visible: widget
+                                                              .isBottomSheet !=
                                                           true,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.edit,
-                                                        text: "Edit",
-                                                        clr: AppColors
-                                                            .primaryColor,
-                                                        ontap: () async {
-                                                          await Get.to(
-                                                                  SignUpScreen(
-                                                            isEdit: true,
-                                                            chefID: controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .chefList![
-                                                                    index]
-                                                                .id
-                                                                .toString(),
-                                                            addVendor: true,
-                                                          ))!
-                                                              .then((value) {
-                                                            controller.getChef(
-                                                                false,
-                                                                controller
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          NewOrderButtonWidget(
+                                                            ic: Icons.edit,
+                                                            text: "Edit",
+                                                            clr: AppColors
+                                                                .primaryColor,
+                                                            ontap: () async {
+                                                              await Get.to(
+                                                                      SignUpScreen(
+                                                                isEdit: true,
+                                                                chefID: controller
                                                                     .userList
                                                                     .value
                                                                     .data!
-                                                                    .currentPage!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .id
                                                                     .toString(),
-                                                                false);
-                                                          });
-                                                        },
-                                                      ),
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.delete,
-                                                        text: "Delete",
-                                                        ontap: () {
-                                                          showDeleteItemDialoug(
-                                                              description:
-                                                                  "Are you sure you want to DELETE the Vendor?",
-                                                              context: context,
-                                                              url: controller
-                                                                  .userList
-                                                                  .value
-                                                                  .data!
-                                                                  .chefList![
-                                                                      index]
-                                                                  .profileImage,
-                                                              onYes: () async {
-                                                                Get.back();
-                                                                appWidgets
-                                                                    .loadingDialog();
-                                                                await AppInterface()
-                                                                    .deleteUser(
-                                                                  role:
-                                                                      "vendor",
-                                                                  id: controller
+                                                                addVendor: true,
+                                                              ))!
+                                                                  .then(
+                                                                      (value) {
+                                                                controller.getChef(
+                                                                    false,
+                                                                    controller
+                                                                        .userList
+                                                                        .value
+                                                                        .data!
+                                                                        .currentPage!
+                                                                        .toString(),
+                                                                    false);
+                                                              });
+                                                            },
+                                                          ),
+                                                          NewOrderButtonWidget(
+                                                            ic: Icons.delete,
+                                                            text: "Delete",
+                                                            ontap: () {
+                                                              showDeleteItemDialoug(
+                                                                  description:
+                                                                      "Are you sure you want to DELETE the Vendor?",
+                                                                  context:
+                                                                      context,
+                                                                  url: controller
                                                                       .userList
                                                                       .value
                                                                       .data!
                                                                       .chefList![
                                                                           index]
-                                                                      .id
-                                                                      .toString(),
-                                                                )
-                                                                    .then(
-                                                                        (value) {
-                                                                  if (value !=
-                                                                          null &&
-                                                                      value ==
-                                                                          200) {
-                                                                    controller.getChef(
-                                                                        false,
-                                                                        controller
-                                                                            .userList
-                                                                            .value
-                                                                            .data!
-                                                                            .currentPage
-                                                                            .toString(),
-                                                                        false);
+                                                                      .profileImage,
+                                                                  onYes:
+                                                                      () async {
+                                                                    Get.back();
                                                                     appWidgets
-                                                                        .hideDialog();
-                                                                    showDialogWithAutoDismiss(
-                                                                        context: Get
-                                                                            .context,
-                                                                        doubleBack:
+                                                                        .loadingDialog();
+                                                                    await AppInterface()
+                                                                        .deleteUser(
+                                                                      role:
+                                                                          "vendor",
+                                                                      id: controller
+                                                                          .userList
+                                                                          .value
+                                                                          .data!
+                                                                          .chefList![
+                                                                              index]
+                                                                          .id
+                                                                          .toString(),
+                                                                    )
+                                                                        .then(
+                                                                            (value) {
+                                                                      if (value !=
+                                                                              null &&
+                                                                          value ==
+                                                                              200) {
+                                                                        controller.getChef(
                                                                             false,
-                                                                        img: AppImages
-                                                                            .successDialougIcon,
-                                                                        autoDismiss:
-                                                                            true,
-                                                                        heading:
-                                                                            "Hurray!",
-                                                                        text:
-                                                                            "Vendor Deleted Successfully",
-                                                                        headingStyle: TextStyle(
-                                                                            fontSize:
-                                                                                32,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: AppColors.textBlackColor));
-                                                                  }
-                                                                });
-                                                              });
-                                                        },
-                                                        clr: AppColors.redColor,
+                                                                            controller.userList.value.data!.currentPage.toString(),
+                                                                            false);
+                                                                        appWidgets
+                                                                            .hideDialog();
+                                                                        showDialogWithAutoDismiss(
+                                                                            context: Get
+                                                                                .context,
+                                                                            doubleBack:
+                                                                                false,
+                                                                            img: AppImages
+                                                                                .successDialougIcon,
+                                                                            autoDismiss:
+                                                                                true,
+                                                                            heading:
+                                                                                "Hurray!",
+                                                                            text:
+                                                                                "Vendor Deleted Successfully",
+                                                                            headingStyle: TextStyle(
+                                                                                fontSize: 32,
+                                                                                fontWeight: FontWeight.w600,
+                                                                                color: AppColors.textBlackColor));
+                                                                      }
+                                                                    });
+                                                                  });
+                                                            },
+                                                            clr: AppColors
+                                                                .redColor,
+                                                          ),
+                                                          NewOrderButtonWidget(
+                                                            ic: Icons.receipt,
+                                                            text: "Orders",
+                                                            ontap: () {
+                                                              Get.to(
+                                                                  OrderListScreen(
+                                                                vendorId: controller
+                                                                    .userList
+                                                                    .value
+                                                                    .data!
+                                                                    .chefList![
+                                                                        index]
+                                                                    .id!
+                                                                    .toString(),
+                                                              ));
+                                                            },
+                                                            clr: AppColors
+                                                                .orangeColor,
+                                                          ),
+                                                        ],
                                                       ),
-                                                      NewOrderButtonWidget(
-                                                        ic: Icons.receipt,
-                                                        text: "Orders",
-                                                        ontap: () {
-                                                          Get.to(
-                                                              OrderListScreen(
-                                                            vendorId: controller
-                                                                .userList
-                                                                .value
-                                                                .data!
-                                                                .chefList![
-                                                                    index]
-                                                                .id!
-                                                                .toString(),
-                                                          ));
-                                                        },
-                                                        clr: AppColors
-                                                            .orangeColor,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            )),
-                                      ),
-                                    ),
-                                  );
+                                                    ),
+                                                  ],
+                                                )),
+                                          ),
+                                        ),
+                                      ));
                                 }),
                           ),
                     controller.isMoreLoading.isTrue
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primaryColor,
-                            ),
-                          )
+                        ? const SkeletonLoadMore()
                         : const SizedBox()
                   ],
-                ),
+                )),
         ),
       ),
     );
@@ -403,12 +433,11 @@ class vendorListDataWidget extends StatelessWidget {
             ],
           ),
         ),
-        CircleAvatar(
+        AppNetworkAvatar(
+          url: data.profileImage == null
+              ? null
+              : Constants.webUrl + data.profileImage!,
           radius: 30,
-          backgroundColor: Colors.white,
-          backgroundImage: data.profileImage != null
-              ? NetworkImage(Constants.webUrl + data.profileImage!)
-              : null,
         )
       ],
     );
